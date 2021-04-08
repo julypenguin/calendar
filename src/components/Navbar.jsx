@@ -21,20 +21,6 @@ const Navbar = ({
         setPreviewData(showData)
     }
 
-    const getMonth = (data) => {
-        const fullDate = getFullDate(data)
-        return <>
-            <span className='mr-1 text-lg'>{fullDate.y}</span>
-            <span className='text-lg'>
-                <FormattedDate
-                    value={`${fullDate.y}-${fullDate.m}`
-                    }
-                    month="numeric"
-                />
-            </span>
-        </>
-    }
-
     const setMonth = (setData, data, calc) => {
         const todayToFullDate = getFullDate()
         const todayY = Number(todayToFullDate.y)
@@ -70,6 +56,27 @@ const Navbar = ({
         const ele = input.getBoundingClientRect()
         if (window.innerHeight - ele.top > 310) return { top: ele.bottom + 2, left: ele.left, zIndex: 6666666 }
         else return { top: ele.top + ele.height, right: ele.left, zIndex: 6666666, width: '219px', height: '215.7px' }
+    }
+
+    const renderFullDate = ({ data, noYear, noMonth, noDate }) => {
+        const fullDate = getFullDate(data)
+        return <>
+            {noYear ? null : <span className='mr-1 text-lg'>{fullDate.y}</span>}
+            {noMonth ? null : <span className='mr-1 text-lg'>
+                <FormattedDate
+                    value={`${fullDate.y}-${fullDate.m}`
+                    }
+                    month="numeric"
+                />
+            </span>}
+            {noDate ? null : <span className='text-lg'>
+                <FormattedDate
+                    value={`${fullDate.y}-${fullDate.m}-${fullDate.d}`
+                    }
+                    day="numeric"
+                />
+            </span>}
+        </>
     }
 
     useEffect(() => {
@@ -118,7 +125,7 @@ const Navbar = ({
                     onClick={() => setShowCalendar(!showCalendar)}
                     ref={selectMonthRef}
                 >
-                    <span className='mr-2 text-blue-700'>{getMonth(showData)}</span>
+                    <span className='mr-2 text-blue-700'>{renderFullDate({ data: showData, noDate:true })}</span>
                     <Icon icon='chevron-down' />
                 </li>
             </ul>
@@ -144,7 +151,7 @@ const Navbar = ({
                     >
                         <div className='flex flex-col p-2 pb-5' style={{ width: '219px', height: '215.7px' }}>
                             <div className='flex justify-between'>
-                                <div className='flex justify-center items-center px-2'>{getMonth(previewData)}</div>
+                                <div className='flex justify-center items-center px-2'>{renderFullDate({ data: previewData, noDate: true })}</div>
                                 <ul className='flex'>
                                     <li
                                         className='p-1 cursor-pointer hover:bg-gray-200 flex-shrink-0'
@@ -177,7 +184,9 @@ const Navbar = ({
                             </div>
                         </div>
                         <div className='top-0 border-r'></div>
-                        <SelectorM />
+                        <SelectorM
+                            month={renderFullDate({ data: previewData, noMonth: true, noDate: true })}
+                        />
                     </div>
                 </div>,
                 document.body
