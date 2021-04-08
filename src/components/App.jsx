@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { IntlProvider } from 'react-intl'
 import { FormattedDate, FormattedMessage, FormattedTime, injectIntl } from 'react-intl'
 
@@ -54,7 +54,8 @@ const App = (props) => {
                         value={`${newM}-${newD}`}
                         month="long"
                         day="2-digit"
-                    />
+                    />,
+                    main: false,
                 })
             }
         }
@@ -72,7 +73,8 @@ const App = (props) => {
                     value={`${m + 1}-${i}`}
                     month="long"
                     day="2-digit"
-                />
+                />,
+                main: true,
             })
         }
 
@@ -93,7 +95,8 @@ const App = (props) => {
                         value={`${newM}-${newD}`}
                         month="long"
                         day="2-digit"
-                    />
+                    />,
+                    main: false,
                 })
             }
         }
@@ -108,7 +111,7 @@ const App = (props) => {
 
     return (
         <IntlProvider defaultLocale='zh' {...language}>
-            <SelectorM />
+            {/* <SelectorM /> */}
             <div className='h-full w-full absolute'>
                 <div className='h-full w-full overflow-hidden flex flex-col relative'>
                     <Navbar

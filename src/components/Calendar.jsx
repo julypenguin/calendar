@@ -12,7 +12,7 @@ const Calendar = ({
     abbr, // 讓 calendar 保持所寫文字
     textSm, // 讓文字變小
     center, // 文字置中
-    canClick, // 點擊後會選取
+    selector, // 點擊後會選取
 }) => {
 
     const getIntlMsg = (id, defaultMessage) => intl.formatMessage({ id, defaultMessage })
@@ -56,9 +56,9 @@ const Calendar = ({
             <div className="relative flex flex-1 w-full h-full">
                 {/* 大月曆 */}
                 <div className="inset-0 absolute flex flex-col">
-                    <div className='flex flex-1 select-none' style={{ height: '48px' }}>
+                    <div className='flex flex-1 select-none'>
                         {weeks.map((week, index) => (
-                            <div key={index} className="relative flex flex-1 text-xs px-4 items-end mb-4">
+                            <div key={index} className={`relative flex flex-1 text-xs items-end mb-4 ${!center ? 'px-4 h-8' : 'justify-center items-center h-full'}`}>
                                 {abbr ?
                                     <div className={`text-gray-500 ${!textSm ? '' : 'text-xs'}`}>{week.abb_name}</div>
                                     :
@@ -79,7 +79,11 @@ const Calendar = ({
                             week.map((data, i) => (
                                 <div
                                     key={i}
-                                    className={` py-2 whitespace-nowrap text-sm font-medium text-gray-900 absolute border-t cursor-pointer ${data.isToday ? 'calendar-today' : data.isOverdue ? 'bg-gray-100' : 'bg-white'}`}
+                                    className={`whitespace-nowrap text-sm font-medium text-gray-900 absolute cursor-pointer 
+                                        ${!selector ? 
+                                            data.isToday ? 'calendar-today border-t' 
+                                                : data.isOverdue ? 'bg-gray-100 border-t' : 'bg-white border-t' 
+                                            : 'bg-white hover:bg-gray-100'}`}
                                     style={{
                                         inset: `
                                             ${index * (100 / datas.length).toFixed(4)}% 
@@ -88,19 +92,19 @@ const Calendar = ({
                                             ${(100 / 7 * (i)).toFixed(4)}%`
                                     }}
                                 >
-                                    <div className={`flex flex-col w-full h-full overflow-hidden ${data.isOverdue ? 'bg-gray-100' : 'bg-white'}`}>
-                                        <div className={`px-4 top w-full ${!center ? '' : 'flex justify-center items-center h-full'}`}>
+                                    <div className={`py-2 flex flex-col w-full h-full overflow-hidden ${selector && data.isToday ? 'rounded-full bg-blue-600' : ''}`}>
+                                        <div className={`px-4 top w-full select-none ${!center ? '' : 'flex justify-center items-center h-full'}`}>
                                             {data.formateDate ?
                                                 abbr ?
-                                                    <div className={`text-gray-500 ${!textSm ? '' : 'text-xs'}`}>{data.date}</div>
+                                                    <div className={`${!textSm ? '' : 'text-xs'} ${selector && data.isToday ? 'text-white' : selector && !data.main ? 'text-gray-300' : 'text-gray-500'}`}>{data.date}</div>
                                                     :
                                                     <>
-                                                        <div className={`text-gray-500 hidden md:block ${!textSm ? '' : 'text-xs'}`}>{data.formateDate}</div>
-                                                        <div className={`text-gray-500 md:hidden ${!textSm ? '' : 'text-xs'}`}>{data.date}</div>
+                                                        <div className={`hidden md:block ${!textSm ? '' : 'text-xs'} ${selector && data.isToday ? 'text-white' : selector && !data.main ? 'text-gray-300'  : 'text-gray-500'}`}>{data.formateDate}</div>
+                                                        <div className={`md:hidden ${!textSm ? '' : 'text-xs'} ${selector && data.isToday ? 'text-white' : selector && !data.main ? 'text-gray-300'  : 'text-gray-500'}`}>{data.date}</div>
                                                     </>
 
                                                 :
-                                                <span className={`text-gray-500 ${!textSm ? '' : 'text-xs'}`}>{data.date}</span>
+                                                <span className={`${!textSm ? '' : 'text-xs'} ${selector && data.isToday ? 'text-white' : selector && !data.main ? 'text-gray-300'  : 'text-gray-500'}`}>{data.date}</span>
                                             }
                                         </div>
                                         {!center &&
