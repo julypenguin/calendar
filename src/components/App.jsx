@@ -89,7 +89,7 @@ const App = (props) => {
                     date: newD,
                     month: newM,
                     year: newY,
-                    isOverdue: false,
+                    isOverdue: checkOverdue({ y: newY, m: newM, d: newD, todayY, todayM, todayD }),
                     isToday: checkOverdue({ y: newY, m: newM, d: newD, todayY, todayM, todayD }, true),
                     formateDate: <FormattedDate
                         value={`${newM}-${newD}`}

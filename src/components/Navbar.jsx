@@ -150,7 +150,7 @@ const Navbar = ({
                         style={detectPosition()}
                     >
                         <div className='flex flex-col p-2 pb-5' style={{ width: '219px', height: '215.7px' }}>
-                            <div className='flex justify-between'>
+                            <div className='flex justify-between select-none'>
                                 <div className='flex justify-center items-center px-2'>{renderFullDate({ data: previewData, noDate: true })}</div>
                                 <ul className='flex'>
                                     <li
@@ -186,6 +186,8 @@ const Navbar = ({
                         <div className='top-0 border-r'></div>
                         <SelectorM
                             month={renderFullDate({ data: previewData, noMonth: true, noDate: true })}
+                            renderFullDate={renderFullDate}
+                            defaultData={previewData}
                         />
                     </div>
                 </div>,

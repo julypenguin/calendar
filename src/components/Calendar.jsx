@@ -83,7 +83,7 @@ const Calendar = ({
                                         ${!selector ? 
                                             data.isToday ? 'calendar-today border-t' 
                                                 : data.isOverdue ? 'bg-gray-100 border-t' : 'bg-white border-t' 
-                                            : 'bg-white hover:bg-gray-100'}`}
+                                            : data.isToday ? 'bg-blue-200' : 'bg-white hover:bg-gray-100'}`}
                                     style={{
                                         inset: `
                                             ${index * (100 / datas.length).toFixed(4)}% 
