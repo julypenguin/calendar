@@ -15,6 +15,9 @@ const Calendar = ({
     selector, // 點擊後會選取
 }) => {
 
+    const fullDate = getFullDate(showData)
+    console.log('fullDate', fullDate)
+
     const getIntlMsg = (id, defaultMessage) => intl.formatMessage({ id, defaultMessage })
 
     const msgintl = {
@@ -56,6 +59,7 @@ const Calendar = ({
             <div className="relative flex flex-1 w-full h-full">
                 {/* 大月曆 */}
                 <div className="inset-0 absolute flex flex-col">
+                    {/* 週 */}
                     <div className='flex flex-1 select-none'>
                         {weeks.map((week, index) => (
                             <div key={index} className={`relative flex flex-1 text-xs items-end mb-4 ${!center ? 'px-4 h-8' : 'justify-center items-center h-full'}`}>
@@ -70,6 +74,7 @@ const Calendar = ({
                             </div>
                         ))}
                     </div>
+                    {/* 日 */}
                     <div
                         className={`relative height-full flex-row overflow-visible bg-gray-100`}
                         style={{ flex: '1 1 100%' }}
@@ -79,11 +84,11 @@ const Calendar = ({
                             week.map((data, i) => (
                                 <div
                                     key={i}
-                                    className={`whitespace-nowrap text-sm font-medium text-gray-900 absolute cursor-pointer 
+                                    className={`whitespace-nowrap text-sm font-medium text-gray-900 absolute cursor-pointer ${Number(data.date) === Number(fullDate.d) && Number(data.month) === Number(fullDate.m) && Number(data.year) === Number(fullDate.y) ? 'bg-blue-200' : 'bg-white hover:bg-gray-100'}
                                         ${!selector ? 
                                             data.isToday ? 'calendar-today border-t' 
                                                 : data.isOverdue ? 'bg-gray-100 border-t' : 'bg-white border-t' 
-                                            : data.isToday ? 'bg-blue-200' : 'bg-white hover:bg-gray-100'}`}
+                                            : ''}`}
                                     style={{
                                         inset: `
                                             ${index * (100 / datas.length).toFixed(4)}% 
@@ -91,8 +96,9 @@ const Calendar = ({
                                             ${100 - (100 / datas.length) * (index + 1)}% 
                                             ${(100 / 7 * (i)).toFixed(4)}%`
                                     }}
+                                    onClick={() => setShowData(`${data.year}-${data.month}-${data.date}`)}
                                 >
-                                    <div className={`py-2 flex flex-col w-full h-full overflow-hidden ${selector && data.isToday ? 'rounded-full bg-blue-600' : ''}`}>
+                                    <div className={`py-2 flex flex-col w-full h-full overflow-hidden ${selector && data.isToday ? 'rounded-full bg-blue-600' : ''} `}>
                                         <div className={`px-4 top w-full select-none ${!center ? '' : 'flex justify-center items-center h-full'}`}>
                                             {data.formateDate ?
                                                 abbr ?

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { FormattedDate, FormattedMessage, FormattedTime, injectIntl } from 'react-intl'
 import { getFullDate } from 'lib/datetime'
 
 const SelectorM = ({
@@ -7,21 +8,77 @@ const SelectorM = ({
     renderFullDate,
 }) => {
     const [previewData, setPreviewData] = useState(new Date())
+    const [mode, setMode] = useState(1) // 1:month, 2:year
 
-    const months = [
-        { name: '1 月' },
-        { name: '2 月' },
-        { name: '3 月' },
-        { name: '4 月' },
-        { name: '5 月' },
-        { name: '6 月' },
-        { name: '7 月' },
-        { name: '8 月' },
-        { name: '9 月' },
-        { name: '10 月' },
-        { name: '11 月' },
-        { name: '12 月' },
-    ]
+    //option=1: month, option=2: year
+    const selectYearOrMonth = (setData, data, option) => {
+        const fullDate = getFullDate(data)
+        // const fullDateSelected = getFullDate(data)
+        const y = Number(fullDate.y)
+        const selectedY = Number(fullDate.y)
+        const m = Number(fullDate.m)
+        const selectedM = Number(fullDate.m)
+        const yearOrMonthArr = new Array(12).fill('')
+        const newArray = new Array(3).fill('')
+
+        if (option === 1) {
+            const newMonth = yearOrMonthArr.map((data, index) => {
+                return {
+                    month: index + 1,
+                    level: Math.floor(index / 4),
+                }
+            })
+
+            return newArray.map((data, index) => {
+                return <div key={index} className='mb-2' role='row'>
+                    {newMonth.filter(d => d.level === index)
+                        .map(d => (
+                            <div
+                                key={d.month}
+                                className={`mr-1 text-xs text-center inline-block cursor-pointer ${d.month === selectedM && y === selectedY ? 'bg-blue-200' : 'bg-white hover:bg-gray-100'}`}
+                                role='gridcell'
+                                style={{ width: '40px', height: '40px', lineHeight: '40px' }}
+                            >
+                                <FormattedDate
+                                    value={`${d.month}-01`
+                                    }
+                                    month="numeric"
+                                />
+                            </div>
+                        ))}
+                </div>
+            })
+        }
+
+        if (option === 2) {
+            const level = Math.floor(y / 12)
+            const newYearStart = (12 * level) + 4
+            const newYear = yearOrMonthArr.map((data, index) => {
+                return {
+                    year: newYearStart + index,
+                    level: Math.floor(index / 4),
+                }
+            })
+            return newArray.map((data, index) => {
+                return <div key={index} className='mb-2' role='row'>
+                    {newYear.filter(d => d.level === index)
+                        .map(d => (
+                            <div
+                                key={d.year}
+                                className={`mr-1 text-xs text-center inline-block cursor-pointer ${d.year === y ? 'bg-blue-200' : 'bg-white hover:bg-gray-100'}`}
+                                role='gridcell'
+                                style={{ width: '40px', height: '40px', lineHeight: '40px' }}
+                            >
+                                {d.year}
+                            </div>
+                        ))}
+                </div>
+
+            })
+
+        }
+
+    }
 
     const setYear = (setData, data, calc) => {
         const todayToFullDate = getFullDate()
@@ -51,20 +108,25 @@ const SelectorM = ({
         <div className='flex flex-col select-none'>
             <div className='px-2 pt-2 pb-1 overflow-hidden' style={{ width: '196px' }}>
                 <div className='flex'>
-                    <div className='flex-1 pl-2 pr-5 hover:bg-gray-100 cursor-pointer'>{renderFullDate({ data: previewData, noMonth: true, noDate: true })}</div>
+                    <div
+                        className='flex-1 pl-2 pr-5 hover:bg-gray-100 cursor-pointer'
+                        onClick={() => setMode(mode === 1 ? 2 : 1)}
+                    >
+                        {renderFullDate({ data: previewData, noMonth: true, noDate: true, range: mode === 2 })}
+                    </div>
                     <div className='flex'>
-                        <div 
+                        <div
                             className='flex justify-center items-center cursor-pointer hover:bg-gray-100' style={{ width: '28px', height: '28px' }}
-                            onClick={() => setYear(setPreviewData, previewData, -1)}
+                            onClick={() => mode === 2 ? setYear(setPreviewData, previewData, -12) : setYear(setPreviewData, previewData, -1)}
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                             </svg>
                         </div>
-                        <div 
-                            className='flex justify-center items-center cursor-pointer hover:bg-gray-100' 
+                        <div
+                            className='flex justify-center items-center cursor-pointer hover:bg-gray-100'
                             style={{ width: '28px', height: '28px' }}
-                            onClick={() => setYear(setPreviewData, previewData, 1)}
+                            onClick={() => mode === 2 ? setYear(setPreviewData, previewData, 12) : setYear(setPreviewData, previewData, 1)}
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
@@ -74,24 +136,7 @@ const SelectorM = ({
                 </div>
                 <div>
                     <div className='mt-1' role='grid'>
-                        <div className='mb-2' role='row'>
-                            <div className='mr-1 text-xs text-center inline-block cursor-pointer hover:bg-gray-100' role='gridcell' style={{ width: '40px', height: '40px', lineHeight: '40px' }}>1 月</div>
-                            <div className='mr-1 text-xs text-center inline-block cursor-pointer hover:bg-gray-100' role='gridcell' style={{ width: '40px', height: '40px', lineHeight: '40px' }}>2 月</div>
-                            <div className='mr-1 text-xs text-center inline-block cursor-pointer hover:bg-gray-100' role='gridcell' style={{ width: '40px', height: '40px', lineHeight: '40px' }}>3 月</div>
-                            <div className='mr-1 text-xs text-center inline-block cursor-pointer bg-blue-200' role='gridcell' style={{ width: '40px', height: '40px', lineHeight: '40px' }}>4 月</div>
-                        </div>
-                        <div className='mb-2' role='row'>
-                            <div className='mr-1 text-xs text-center inline-block cursor-pointer hover:bg-gray-100' role='gridcell' style={{ width: '40px', height: '40px', lineHeight: '40px' }}>5 月</div>
-                            <div className='mr-1 text-xs text-center inline-block cursor-pointer hover:bg-gray-100' role='gridcell' style={{ width: '40px', height: '40px', lineHeight: '40px' }}>6 月</div>
-                            <div className='mr-1 text-xs text-center inline-block cursor-pointer hover:bg-gray-100' role='gridcell' style={{ width: '40px', height: '40px', lineHeight: '40px' }}>7 月</div>
-                            <div className='mr-1 text-xs text-center inline-block cursor-pointer hover:bg-gray-100' role='gridcell' style={{ width: '40px', height: '40px', lineHeight: '40px' }}>8 月</div>
-                        </div>
-                        <div className='mb-1' role='row'>
-                            <div className='mr-1 text-xs text-center inline-block cursor-pointer hover:bg-gray-100' role='gridcell' style={{ width: '40px', height: '40px', lineHeight: '40px' }}>9 月</div>
-                            <div className='mr-1 text-xs text-center inline-block cursor-pointer hover:bg-gray-100' role='gridcell' style={{ width: '40px', height: '40px', lineHeight: '40px' }}>10 月</div>
-                            <div className='mr-1 text-xs text-center inline-block cursor-pointer hover:bg-gray-100' role='gridcell' style={{ width: '40px', height: '40px', lineHeight: '40px' }}>11 月</div>
-                            <div className='mr-1 text-xs text-center inline-block cursor-pointer hover:bg-gray-100' role='gridcell' style={{ width: '40px', height: '40px', lineHeight: '40px' }}>12 月</div>
-                        </div>
+                        {selectYearOrMonth(setPreviewData, previewData, mode)}
                     </div>
                 </div>
             </div>

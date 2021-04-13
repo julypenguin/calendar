@@ -58,10 +58,13 @@ const Navbar = ({
         else return { top: ele.top + ele.height, right: ele.left, zIndex: 6666666, width: '219px', height: '215.7px' }
     }
 
-    const renderFullDate = ({ data, noYear, noMonth, noDate }) => {
+    const renderFullDate = ({ data, noYear, noMonth, noDate, range }) => {
+        console.log('datadata', data)
         const fullDate = getFullDate(data)
+        const levelY = Math.floor(fullDate.y / 12)
+        const newY = range ? `${(12 * levelY) + 4} - ${(12 * levelY) + 15}` : `${fullDate.y}`
         return <>
-            {noYear ? null : <span className='mr-1 text-lg'>{fullDate.y}</span>}
+            {noYear ? null : <span className='mr-1 text-lg'>{newY}</span>}
             {noMonth ? null : <span className='mr-1 text-lg'>
                 <FormattedDate
                     value={`${fullDate.y}-${fullDate.m}`
@@ -125,7 +128,7 @@ const Navbar = ({
                     onClick={() => setShowCalendar(!showCalendar)}
                     ref={selectMonthRef}
                 >
-                    <span className='mr-2 text-blue-700'>{renderFullDate({ data: showData, noDate:true })}</span>
+                    <span className='mr-2 text-blue-700'>{renderFullDate({ data: showData, noDate: true })}</span>
                     <Icon icon='chevron-down' />
                 </li>
             </ul>

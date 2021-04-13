@@ -12,7 +12,7 @@ import { getFullDate } from 'lib/datetime'
 const App = (props) => {
     const { intl: { language } } = props
 
-    const [showData, setShowData] = useState(new Date())
+    const [showData, setShowData] = useState(new Date().toISOString())
 
     const checkOverdue = ({ y, m, d, todayY, todayM, todayD }, checkToday) => {
         if (checkToday) {
