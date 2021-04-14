@@ -3,8 +3,9 @@ import { FormattedDate, FormattedMessage, FormattedTime, injectIntl } from 'reac
 import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome'
 import '../styl/styles.css'
 import { getFullDate } from 'lib/datetime'
+import { weeks } from './formateDate'
 
-const Calendar = ({
+const CalendarM = ({
     intl,
     showData,
     setShowData,
@@ -16,48 +17,11 @@ const Calendar = ({
 }) => {
 
     const fullDate = getFullDate(showData)
-    console.log('fullDate', fullDate)
-
-    const getIntlMsg = (id, defaultMessage) => intl.formatMessage({ id, defaultMessage })
-
-    const msgintl = {
-        monday: getIntlMsg('calendar.monday', '星期一'),
-        mon: getIntlMsg('calendar.mon', '一'),
-        tuesday: getIntlMsg('calendar.tuesday', '星期二'),
-        tue: getIntlMsg('calendar.tue', '二'),
-        wednesday: getIntlMsg('calendar.wednesday', '星期三'),
-        wed: getIntlMsg('calendar.wed', '三'),
-        thursday: getIntlMsg('calendar.thursday', '星期四'),
-        thu: getIntlMsg('calendar.thu', '四'),
-        friday: getIntlMsg('calendar.friday', '星期五'),
-        fri: getIntlMsg('calendar.fri', '五'),
-        saturday: getIntlMsg('calendar.saturday', '星期六'),
-        sat: getIntlMsg('calendar.sat', '六'),
-        sunday: getIntlMsg('calendar.sunday', '星期日'),
-        sun: getIntlMsg('calendar.sun', '日'),
-    }
-
-    const weeks = [
-        { name: msgintl.monday, abb_name: msgintl.mon },
-        { name: msgintl.tuesday, abb_name: msgintl.tue },
-        { name: msgintl.wednesday, abb_name: msgintl.wed },
-        { name: msgintl.thursday, abb_name: msgintl.thu },
-        { name: msgintl.friday, abb_name: msgintl.fri },
-        { name: msgintl.saturday, abb_name: msgintl.sat },
-        { name: msgintl.sunday, abb_name: msgintl.sun },
-    ]
-
-
-
-    // useEffect(() => {
-    //     if ()
-    // }, [date])
-
 
     return (
         <>
             <div className="relative flex flex-1 w-full h-full">
-                {/* 大月曆 */}
+                {/* 大月曆(月) */}
                 <div className="inset-0 absolute flex flex-col">
                     {/* 週 */}
                     <div className='flex flex-1 select-none'>
@@ -85,9 +49,9 @@ const Calendar = ({
                                 <div
                                     key={i}
                                     className={`whitespace-nowrap text-sm font-medium text-gray-900 absolute cursor-pointer ${Number(data.date) === Number(fullDate.d) && Number(data.month) === Number(fullDate.m) && Number(data.year) === Number(fullDate.y) ? 'bg-blue-200' : 'bg-white hover:bg-gray-100'}
-                                        ${!selector ? 
-                                            data.isToday ? 'calendar-today border-t' 
-                                                : data.isOverdue ? 'bg-gray-100 border-t' : 'bg-white border-t' 
+                                        ${!selector ?
+                                            data.isToday ? 'calendar-today border-t'
+                                                : data.isOverdue ? 'bg-gray-100 border-t' : 'bg-white border-t'
                                             : ''}`}
                                     style={{
                                         inset: `
@@ -105,12 +69,12 @@ const Calendar = ({
                                                     <div className={`${!textSm ? '' : 'text-xs'} ${selector && data.isToday ? 'text-white' : selector && !data.main ? 'text-gray-300' : 'text-gray-500'}`}>{data.date}</div>
                                                     :
                                                     <>
-                                                        <div className={`hidden md:block ${!textSm ? '' : 'text-xs'} ${selector && data.isToday ? 'text-white' : selector && !data.main ? 'text-gray-300'  : 'text-gray-500'}`}>{data.formateDate}</div>
-                                                        <div className={`md:hidden ${!textSm ? '' : 'text-xs'} ${selector && data.isToday ? 'text-white' : selector && !data.main ? 'text-gray-300'  : 'text-gray-500'}`}>{data.date}</div>
+                                                        <div className={`hidden md:block ${!textSm ? '' : 'text-xs'} ${selector && data.isToday ? 'text-white' : selector && !data.main ? 'text-gray-300' : 'text-gray-500'}`}>{data.formateDate}</div>
+                                                        <div className={`md:hidden ${!textSm ? '' : 'text-xs'} ${selector && data.isToday ? 'text-white' : selector && !data.main ? 'text-gray-300' : 'text-gray-500'}`}>{data.date}</div>
                                                     </>
 
                                                 :
-                                                <span className={`${!textSm ? '' : 'text-xs'} ${selector && data.isToday ? 'text-white' : selector && !data.main ? 'text-gray-300'  : 'text-gray-500'}`}>{data.date}</span>
+                                                <span className={`${!textSm ? '' : 'text-xs'} ${selector && data.isToday ? 'text-white' : selector && !data.main ? 'text-gray-300' : 'text-gray-500'}`}>{data.date}</span>
                                             }
                                         </div>
                                         {!center &&
@@ -140,4 +104,4 @@ const Calendar = ({
     );
 };
 
-export default injectIntl(Calendar);
+export default injectIntl(CalendarM);

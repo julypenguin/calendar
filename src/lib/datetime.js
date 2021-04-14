@@ -1,5 +1,5 @@
-export function addDays(days=0){
-    const dat = new Date(); 
+export function addDays(days=0, date=new Date()){
+    const dat = new Date(date); 
     dat.setDate(dat.getDate() + days);  
     return dat
 }

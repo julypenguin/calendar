@@ -3,8 +3,9 @@ import { createPortal } from 'react-dom'
 import { FormattedDate, FormattedMessage, FormattedTime, injectIntl } from 'react-intl'
 import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome'
 import { getFullDate } from 'lib/datetime'
-import Calendar from './Calendar'
+import CalendarM from './CalendarM'
 import SelectorM from './SelectorM'
+import { renderFullDate } from './formateDate'
 
 const Navbar = ({
     showData,
@@ -56,30 +57,6 @@ const Navbar = ({
         const ele = input.getBoundingClientRect()
         if (window.innerHeight - ele.top > 310) return { top: ele.bottom + 2, left: ele.left, zIndex: 6666666 }
         else return { top: ele.top + ele.height, right: ele.left, zIndex: 6666666, width: '219px', height: '215.7px' }
-    }
-
-    const renderFullDate = ({ data, noYear, noMonth, noDate, range }) => {
-        console.log('datadata', data)
-        const fullDate = getFullDate(data)
-        const levelY = Math.floor(fullDate.y / 12)
-        const newY = range ? `${(12 * levelY) + 4} - ${(12 * levelY) + 15}` : `${fullDate.y}`
-        return <>
-            {noYear ? null : <span className='mr-1 text-lg'>{newY}</span>}
-            {noMonth ? null : <span className='mr-1 text-lg'>
-                <FormattedDate
-                    value={`${fullDate.y}-${fullDate.m}`
-                    }
-                    month="numeric"
-                />
-            </span>}
-            {noDate ? null : <span className='text-lg'>
-                <FormattedDate
-                    value={`${fullDate.y}-${fullDate.m}-${fullDate.d}`
-                    }
-                    day="numeric"
-                />
-            </span>}
-        </>
     }
 
     useEffect(() => {
@@ -175,7 +152,7 @@ const Navbar = ({
                                 </ul>
                             </div>
                             <div className='flex-1'>
-                                <Calendar
+                                <CalendarM
                                     showData={previewData}
                                     setShowData={setPreviewData}
                                     renderDate={renderDate}

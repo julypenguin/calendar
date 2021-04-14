@@ -5,8 +5,8 @@ import { FormattedDate, FormattedMessage, FormattedTime, injectIntl } from 'reac
 import '../styl/index.styl'
 import '../styl/styles.css'
 import Navbar from './Navbar'
-import Calendar from './Calendar'
-import SelectorM from './SelectorM'
+import CalendarM from './CalendarM'
+import CalendarD from './CalendarD'
 import { getFullDate } from 'lib/datetime'
 
 const App = (props) => {
@@ -120,11 +120,16 @@ const App = (props) => {
                         renderDate={renderDate}
                     />
 
-                    <Calendar
+                    <CalendarD
+                        showData={showData}
+                        setShowData={setShowData}
+                    />
+
+                    {/* <CalendarM
                         showData={showData}
                         setShowData={setShowData}
                         renderDate={renderDate}
-                    />
+                    /> */}
                 </div>
             </div>
 
