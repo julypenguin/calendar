@@ -6,9 +6,23 @@ const SelectorM = ({
     month,
     defaultData,
     renderFullDate,
+    setOtherData,
 }) => {
     const [previewData, setPreviewData] = useState(new Date())
     const [mode, setMode] = useState(1) // 1:month, 2:year
+
+    const handleSetMonth = data => {
+        // setShowData(`${data.year}-${data.month}-${data.date}`)
+        if (typeof setOtherData === 'function') setOtherData(`${data.year}-${data.month}-${data.date}`)
+        if (typeof onClose === 'function') onClose()
+    }
+
+    const handleSetYear = year => {
+        const date = new Date(previewData)
+        date.setFullYear(year)
+        setPreviewData(date)
+        setMode(1)
+    }
 
     //option=1: month, option=2: year
     const selectYearOrMonth = (setData, data, option) => {
@@ -38,6 +52,7 @@ const SelectorM = ({
                                 className={`mr-1 text-xs text-center inline-block cursor-pointer ${d.month === selectedM && y === selectedY ? 'bg-blue-200' : 'bg-white hover:bg-gray-100'}`}
                                 role='gridcell'
                                 style={{ width: '40px', height: '40px', lineHeight: '40px' }}
+                                onClick={() => handleSetMonth()}
                             >
                                 <FormattedDate
                                     value={`${d.month}-01`
@@ -68,6 +83,7 @@ const SelectorM = ({
                                 className={`mr-1 text-xs text-center inline-block cursor-pointer ${d.year === y ? 'bg-blue-200' : 'bg-white hover:bg-gray-100'}`}
                                 role='gridcell'
                                 style={{ width: '40px', height: '40px', lineHeight: '40px' }}
+                                onClick={() => handleSetYear(d.year)}
                             >
                                 {d.year}
                             </div>

@@ -197,6 +197,8 @@ const Navbar = ({
                                     showData={previewData}
                                     setShowData={setPreviewData}
                                     renderDate={renderDate}
+                                    setOtherData={setShowData}
+                                    onClose={onClose}
                                     abbr
                                     textSm
                                     center
@@ -209,6 +211,8 @@ const Navbar = ({
                             month={renderFullDate({ data: previewData, noMonth: true, noDate: true })}
                             renderFullDate={renderFullDate}
                             defaultData={previewData}
+                            setOtherData={setShowData}
+                            onClose={onClose}
                         />
                     </div>
                 </div>,

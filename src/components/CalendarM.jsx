@@ -11,6 +11,8 @@ const CalendarM = ({
     showData,
     setShowData,
     renderDate,
+    setOtherData,
+    onClose,
     abbr, // 讓 calendar 保持所寫文字
     textSm, // 讓文字變小
     center, // 文字置中
@@ -31,6 +33,12 @@ const CalendarM = ({
         )
 
     } 
+
+    const handleSetDate = data => {
+        setShowData(`${data.year}-${data.month}-${data.date}`)
+        if (typeof setOtherData === 'function') setOtherData(`${data.year}-${data.month}-${data.date}`)
+        if (typeof onClose === 'function') onClose()
+    }
 
     return (
         <>
@@ -73,7 +81,7 @@ const CalendarM = ({
                                             ${100 - (100 / datas.length) * (index + 1)}% 
                                             ${(100 / 7 * (i)).toFixed(4)}%`
                                     }}
-                                    onClick={() => setShowData(`${data.year}-${data.month}-${data.date}`)}
+                                    onClick={() => handleSetDate(data)}
                                 >
                                     <div className={`py-2 flex flex-col w-full h-full overflow-hidden ${selector && data.isToday ? 'rounded-full bg-blue-600' : ''} `}>
                                         <div className={`px-4 top w-full select-none ${!center ? '' : 'flex justify-center items-center h-full'}`}>
