@@ -5,21 +5,35 @@ import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome'
 import { getFullDate } from 'lib/datetime'
 import CalendarM from './CalendarM'
 import SelectorM from './SelectorM'
-import { renderFullDate } from './formateDate'
+import { renderFullDate, calendarType } from './formateDate'
 
 const Navbar = ({
     showData,
     setShowData,
     renderDate,
+    cycle,
+    setCycle,
 }) => {
     const [previewData, setPreviewData] = useState(new Date())
+    // const [cycle, setCycle] = useState(30) // 1: 1天, 2:2天, 3:3天, 4:4天, 5:5天, 6:6天, 7:7天, 30: 1月, 77:1週
     const [showCalendar, setShowCalendar] = useState(false)
+    const [showCycle, setShowCycle] = useState(false)
 
     const selectMonthRef = useRef()
+    const selectCycleRef = useRef()
+    const outerRef = useRef()
+
+    const cycleList = [0, 77, 30]
 
     const onClose = () => {
         setShowCalendar(false)
-        setPreviewData(showData)
+        setShowCycle(false)
+        setPreviewData(showData) // 回到未選擇的這天
+    }
+
+    const selectCycle = (mode) => {
+        setCycle(mode)
+        onClose()
     }
 
     const setMonth = (setData, data, calc) => {
@@ -52,11 +66,37 @@ const Navbar = ({
         if (typeof setData === 'function') setData(newShowDate)
     }
 
-    const detectPosition = () => {
-        const input = selectMonthRef.current
-        const ele = input.getBoundingClientRect()
+    const detectPosition = (ref, rightAndBottom, parentRef) => {
+        if (!ref) return {}
+        const elementRef = ref.current
+        const ele = elementRef.getBoundingClientRect()
+        let parentEle = parentRef && parentRef.current && parentRef.current.getBoundingClientRect()
+
+        if (rightAndBottom && parentEle) {
+            return { top: ele.bottom, right: parentEle.right - ele.right, zIndex: 6666666 }
+        }
         if (window.innerHeight - ele.top > 310) return { top: ele.bottom + 2, left: ele.left, zIndex: 6666666 }
         else return { top: ele.top + ele.height, right: ele.left, zIndex: 6666666, width: '219px', height: '215.7px' }
+    }
+
+    const renderCycleList = (mode, index) => {
+        return (
+            <li
+                key={index}
+                className='pl-2 py-2 cursor-pointer hover:bg-gray-200 flex flex-shrink-0 items-center'
+                style={{ paddingRight: '13.13px' }}
+                onClick={() => mode === 0 ? selectCycle(mode + 1) : selectCycle(mode)}
+            >
+                <span className='block w-5 h-5 mr-2 text-blue-700'>
+                    <Icon style={{ width: '100%', height: '100%' }} icon={['far', 'calendar-alt']} />
+                </span>
+                <span className='mr-2 text-lg text-blue-700 flex-shrink-0'>
+                    {calendarType[mode]}
+                    {/* <FormattedMessage id='calendar.day' /> */}
+                </span>
+
+            </li>
+        )
     }
 
     useEffect(() => {
@@ -64,7 +104,7 @@ const Navbar = ({
     }, [showData])
 
     return (
-        < div className='flex justify-between bg-gray-100 select-none' >
+        < div className='flex justify-between bg-gray-100 select-none' ref={outerRef}>
             <ul className='flex py-2'>
                 <li
                     className='p-2 mx-1 cursor-pointer hover:bg-gray-200 flex text-lg flex-shrink-0 text-blue-700'
@@ -92,30 +132,31 @@ const Navbar = ({
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                     </svg>
-                    {/* {showCalendar && <div className={`origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 transition ease-out duration-75 transform scale-95 z-10 `}>
-                        <Calendar
-                            showData={showData}
-                            setShowData={setShowData}
-                            renderDate={renderDate}
-                        />
-                    </div>} */}
                 </li>
                 <li
                     className={`p-2 mx-1 cursor-pointer text-gray-300 hover:bg-gray-200 flex-shrink-0 rounded-sm ${!showCalendar ? '' : 'bg-blue-100'}`}
                     onClick={() => setShowCalendar(!showCalendar)}
                     ref={selectMonthRef}
                 >
-                    <span className='mr-2 text-blue-700'>{renderFullDate({ data: showData, noDate: true })}</span>
+                    <span className='mr-2 text-blue-700'>
+                        {cycle === 77 && renderFullDate({ data: showData, noDate: true, rangeDtoWeek: true })} {cycle === 30 && renderFullDate({ data: showData, noDate: true })}
+                        {cycle > 0 && cycle < 8 && renderFullDate({ data: showData })}
+                    </span>
                     <Icon icon='chevron-down' />
                 </li>
             </ul>
             <ul className='flex py-2'>
-                <li className='p-2 mx-1 cursor-pointer flex items-center text-gray-300 hover:bg-gray-200 flex-shrink-0'>
+                <li
+                    className='p-2 mx-1 cursor-pointer flex items-center text-gray-300 hover:bg-gray-200 flex-shrink-0'
+                    onClick={() => setShowCycle(!showCycle)}
+                    ref={selectCycleRef}
+                >
                     <span className='w-5 h-5 mr-2 text-blue-700'>
                         <Icon style={{ width: '100%', height: '100%' }} icon={['far', 'calendar-alt']} />
                     </span>
                     <span className='mr-2 text-lg text-blue-700'>
-                        <FormattedMessage id='calendar.month' />
+                        {calendarType[cycle]}
+                        {/* <FormattedMessage id='calendar.month' /> */}
                     </span>
                     <Icon icon='chevron-down' />
                 </li>
@@ -127,7 +168,7 @@ const Navbar = ({
                     <div className='fixed h-full w-full top-0 left-0' onClick={() => onClose()}></div>
                     <div
                         className={`absolute bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-10 transition ease-out duration-75 flex`}
-                        style={detectPosition()}
+                        style={detectPosition(selectMonthRef)}
                     >
                         <div className='flex flex-col p-2 pb-5' style={{ width: '219px', height: '215.7px' }}>
                             <div className='flex justify-between select-none'>
@@ -169,6 +210,24 @@ const Navbar = ({
                             renderFullDate={renderFullDate}
                             defaultData={previewData}
                         />
+                    </div>
+                </div>,
+                document.body
+            )}
+
+            {!showCycle ? null : createPortal(
+                <div className={`fixed h-full w-full top-0`}>
+                    <div className='fixed h-full w-full top-0 left-0' onClick={() => onClose()}></div>
+                    <div
+                        className={`absolute bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-10 transition ease-out duration-75 flex`}
+                        style={detectPosition(selectCycleRef)}
+                    >
+                        <div className='flex flex-col select-none'>
+                            <ul className='flex flex-col'>
+                                {cycleList.map((data, index) => renderCycleList(data, index))}
+                            </ul>
+                        </div>
+                        <div className='top-0 border-r'></div>
                     </div>
                 </div>,
                 document.body

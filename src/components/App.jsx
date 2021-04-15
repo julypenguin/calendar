@@ -13,6 +13,9 @@ const App = (props) => {
     const { intl: { language } } = props
 
     const [showData, setShowData] = useState(new Date().toISOString())
+    const [cycle, setCycle] = useState(30) // 1: 1天, 2:2天, 3:3天, 4:4天, 5:5天, 6:6天, 7:7天, 30: 1月, 77:1週
+
+    const isWeek = cycle === 77 ? true : false
 
     const checkOverdue = ({ y, m, d, todayY, todayM, todayD }, checkToday) => {
         if (checkToday) {
@@ -118,18 +121,25 @@ const App = (props) => {
                         showData={showData}
                         setShowData={setShowData}
                         renderDate={renderDate}
+                        cycle={cycle}
+                        setCycle={setCycle}
                     />
 
-                    <CalendarD
-                        showData={showData}
-                        setShowData={setShowData}
-                    />
+                    {cycle === 30 ?
+                        <CalendarM
+                            showData={showData}
+                            setShowData={setShowData}
+                            renderDate={renderDate}
+                        />
+                        :
+                        <CalendarD
+                            showData={showData}
+                            setShowData={setShowData}
+                            cycle={cycle}
+                            isWeek={isWeek}
+                        />
+                    }
 
-                    {/* <CalendarM
-                        showData={showData}
-                        setShowData={setShowData}
-                        renderDate={renderDate}
-                    /> */}
                 </div>
             </div>
 

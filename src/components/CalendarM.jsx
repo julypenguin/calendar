@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import classNames from 'classnames'
 import { FormattedDate, FormattedMessage, FormattedTime, injectIntl } from 'react-intl'
 import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome'
 import '../styl/styles.css'
@@ -17,6 +18,19 @@ const CalendarM = ({
 }) => {
 
     const fullDate = getFullDate(showData)
+
+    const isToday = data => {
+        return Number(data.date) === Number(fullDate.d) && Number(data.month) === Number(fullDate.m) && Number(data.year) === Number(fullDate.y)
+    }
+
+    const selectedClassName = data => {
+        classNames('table-row-canclick',
+            {
+                'bg-blue-200': isToday(data)
+            }
+        )
+
+    } 
 
     return (
         <>
@@ -44,7 +58,6 @@ const CalendarM = ({
                         style={{ flex: '1 1 100%' }}
                     >
                         {renderDate(showData).map((week, index, datas) => (
-                            // <div key={index} className="">
                             week.map((data, i) => (
                                 <div
                                     key={i}
@@ -95,7 +108,6 @@ const CalendarM = ({
                                     </div>
                                 </div>
                             ))
-                            // </div>
                         ))}
                     </div>
                 </div>

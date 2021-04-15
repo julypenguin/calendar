@@ -112,7 +112,7 @@ const SelectorM = ({
                         className='flex-1 pl-2 pr-5 hover:bg-gray-100 cursor-pointer'
                         onClick={() => setMode(mode === 1 ? 2 : 1)}
                     >
-                        {renderFullDate({ data: previewData, noMonth: true, noDate: true, range: mode === 2 })}
+                        {renderFullDate({ data: previewData, noMonth: true, noDate: true, rangeY: mode === 2 })}
                     </div>
                     <div className='flex'>
                         <div

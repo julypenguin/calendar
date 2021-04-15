@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { FormattedDate, FormattedMessage, FormattedTime, injectIntl } from 'react-intl'
-import { getFullDate } from 'lib/datetime'
+import { getFullDate, addDays } from 'lib/datetime'
 
 export const weeks = [
     {
@@ -40,25 +40,81 @@ export const weeks = [
     },
 ]
 
-export const renderFullDate = ({ data, noYear, noMonth, noDate, range, className }) => {
+export const calendarType = {
+    0: <>
+        <span className='mr-1'></span><FormattedMessage id='calendar.day' />
+    </>,
+    1: <>
+        <span className='mr-1'>1</span><FormattedMessage id='calendar.day' />
+    </>,
+    2: <>
+        <span className='mr-1'>2</span><FormattedMessage id='calendar.day' />
+    </>,
+    3: <>
+        <span className='mr-1'>3</span><FormattedMessage id='calendar.day' />
+    </>,
+    4: <>
+        <span className='mr-1'>4</span><FormattedMessage id='calendar.day' />
+    </>,
+    5: <>
+        <span className='mr-1'>5</span><FormattedMessage id='calendar.day' />
+    </>,
+    6: <>
+        <span className='mr-1'>6</span><FormattedMessage id='calendar.day' />
+    </>,
+    7: <>
+        <span className='mr-1'>7</span><FormattedMessage id='calendar.day' />
+    </>,
+    30: <FormattedMessage id='calendar.month' />,
+    77: <FormattedMessage id='calendar.week' />,
+}
+
+export const renderFullDate = ({ data, noYear, noMonth, noDate, rangeY, rangeDtoWeek, className }) => {
     const fullDate = getFullDate(data)
     const levelY = Math.floor(fullDate.y / 12)
-    const newY = range ? `${(12 * levelY) + 4} - ${(12 * levelY) + 15}` : `${fullDate.y}`
+    const newY = rangeY ? `${(12 * levelY) + 4} - ${(12 * levelY) + 15}` : `${fullDate.y}`
+    const prevDaysCount = new Date(data).getDay()
+    const earliestDate = getFullDate(addDays(0 - prevDaysCount, data))
+    const latestDate = getFullDate(addDays(6 - prevDaysCount, data))
+
     return <>
-        {noYear ? null : <span className={`mr-1 ${className ? className : 'text-lg'}`}>{newY}</span>}
-        {noMonth ? null : <span className={`mr-1 ${className ? className : 'text-lg'}`}>
-            <FormattedDate
-                value={`${fullDate.y}-${fullDate.m}`
-                }
-                month="numeric"
-            />
-        </span>}
-        {noDate ? null : <span className={`${className ? className : 'text-lg'}`}>
-            <FormattedDate
-                value={`${fullDate.y}-${fullDate.m}-${fullDate.d}`
-                }
-                day="numeric"
-            />
-        </span>}
+
+        {!rangeDtoWeek ? <>
+            {noYear ? null : <span className={`mr-1 ${className ? className : 'text-lg'}`}>{newY}</span>}
+            {noMonth ? null : <span className={`mr-1 ${className ? className : 'text-lg'}`}>
+                <FormattedDate
+                    value={`${fullDate.y}-${fullDate.m}`
+                    }
+                    month="numeric"
+                />
+            </span>}
+            {noDate ? null : <span className={`${className ? className : 'text-lg'}`}>
+                <FormattedDate
+                    value={`${fullDate.y}-${fullDate.m}-${fullDate.d}`
+                    }
+                    day="numeric"
+                />
+            </span>}
+        </>
+            :
+            <span className={`mr-1 ${className ? className : 'text-lg'}`}>
+                <FormattedDate
+                    value={`${earliestDate.y}-${earliestDate.m}-${earliestDate.d}`
+                    }
+                    year="numeric"
+                    month="long"
+                    day="numeric"
+                />
+                <span className='mr-1'>-</span>
+                <FormattedDate
+                    value={`${latestDate.y}-${latestDate.m}-${latestDate.d}`
+                    }
+                    year={earliestDate.y === latestDate.y ? undefined : "numeric"}
+                    month={earliestDate.m === latestDate.m ? undefined : "long"}
+                    day="numeric"
+                />
+            </span>
+        }
+
     </>
 }

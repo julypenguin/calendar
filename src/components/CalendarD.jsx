@@ -9,6 +9,7 @@ const CalendarD = ({
     showData,
     setShowData,
     isWeek,
+    cycle,
 }) => {
     const [days, setDays] = useState(7)
 
@@ -58,7 +59,7 @@ const CalendarD = ({
         }
 
         return noteArr.map((data, index) => (
-            <div className='border-l border-r relative border-box flex-shrink-0' style={{ minWidth: '80px', flexBasis: `${(100 / days).toFixed(4)}%` }}>
+            <div key={index} className='border-l border-r relative border-box flex-shrink-0' style={{ minWidth: '80px', flexBasis: `${(100 / days).toFixed(4)}%` }}>
             </div>
         ))
     }
@@ -70,8 +71,9 @@ const CalendarD = ({
     }
 
     useEffect(() => {
-        if (isWeek) setDays(7)
-    }, [isWeek])
+        if (cycle === 77) setDays(7)
+        else if (cycle > 0 && cycle < 8) setDays(cycle)
+    }, [cycle])
 
     return (
         <div className="relative flex flex-1 w-full h-full">
@@ -84,15 +86,6 @@ const CalendarD = ({
                     </div>
                     <div className='overflow-hidden flex flex-1' style={{ paddingRight: '18px', paddingLeft: '10px', marginLeft: '-10px', height: '48px', minWidth: '80px' }}>
                         {renderDaysTitle(days)}
-                        {/* {dayTitleArr.map((data, index) => (
-                            <div key={index} className='mr-0 border-r border-b border-l flex-col flex-shrink-0' style={{ flexBasis: `${(100 / days).toFixed(4)}%` }}>
-                                <div className='flex flex-row flex-nowrap items-end' style={{ padding: '10px 0 0 10px', marginBottom: '8px' }}>
-                                    <div className='text-2xl whitespace-nowrap overflow-hidden' style={{ marginRight: '8px', flex: '0 0 auto' }}>{renderFullDate({ data: showData, noYear: true })}</div>
-                                    <div className='' style={{ marginBottom: '3px' }}>週二</div>
-                                </div>
-                            </div>
-
-                        ))} */}
                     </div>
                 </div>
                 {/* 行程 */}
@@ -104,9 +97,6 @@ const CalendarD = ({
                                 {hourArr.map((data, index) => (
                                     <div key={index} className='text-right w-full absolute' style={{ top: `${(100 / 24) * (index + 1)}%` }}>
                                         <div className='relative' style={{ bottom: '8px', marginRight: '11px' }}>
-                                            {/* <FormattedTime
-                                                value={`2021-04-13T${index > 9 ? index : '0' + index}:00`}
-                                            /> */}
                                             <div className='text-xs'>上午 {index + 1}</div>
                                         </div>
                                     </div>
