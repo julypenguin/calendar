@@ -9,11 +9,13 @@ import CalendarM from './CalendarM'
 import CalendarD from './CalendarD'
 import { getFullDate } from 'lib/datetime'
 
+import testData from './data.json'
+
 const App = (props) => {
     const { intl: { language } } = props
 
     const [showData, setShowData] = useState(new Date().toISOString())
-    const [cycle, setCycle] = useState(30) // 1: 1天, 2:2天, 3:3天, 4:4天, 5:5天, 6:6天, 7:7天, 30: 1月, 77:1週
+    const [cycle, setCycle] = useState(7) // 1: 1天, 2:2天, 3:3天, 4:4天, 5:5天, 6:6天, 7:7天, 30: 1月, 77:1週
 
     const isWeek = cycle === 77 ? true : false
 
@@ -118,6 +120,7 @@ const App = (props) => {
             <div className='h-full w-full absolute'>
                 <div className='h-full w-full overflow-hidden flex flex-col relative'>
                     <Navbar
+                        {...props}
                         showData={showData}
                         setShowData={setShowData}
                         renderDate={renderDate}
@@ -127,16 +130,19 @@ const App = (props) => {
 
                     {cycle === 30 ?
                         <CalendarM
+                            {...props}
                             showData={showData}
                             setShowData={setShowData}
                             renderDate={renderDate}
                         />
                         :
                         <CalendarD
+                            {...props}
                             showData={showData}
                             setShowData={setShowData}
                             cycle={cycle}
                             isWeek={isWeek}
+                            testData={testData}
                         />
                     }
 

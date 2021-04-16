@@ -36,6 +36,20 @@ const Navbar = ({
         onClose()
     }
 
+    const handleSetDate = (calc) => {
+        if (cycle === 30) return setMonth(setShowData, showData, calc)
+        if (cycle === 77) return setDate(setShowData, showData, calc * 7)
+        setDate(setShowData, showData, calc)
+    }
+
+    const setDate = (setData, data, calc) => {
+        const fullDate = getFullDate(data)
+        const date = new Date(data)
+        date.setDate(Number(fullDate.d) + calc)
+        if (typeof setData === 'function') setData(date)
+        return
+    }
+
     const setMonth = (setData, data, calc) => {
         const todayToFullDate = getFullDate()
         const todayY = Number(todayToFullDate.y)
@@ -119,7 +133,7 @@ const Navbar = ({
                 </li>
                 <li
                     className='p-2 px-4 mx-1 cursor-pointer hover:bg-gray-200 flex-shrink-0'
-                    onClick={() => setMonth(setShowData, showData, -1)}
+                    onClick={() => handleSetDate(-1)}
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -127,7 +141,7 @@ const Navbar = ({
                 </li>
                 <li
                     className='p-2 px-4 mx-1 cursor-pointer hover:bg-gray-200 flex-shrink-0 relative'
-                    onClick={() => setMonth(setShowData, showData, 1)}
+                    onClick={() => handleSetDate(1)}
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
@@ -170,7 +184,7 @@ const Navbar = ({
                         className={`absolute bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-10 transition ease-out duration-75 flex`}
                         style={detectPosition(selectMonthRef)}
                     >
-                        <div className='flex flex-col p-2 pb-5' style={{ width: '219px', height: '215.7px' }}>
+                        {cycle === 30 ? null : <div className='flex flex-col p-2 pb-5' style={{ width: '219px', height: '215.7px' }}>
                             <div className='flex justify-between select-none'>
                                 <div className='flex justify-center items-center px-2'>{renderFullDate({ data: previewData, noDate: true })}</div>
                                 <ul className='flex'>
@@ -205,14 +219,16 @@ const Navbar = ({
                                     selector
                                 />
                             </div>
-                        </div>
+                        </div>}
                         <div className='top-0 border-r'></div>
                         <SelectorM
                             month={renderFullDate({ data: previewData, noMonth: true, noDate: true })}
                             renderFullDate={renderFullDate}
                             defaultData={previewData}
+                            setDefaultData={setPreviewData}
                             setOtherData={setShowData}
                             onClose={onClose}
+                            cycle={cycle}
                         />
                     </div>
                 </div>,

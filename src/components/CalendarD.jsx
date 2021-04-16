@@ -10,8 +10,9 @@ const CalendarD = ({
     setShowData,
     isWeek,
     cycle,
+    testData,
 }) => {
-    const [days, setDays] = useState(7)
+    const [days, setDays] = useState(1)
 
     const timeRef = useRef()
 
@@ -58,8 +59,26 @@ const CalendarD = ({
             noteArr.push(addDays(i, showData).toISOString())
         }
 
+        const fullDateB = getFullDate(testData.data[0].btime)
+        const fullDateE = getFullDate(testData.data[0].etime)
+        const minB = Number(fullDateB.h) * 60 + Number(fullDateB.mm)
+        const minE = Number(fullDateE.h) * 60 + Number(fullDateE.mm)
+        const secPercent = (100 / 1440).toFixed(4)
+
         return noteArr.map((data, index) => (
             <div key={index} className='border-l border-r relative border-box flex-shrink-0' style={{ minWidth: '80px', flexBasis: `${(100 / days).toFixed(4)}%` }}>
+                {index === 8 ? null : (
+                    <div className='absolute left-0 top-0 bottom-0' style={{ right: '10px', minWidth: '6px' }}>
+                        <div draggable='true'>
+                            <div 
+                                className='absolute bg-blue-200 cursor-pointer opacity-70 box-border border-l-4 border-blue-600' 
+                                style={{ inset: `${secPercent * minB}% 0% ${100 - (secPercent * minE)}%` }}
+                            >
+
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         ))
     }

@@ -78,7 +78,6 @@ export const renderFullDate = ({ data, noYear, noMonth, noDate, rangeY, rangeDto
     const latestDate = getFullDate(addDays(6 - prevDaysCount, data))
 
     return <>
-
         {!rangeDtoWeek ? <>
             {noYear ? null : <span className={`mr-1 ${className ? className : 'text-lg'}`}>{newY}</span>}
             {noMonth ? null : <span className={`mr-1 ${className ? className : 'text-lg'}`}>

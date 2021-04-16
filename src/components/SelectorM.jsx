@@ -5,22 +5,43 @@ import { getFullDate } from 'lib/datetime'
 const SelectorM = ({
     month,
     defaultData,
+    setDefaultData,
     renderFullDate,
     setOtherData,
+    cycle,
+    onClose={onClose}
 }) => {
     const [previewData, setPreviewData] = useState(new Date())
     const [mode, setMode] = useState(1) // 1:month, 2:year
 
-    const handleSetMonth = data => {
+    const handleSetMonth = month => {
         // setShowData(`${data.year}-${data.month}-${data.date}`)
-        if (typeof setOtherData === 'function') setOtherData(`${data.year}-${data.month}-${data.date}`)
-        if (typeof onClose === 'function') onClose()
+        const date = new Date(previewData)
+        date.setMonth(month)
+        const fullDate = getFullDate(date)
+        const fullDateDefault = getFullDate(defaultData)
+        const fullDateToday = getFullDate()
+
+        if (fullDate.y === fullDateToday.y && fullDate.m === fullDateToday.m) {
+            date.setDate(fullDateToday.d)
+        } else {
+            date.setDate(1)
+        }
+
+        setPreviewData(date)
+        if (typeof setDefaultData === 'function') setDefaultData(date)
+        if (typeof setOtherData === 'function' && cycle === 30) {
+            if (fullDate.y === fullDateDefault.y && fullDate.m === fullDateDefault.m) return
+            setOtherData(date)
+            if (typeof onClose === 'function') onClose()
+        } 
     }
 
     const handleSetYear = year => {
         const date = new Date(previewData)
         date.setFullYear(year)
         setPreviewData(date)
+        if (typeof setDefaultData === 'function') setDefaultData(date)
         setMode(1)
     }
 
@@ -52,7 +73,7 @@ const SelectorM = ({
                                 className={`mr-1 text-xs text-center inline-block cursor-pointer ${d.month === selectedM && y === selectedY ? 'bg-blue-200' : 'bg-white hover:bg-gray-100'}`}
                                 role='gridcell'
                                 style={{ width: '40px', height: '40px', lineHeight: '40px' }}
-                                onClick={() => handleSetMonth()}
+                                onClick={() => handleSetMonth(d.month - 1)}
                             >
                                 <FormattedDate
                                     value={`${d.month}-01`
@@ -156,7 +177,7 @@ const SelectorM = ({
                     </div>
                 </div>
             </div>
-            <div className='text-right px-6 text-xs hover:text-blue-400 cursor-pointer'>今天</div>
+            {cycle === 30 ? null : <div className='text-right px-6 text-xs hover:text-blue-400 cursor-pointer'>今天</div>}
         </div>
     );
 };
