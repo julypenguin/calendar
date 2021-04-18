@@ -15,27 +15,37 @@ const CalendarD = ({
     const [days, setDays] = useState(1)
 
     const timeRef = useRef()
-
+    
     const hourArr = new Array(23).fill('')
     const hourLineArr = new Array(47).fill('')
+    
+    let firstDay = new Date()
+    let lastDay = new Date()
 
     const renderDaysTitle = (days) => {
         const dayArr = []
 
         if (isWeek) {
             const prevDaysCount = new Date(showData).getDay()
+            let j = 1
 
             for (let i = 0; i <= prevDaysCount; i++) {
                 dayArr.push(addDays(i - prevDaysCount, showData).toISOString())
             }
 
-            for (let i = 1; i <= 6 - prevDaysCount; i++) {
-                dayArr.push(addDays(i, showData).toISOString())                
+            for (j = 1; j <= 6 - prevDaysCount; j++) {
+                dayArr.push(addDays(j, showData).toISOString())                
             }
+
+            firstDay = addDays(0 - prevDaysCount, showData).toISOString()
+            lastDay = addDays(j - 1, showData).toISOString()
         } else {
-            for (let i = 0; i < days; i++) {
+            let i = 0
+            for (i = 0; i < days; i++) {
                 dayArr.push(addDays(i, showData).toISOString())
             }
+            firstDay = addDays(0, showData).toISOString()
+            lastDay = addDays(i - 1, showData).toISOString()
         }
 
         return dayArr.map((data, index) => (
@@ -53,12 +63,21 @@ const CalendarD = ({
 
     }
 
-    const renderNote = (days) => {
+    const renderNote = (btime, etime, index) => {
+        // if (firstDay < btime &&  lastDay > etime)
+    }
+
+    const checkDays = (date, mode, index) => {
+        
+    }
+
+    const renderNotes = (days) => {
         const noteArr = []
         for (let i = 0; i < days; i++) {
             noteArr.push(addDays(i, showData).toISOString())
         }
-
+        console.log('firstDay', firstDay, firstDay > testData.data[0].btime)
+        console.log('lastDay', lastDay, lastDay > testData.data[0].etime)
         const fullDateB = getFullDate(testData.data[0].btime)
         const fullDateE = getFullDate(testData.data[0].etime)
         const minB = Number(fullDateB.h) * 60 + Number(fullDateB.mm)
@@ -71,8 +90,15 @@ const CalendarD = ({
                     <div className='absolute left-0 top-0 bottom-0' style={{ right: '10px', minWidth: '6px' }}>
                         <div draggable='true'>
                             <div 
-                                className='absolute bg-blue-200 cursor-pointer opacity-70 box-border border-l-4 border-blue-600' 
+                                className='absolute bg-blue-200 cursor-pointer opacity-70 box-border border-l-4 border-blue-600 hover:bg-blue-300' 
                                 style={{ inset: `${secPercent * minB}% 0% ${100 - (secPercent * minE)}%` }}
+                            >
+
+                            </div>
+
+                            <div 
+                                className='absolute bg-blue-200 cursor-pointer opacity-70 box-border border-l-4 border-blue-600 hover:bg-blue-300' 
+                                style={{ inset: `15.246% 0% 43.426%` }}
                             >
 
                             </div>
@@ -134,7 +160,7 @@ const CalendarD = ({
                                     <div key={index} className={`absolute left-0 right-0 border-t ${index % 2 === 1 ? 'border-solid' : 'border-dashed'}`} style={{ top: `${(100 / 48) * (index + 1)}%` }}></div>
                                 ))}
 
-                                {renderNote(days)}
+                                {renderNotes(days)}
                             </div>
                         </div>
 
