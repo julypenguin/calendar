@@ -49,3 +49,44 @@ function leftpad(str,len=2,pattern='0') {
 			str = '0'+str
 	return str
 }
+
+export function getCycleDays({ date, dayCount, isWeek }) {
+	if (!new Date(date).getDate()) return []
+	const dayArr = []
+
+	if (isWeek) {
+		const prevDaysCount = new Date(date).getDay()
+		let j = 1
+
+		for (let i = 0; i <= prevDaysCount; i++) {
+			const newDate = addDays(i - prevDaysCount, date)
+			setStartTime(newDate)
+
+			dayArr.push(newDate)
+		}
+
+		for (j = 1; j <= 6 - prevDaysCount + 1; j++) {
+			const newDate = addDays(j, date)
+			setStartTime(newDate)
+
+			dayArr.push(newDate)                
+		}
+
+	} else {
+		let i = 0
+		for (i = 0; i < dayCount; i++) {
+			const newDate = addDays(i, date)
+			setStartTime(newDate)
+
+			dayArr.push(newDate)
+		}
+	}
+
+	return dayArr
+}
+
+function setStartTime(date) {
+	date.setHours(0)
+	date.setMinutes(0)
+	date.setSeconds(0)
+}

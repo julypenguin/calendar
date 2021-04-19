@@ -142,7 +142,7 @@ const App = (props) => {
                             setShowData={setShowData}
                             cycle={cycle}
                             isWeek={isWeek}
-                            testData={testData}
+                            calendarData={testData}
                         />
                     }
 

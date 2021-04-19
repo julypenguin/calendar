@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { FormattedDate, FormattedMessage, FormattedTime, injectIntl } from 'react-intl'
 import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome'
 import { renderFullDate } from './formateDate'
-import { getFullDate, addDays } from 'lib/datetime'
+import { getFullDate, addDays, getCycleDays } from 'lib/datetime'
 import { weeks } from './formateDate'
 
 const CalendarD = ({
@@ -10,43 +10,17 @@ const CalendarD = ({
     setShowData,
     isWeek,
     cycle,
-    testData,
+    calendarData,
 }) => {
     const [days, setDays] = useState(1)
 
     const timeRef = useRef()
-    
+
     const hourArr = new Array(23).fill('')
     const hourLineArr = new Array(47).fill('')
-    
-    let firstDay = new Date()
-    let lastDay = new Date()
 
     const renderDaysTitle = (days) => {
-        const dayArr = []
-
-        if (isWeek) {
-            const prevDaysCount = new Date(showData).getDay()
-            let j = 1
-
-            for (let i = 0; i <= prevDaysCount; i++) {
-                dayArr.push(addDays(i - prevDaysCount, showData).toISOString())
-            }
-
-            for (j = 1; j <= 6 - prevDaysCount; j++) {
-                dayArr.push(addDays(j, showData).toISOString())                
-            }
-
-            firstDay = addDays(0 - prevDaysCount, showData).toISOString()
-            lastDay = addDays(j - 1, showData).toISOString()
-        } else {
-            let i = 0
-            for (i = 0; i < days; i++) {
-                dayArr.push(addDays(i, showData).toISOString())
-            }
-            firstDay = addDays(0, showData).toISOString()
-            lastDay = addDays(i - 1, showData).toISOString()
-        }
+        const dayArr = getCycleDays({ date: showData, dayCount: days, isWeek })
 
         return dayArr.map((data, index) => (
             <div
@@ -63,48 +37,97 @@ const CalendarD = ({
 
     }
 
-    const renderNote = (btime, etime, index) => {
-        // if (firstDay < btime &&  lastDay > etime)
+    const dateDiff = ({ btime, etime }) => {
+        const fullDateB = getFullDate(btime)
+        const fullDateE = getFullDate(etime)
+        const fullDateDiff = (fullDateE.y - fullDateB.y) + (fullDateE.m - fullDateB.m) + (fullDateE.d - fullDateB.d)
+        if (fullDateDiff <= 0) return false
+        return true
     }
 
-    const checkDays = (date, mode, index) => {
-        
-    }
+    const renderNote = ({ btime, etime, title, bg_color, today, index }) => {
+        const tomorrow = addDays(1, today)
 
-    const renderNotes = (days) => {
-        const noteArr = []
-        for (let i = 0; i < days; i++) {
-            noteArr.push(addDays(i, showData).toISOString())
-        }
-        console.log('firstDay', firstDay, firstDay > testData.data[0].btime)
-        console.log('lastDay', lastDay, lastDay > testData.data[0].etime)
-        const fullDateB = getFullDate(testData.data[0].btime)
-        const fullDateE = getFullDate(testData.data[0].etime)
+        if (!new Date(today).getDate()) return
+
+        const diff = dateDiff({ btime, etime })
+        if (diff) return
+
+        if (new Date(btime) < today || new Date(etime) >= tomorrow) return
+        const fullDateB = getFullDate(btime)
+        const fullDateE = getFullDate(etime)
         const minB = Number(fullDateB.h) * 60 + Number(fullDateB.mm)
         const minE = Number(fullDateE.h) * 60 + Number(fullDateE.mm)
         const secPercent = (100 / 1440).toFixed(4)
 
-        return noteArr.map((data, index) => (
-            <div key={index} className='border-l border-r relative border-box flex-shrink-0' style={{ minWidth: '80px', flexBasis: `${(100 / days).toFixed(4)}%` }}>
-                {index === 8 ? null : (
-                    <div className='absolute left-0 top-0 bottom-0' style={{ right: '10px', minWidth: '6px' }}>
-                        <div draggable='true'>
-                            <div 
-                                className='absolute bg-blue-200 cursor-pointer opacity-70 box-border border-l-4 border-blue-600 hover:bg-blue-300' 
-                                style={{ inset: `${secPercent * minB}% 0% ${100 - (secPercent * minE)}%` }}
-                            >
+        return (
+            <div
+                key={index}
+                className={`absolute cursor-pointer opacity-70 box-border border-l-4 border-blue-600 w-full hover:bg-blue-300 ${bg_color ? bg_color : 'bg-blue-200'}`}
+                style={{ inset: `${secPercent * minB}% 0% ${100 - (secPercent * minE)}%` }}
+            >
+                <div className='p-1'>
+                    {title}
+                </div>
+            </div>
+        )
+    }
 
-                            </div>
+    const renderColumnNote = ({ btime, etime, title, bg_color, today, index }) => {
+        const tomorrow = addDays(1, today)
+        const dateB = new Date(btime)
+        const dateE = new Date(etime)
+        const isFirstDate = dateB > today && dateB < tomorrow
+        const isLastDate = dateE > today && dateE < tomorrow
+        const isBetweenDates = dateB < today && dateE > today
 
-                            <div 
-                                className='absolute bg-blue-200 cursor-pointer opacity-70 box-border border-l-4 border-blue-600 hover:bg-blue-300' 
-                                style={{ inset: `15.246% 0% 43.426%` }}
-                            >
+        if (!isFirstDate && !isLastDate && !isBetweenDates) return
 
-                            </div>
+        const fullDateB = getFullDate(btime)
+        const fullDateE = getFullDate(etime)
+        const minB = Number(fullDateB.h) * 60 + Number(fullDateB.mm)
+        const minE = Number(fullDateE.h) * 60 + Number(fullDateE.mm)
+        const secPercent = (100 / 1440).toFixed(4)
+
+        const top = isFirstDate ? `${secPercent * minB}` : '0'
+        const bottom = isLastDate ? `${100 - (secPercent * minE)}` : '0'
+
+        return (
+            <div
+                key={index}
+                className='absolute left-0 top-0 bottom-0'
+                style={{ right: '0px', minWidth: '6px' }}
+            >
+                <div draggable='true'>
+                    <div
+                        key={index}
+                        className={`absolute cursor-pointer opacity-70 w-full ${bg_color ? bg_color : 'bg-blue-200'}`}
+                        style={{ inset: `${top}% 0% ${bottom}%` }}
+                    >
+                        <div className='p-1'>
                         </div>
                     </div>
-                )}
+                </div>
+            </div>
+        )
+    }
+
+    const renderNotes = (days) => {
+        const dayArr = getCycleDays({ date: showData, dayCount: days, isWeek })
+        const onlyOneDayArr = calendarData.data.filter((d) => !dateDiff({ ...d }))
+        const moreDayArr = calendarData.data.filter((d) => dateDiff({ ...d }))
+
+        return dayArr.map((data, index) => (
+            <div key={index} className='border-l border-r relative border-box flex-shrink-0' style={{ minWidth: '80px', flexBasis: `${(100 / days).toFixed(4)}%` }}>
+
+                {moreDayArr.map((dataDetail, index) => renderColumnNote({ ...dataDetail, today: data, index }))}
+
+                <div className='absolute left-0 top-0 bottom-0' style={{ right: '10px', minWidth: '6px' }}>
+                    <div draggable='true'>
+                        {onlyOneDayArr.map((dataDetail, index) => renderNote({ ...dataDetail, today: data, index }))}
+                    </div>
+                </div>
+
             </div>
         ))
     }
