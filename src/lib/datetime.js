@@ -65,7 +65,7 @@ export function getCycleDays({ date, dayCount, isWeek }) {
 			dayArr.push(newDate)
 		}
 
-		for (j = 1; j <= 6 - prevDaysCount + 1; j++) {
+		for (j = 1; j <= 6 - prevDaysCount; j++) {
 			const newDate = addDays(j, date)
 			setStartTime(newDate)
 

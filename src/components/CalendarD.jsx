@@ -19,6 +19,25 @@ const CalendarD = ({
     const hourArr = new Array(23).fill('')
     const hourLineArr = new Array(47).fill('')
 
+    // 過濾不必要的日期
+    const filterDate = ({ btime, etime }) => {
+        const dayArr = getCycleDays({ date: showData, dayCount: days, isWeek })
+        const dateB = new Date(btime)
+        const dateE = new Date(etime)
+
+        const firstDate = new Date(dayArr[0])
+        const lastDate = addDays(1, new Date(dayArr[dayArr.length - 1]))
+
+        const before =  dateB < firstDate && dateE > firstDate
+        const between =  dateB > firstDate && dateE < lastDate
+        const future = dateB < lastDate && dateE > lastDate
+        const contain = dateB < firstDate && dateE > lastDate
+
+        return before || between || future || contain
+    }
+    
+    const newCalendarData = calendarData && calendarData.data.filter((date) => filterDate(date)) || []
+
     // 判斷行事曆裡面的資料是否有跨日，跨日回傳 true
     const dateDiff = ({ btime, etime }) => {
         const fullDateB = getFullDate(btime)
@@ -28,47 +47,37 @@ const CalendarD = ({
         return true
     }
 
-    const calcRight = (data) => {
+    const calcLeftAndRight = (data, direction) => {
         if (!data) return 0
-        const { btime ,etime } = data
+        const { btime, etime } = data
         const dayArr = getCycleDays({ date: showData, dayCount: days, isWeek })
         const dateB = new Date(btime)
         const dateE = new Date(etime)
-        
-        dayArr.filter((today, index) => {
-            console.log("today", today)
+        const newDayArr = dayArr.map((today, index) => {
             const tomorrow = addDays(1, today)
             const isFirstDate = dateB > today && dateB < tomorrow
             const isLastDate = dateE > today && dateE < tomorrow
             const isBetweenDates = dateB < today && dateE > today
-            console.log('isFirstDate', isFirstDate)
-            console.log('isLastDate', isLastDate)
-            console.log('isBetweenDates', isBetweenDates)
 
             return isFirstDate || isLastDate || isBetweenDates
         })
 
-        console.log('dayArr', dayArr)
-
-        // const tomorrow = addDays(1, today)
-        // const dateB = new Date(btime)
-        // const dateE = new Date(etime)
-        // const isFirstDate = dateB > today && dateB < tomorrow
-        // const isLastDate = dateE > today && dateE < tomorrow
-        // const isBetweenDates = dateB < today && dateE > today
-
+        const left = (100 / days) * newDayArr.indexOf(true)
+        const right = 100 - ((100 / days) * (newDayArr.lastIndexOf(true) + 1))
+        if (direction === 'right') return right
+        return left
     }
 
     const renderTitleNote = () => {
-        const moreDayArr = calendarData && calendarData.data.filter((d) => dateDiff({ ...d })) || []
+        const moreDayArr = newCalendarData.filter((d) => dateDiff({ ...d })) || []
         return moreDayArr.map((data, index, arr) => (
-            <div style={{ height: `${(arr.length * 30) + 8}px` }}>
+            <div key={index} style={{ height: `${(arr.length * 30) + 8}px` }}>
                 <div draggable='true'>
                     <div
-                        className={`absolute cursor-pointer left-0 top-0 flex items-center bg-blue-200`}
-                        style={{ height: '29px', margin: '4px', marginRight: '12px', right: `${calcRight(calendarData.data)}%` }}
+                        className={`absolute cursor-pointer px-2 flex items-center bg-blue-200 border-l-4 border-blue-600 opacity-70 hover:bg-blue-300`}
+                        style={{ height: '29px', marginTop: '4px', marginRight: '12px', marginBottom: '4px', left: `${calcLeftAndRight(data, 'left')}%`, right: `${calcLeftAndRight(data, 'right')}%`, top: `${30 * index}px` }}
                     >
-                        123
+                        {data.title}
                     </div>
                 </div>
             </div>
@@ -77,17 +86,16 @@ const CalendarD = ({
 
     const renderDaysTitle = (days, calendarData) => {
         const dayArr = getCycleDays({ date: showData, dayCount: days, isWeek })
-        const moreDayArr = calendarData && calendarData.data.filter((d) => dateDiff({ ...d })) || []
-
+        const moreDayArr = calendarData && calendarData.filter((d) => dateDiff({ ...d })) || []
         return dayArr.map((data, index) => {
             if (calendarData && !moreDayArr.length) return null
             return (
                 <div
                     key={index}
-                    className='mr-0 border-r border-b border-l flex-col flex-shrink-0'
+                    className={`mr-0 border-r border-l flex-col flex-shrink-0 ${calendarData ? 'border-b-2' : ''}`}
                     style={{ flexBasis: `${(100 / days).toFixed(4)}%` }}
                 >
-                    <div className='flex flex-row flex-nowrap items-end' style={{ padding: '10px 0 0 10px', marginBottom: '8px' }}>
+                    <div className='flex flex-row flex-nowrap items-end' style={{ padding: `${calendarData ? '' : '10px 0 0 10px'}`, marginBottom: `${calendarData ? '' : '8px'}` }}>
                         {moreDayArr.length ? null :
                             <>
                                 <div className='whitespace-nowrap overflow-hidden' style={{ marginRight: '8px', flex: '0 0 auto' }}>{renderFullDate({ data: data, noYear: true, noMonth: true, className: 'text-2xl' })}</div>
@@ -99,23 +107,6 @@ const CalendarD = ({
                 </div>
             )
         })
-
-        return dayArr.map((data, index) => (
-            <div
-                key={index}
-                className='mr-0 border-r border-b border-l flex-col flex-shrink-0'
-                style={{ flexBasis: `${(100 / days).toFixed(4)}%` }}
-            >
-                <div className='flex flex-row flex-nowrap items-end' style={{ padding: '10px 0 0 10px', marginBottom: '8px' }}>
-                    {moreDayArr.length ? renderTitleNote() :
-                        <>
-                            <div className='whitespace-nowrap overflow-hidden' style={{ marginRight: '8px', flex: '0 0 auto' }}>{renderFullDate({ data: data, noYear: true, noMonth: true, className: 'text-2xl' })}</div>
-                            <div className='' style={{ marginBottom: '2px' }}>{weeks[index].week_name}</div>
-                        </>
-                    }
-                </div>
-            </div>
-        ))
     }
 
     const renderNote = ({ btime, etime, title, bg_color, today, index }) => {
@@ -125,7 +116,6 @@ const CalendarD = ({
 
         const diff = dateDiff({ btime, etime })
         if (diff) return
-
         if (new Date(btime) < today || new Date(etime) >= tomorrow) return
         const fullDateB = getFullDate(btime)
         const fullDateE = getFullDate(etime)
@@ -174,7 +164,7 @@ const CalendarD = ({
                 <div draggable='true'>
                     <div
                         key={index}
-                        className={`absolute cursor-pointer opacity-70 w-full ${bg_color ? bg_color : 'bg-blue-200'}`}
+                        className={`absolute opacity-70 w-full ${bg_color ? bg_color : 'bg-blue-200'}`}
                         style={{ inset: `${top}% 0% ${bottom}%` }}
                     >
                         <div className='p-1'>
@@ -187,9 +177,8 @@ const CalendarD = ({
 
     const renderNotes = (days) => {
         const dayArr = getCycleDays({ date: showData, dayCount: days, isWeek })
-        const onlyOneDayArr = calendarData.data.filter((d) => !dateDiff({ ...d }))
-        const moreDayArr = calendarData.data.filter((d) => dateDiff({ ...d }))
-
+        const onlyOneDayArr = newCalendarData.filter((d) => !dateDiff({ ...d }))
+        const moreDayArr = newCalendarData.filter((d) => dateDiff({ ...d }))
         return dayArr.map((data, index) => (
             <div key={index} className='border-l border-r relative border-box flex-shrink-0' style={{ minWidth: '80px', flexBasis: `${(100 / days).toFixed(4)}%` }}>
 
@@ -228,7 +217,7 @@ const CalendarD = ({
                     <div className='overflow-hidden flex-1' style={{ paddingRight: '18px', paddingLeft: '10px', marginLeft: '-10px', minHeight: '48px', minWidth: '80px' }}>
                         <div className='flex'>{renderDaysTitle(days)}</div>
                         <div className='flex relative'>
-                            {renderDaysTitle(days, calendarData)}
+                            {renderDaysTitle(days, newCalendarData)}
                             {renderTitleNote()}
                         </div>
                     </div>
