@@ -38,11 +38,27 @@ const CalendarM = (props) => {
             weeks.map((week, index, arr) => {
                 const firstFullDay = week[0]
                 const lastFullDay = week[arr.length - 1]
-                const firstDay = new Date(firstFullDay.year, firstFullDay.month - 1, firstFullDay.date)
-                const lastDay = new Date(lastFullDay.year, lastFullDay.month - 1, lastFullDay.date)
-                const DateB = new Date(date.btime)
-                const DateE = new Date(date.etime)
+                const firstDate = new Date(firstFullDay.year, firstFullDay.month - 1, firstFullDay.date)
+                const lastDate = new Date(lastFullDay.year, lastFullDay.month - 1, lastFullDay.date)
+                const dateB = new Date(date.btime)
+                const dateE = new Date(date.etime)
 
+                const before = dateB < firstDate && dateE > firstDate
+                const between = dateB > firstDate && dateE < lastDate
+                const future = dateB < lastDate && dateE > lastDate
+                const contain = dateB < firstDate && dateE > lastDate
+
+                if (between) {
+                    week.map((date) => {
+
+                    })
+                }
+
+                return {
+                    top: ``,
+                    right: `${future || contain ? '0' : ''}`,
+                    left: `${before || contain ? '0' : '' }`,
+                }
             })
         }, [])
         console.log('weeks!!!', weeks)
