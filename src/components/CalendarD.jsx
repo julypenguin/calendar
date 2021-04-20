@@ -2,16 +2,11 @@ import React, { useEffect, useState, useRef } from 'react';
 import { FormattedDate, FormattedMessage, FormattedTime, injectIntl } from 'react-intl'
 import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome'
 import { renderFullDate } from './formateDate'
-import { getFullDate, addDays, getCycleDays } from 'lib/datetime'
+import { getFullDate, addDays, getCycleDays, filterDate, dateDiff } from 'lib/datetime'
 import { weeks } from './formateDate'
 
-const CalendarD = ({
-    showData,
-    setShowData,
-    isWeek,
-    cycle,
-    calendarData,
-}) => {
+const CalendarD = (props) => {
+    const { showData, isWeek, cycle, calendarData } = props
     const [days, setDays] = useState(1)
 
     const timeRef = useRef()
@@ -19,33 +14,7 @@ const CalendarD = ({
     const hourArr = new Array(23).fill('')
     const hourLineArr = new Array(47).fill('')
 
-    // 過濾不必要的日期
-    const filterDate = ({ btime, etime }) => {
-        const dayArr = getCycleDays({ date: showData, dayCount: days, isWeek })
-        const dateB = new Date(btime)
-        const dateE = new Date(etime)
-
-        const firstDate = new Date(dayArr[0])
-        const lastDate = addDays(1, new Date(dayArr[dayArr.length - 1]))
-
-        const before =  dateB < firstDate && dateE > firstDate
-        const between =  dateB > firstDate && dateE < lastDate
-        const future = dateB < lastDate && dateE > lastDate
-        const contain = dateB < firstDate && dateE > lastDate
-
-        return before || between || future || contain
-    }
-    
-    const newCalendarData = calendarData && calendarData.data.filter((date) => filterDate(date)) || []
-
-    // 判斷行事曆裡面的資料是否有跨日，跨日回傳 true
-    const dateDiff = ({ btime, etime }) => {
-        const fullDateB = getFullDate(btime)
-        const fullDateE = getFullDate(etime)
-        const fullDateDiff = (fullDateE.y - fullDateB.y) + (fullDateE.m - fullDateB.m) + (fullDateE.d - fullDateB.d)
-        if (fullDateDiff <= 0) return false
-        return true
-    }
+    const newCalendarData = calendarData && calendarData.data.filter((date) => filterDate({ ...props, ...date, dayCount: days })) || []
 
     const calcLeftAndRight = (data, direction) => {
         if (!data) return 0

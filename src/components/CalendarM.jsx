@@ -3,41 +3,58 @@ import classNames from 'classnames'
 import { FormattedDate, FormattedMessage, FormattedTime, injectIntl } from 'react-intl'
 import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome'
 import '../styl/styles.css'
-import { getFullDate } from 'lib/datetime'
+import { getFullDate, filterDate, dateDiff } from 'lib/datetime'
 import { weeks } from './formateDate'
 
-const CalendarM = ({
-    intl,
-    showData,
-    setShowData,
-    renderDate,
-    setOtherData,
-    onClose,
-    abbr, // 讓 calendar 保持所寫文字
-    textSm, // 讓文字變小
-    center, // 文字置中
-    selector, // 點擊後會選取
-}) => {
+const CalendarM = (props) => {
+    const {
+        showData,
+        setShowData,
+        renderDate,
+        setOtherData,
+        onClose,
+        abbr, // 讓 calendar 保持所寫文字
+        textSm, // 讓文字變小
+        center, // 文字置中
+        selector, // 點擊後會選取
+        calendarData, // 從外部填入日曆的資料
+        isMonth,
+    } = props
 
     const fullDate = getFullDate(showData)
 
-    const isToday = data => {
-        return Number(data.date) === Number(fullDate.d) && Number(data.month) === Number(fullDate.m) && Number(data.year) === Number(fullDate.y)
-    }
-
-    const selectedClassName = data => {
-        classNames('table-row-canclick',
-            {
-                'bg-blue-200': isToday(data)
-            }
-        )
-
-    } 
+    const newCalendarData = calendarData && calendarData.data.filter((date) => filterDate({ ...props, ...date, dayCount: 30 })) || []
 
     const handleSetDate = data => {
         setShowData(`${data.year}-${data.month}-${data.date}`)
         if (typeof setOtherData === 'function') setOtherData(`${data.year}-${data.month}-${data.date}`)
         if (typeof onClose === 'function') onClose()
+    }
+
+    const formatCalendarData = (data) => {
+        const weeks = renderDate(showData)
+        if (!Array.isArray(data)) return []
+        data.reduce((acc, date) => {
+
+        }, [])
+        console.log('weeks!!!', weeks)
+    }
+
+    const renderNotes = () => {
+        formatCalendarData(newCalendarData)
+        const notes = newCalendarData.map((date) => (
+            <div draggable='true'>
+                <div className='absolute cursor-pointer box-border' style={{ left: '14.2857%', right: '42.8571%', top: `calc(60% + 34px)`, height: '23px' }}>今天</div>
+            </div>
+        ))
+
+        return (
+            <div draggable='true'>
+                <div className='absolute cursor-pointer box-border bg-blue-300 mr-2 rounded opacity-70 text-blue-800' style={{ left: '14.2857%', right: '42.8571%', top: 'calc(60% + 34px)', height: '23px' }}>
+                    <div className='px-2 truncate'>今天</div>
+                </div>
+            </div>
+        )
     }
 
     return (
@@ -69,7 +86,7 @@ const CalendarM = ({
                             week.map((data, i) => (
                                 <div
                                     key={i}
-                                    className={`whitespace-nowrap text-sm font-medium text-gray-900 absolute cursor-pointer ${Number(data.date) === Number(fullDate.d) && Number(data.month) === Number(fullDate.m) && Number(data.year) === Number(fullDate.y) ? 'bg-blue-200' : 'bg-white hover:bg-gray-100'}
+                                    className={`whitespace-nowrap text-sm font-medium text-gray-900 absolute cursor-pointer ${Number(data.date) === Number(fullDate.d) && Number(data.month) === Number(fullDate.m) && Number(data.year) === Number(fullDate.y) ? 'bg-blue-200 opacity-70' : 'bg-white hover:bg-gray-100'}
                                         ${!selector ?
                                             data.isToday ? 'calendar-today border-t'
                                                 : data.isOverdue ? 'bg-gray-100 border-t' : 'bg-white border-t'
@@ -98,25 +115,20 @@ const CalendarM = ({
                                                 <span className={`${!textSm ? '' : 'text-xs'} ${selector && data.isToday ? 'text-white' : selector && !data.main ? 'text-gray-300' : 'text-gray-500'}`}>{data.date}</span>
                                             }
                                         </div>
-                                        {!center &&
+                                        {/* {!center &&
                                             data.date === 19 && <div className="px-2 bottom flex-grow h-30 py-1 w-full cursor-pointer">
                                                 <div
                                                     className="event text-blue-600 rounded p-1 text-sm mb-1 hover:bg-blue-100 leading-6"
                                                 >
                                                     <div className="event-name truncate">下午 2 【充電時間：打造你的關鍵三力】</div>
                                                 </div>
-                                                {/* <div
-                                                    className="event bg-purple-400 text-white rounded p-1 text-sm mb-1"
-                                                >
-                                                    <span className="event-name">Meeting</span>
-                                                    <span className="time">12:00~14:00</span>
-                                                </div> */}
                                             </div>
-                                        }
+                                        } */}
                                     </div>
                                 </div>
                             ))
                         ))}
+                        {renderNotes()}
                     </div>
                 </div>
             </div>
@@ -124,4 +136,4 @@ const CalendarM = ({
     );
 };
 
-export default injectIntl(CalendarM);
+export default CalendarM;

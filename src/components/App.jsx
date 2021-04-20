@@ -135,6 +135,7 @@ const App = (props) => {
                             setShowData={setShowData}
                             renderDate={renderDate}
                             calendarData={testData}
+                            isMonth={cycle === 30}
                         />
                         :
                         <CalendarD
