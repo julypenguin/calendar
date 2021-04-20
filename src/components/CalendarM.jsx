@@ -35,7 +35,15 @@ const CalendarM = (props) => {
         const weeks = renderDate(showData)
         if (!Array.isArray(data)) return []
         data.reduce((acc, date) => {
+            weeks.map((week, index, arr) => {
+                const firstFullDay = week[0]
+                const lastFullDay = week[arr.length - 1]
+                const firstDay = new Date(firstFullDay.year, firstFullDay.month - 1, firstFullDay.date)
+                const lastDay = new Date(lastFullDay.year, lastFullDay.month - 1, lastFullDay.date)
+                const DateB = new Date(date.btime)
+                const DateE = new Date(date.etime)
 
+            })
         }, [])
         console.log('weeks!!!', weeks)
     }
