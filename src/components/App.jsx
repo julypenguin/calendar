@@ -8,6 +8,7 @@ import Navbar from './Navbar'
 import CalendarM from './CalendarM'
 import CalendarD from './CalendarD'
 import { getFullDate } from 'lib/datetime'
+import EditorNote from './EditorNote'
 
 import testData from './data.json'
 
@@ -116,7 +117,7 @@ const App = (props) => {
 
     return (
         <IntlProvider defaultLocale='zh' {...language}>
-            {/* <SelectorM /> */}
+            <EditorNote />
             <div className='h-full w-full absolute'>
                 <div className='h-full w-full overflow-hidden flex flex-col relative'>
                     <Navbar
