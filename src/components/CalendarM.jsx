@@ -33,52 +33,113 @@ const CalendarM = (props) => {
 
     const formatCalendarData = (data) => {
         const weeks = renderDate(showData)
-        if (!Array.isArray(data)) return []
-        data.reduce((acc, date) => {
-            weeks.map((week, index, arr) => {
-                const firstFullDay = week[0]
-                const lastFullDay = week[arr.length - 1]
-                const firstDate = new Date(firstFullDay.year, firstFullDay.month - 1, firstFullDay.date)
-                const lastDate = new Date(lastFullDay.year, lastFullDay.month - 1, lastFullDay.date)
-                const dateB = new Date(date.btime)
-                const dateE = new Date(date.etime)
+        let subLevel = {} // 紀錄某一天有幾筆資料
 
-                const before = dateB < firstDate && dateE > firstDate
-                const between = dateB > firstDate && dateE < lastDate
-                const future = dateB < lastDate && dateE > lastDate
-                const contain = dateB < firstDate && dateE > lastDate
+        // 先把一天一天跑起來，再來看特定日子有哪幾個資料
+        const newDatas = weeks.map((week, index, arr) => {
+            const newWeek = week.map((day, idx) => {
+                const newData = data.map((date) => {
+                    let left = 0
+                    let right = 0
+                    let crossDay = false
+                    const today = new Date(day.year, day.month - 1, day.date)
+                    const tomorrow = new Date(day.year, day.month - 1, day.date + 1)
+                    const dateB = new Date(date.btime)
+                    const dateE = new Date(date.etime)
 
-                if (between) {
-                    week.map((date) => {
+                    const before = dateB < today && dateE > today // 不只一天，今天不是第一天
+                    const between = dateB > today && dateE < tomorrow // 當天
+                    const future = dateB < tomorrow && dateE > tomorrow // 不只一天，今天不是最後一天
+                    const cover = dateB < today && dateE > tomorrow // 不只一天，今天不是第一天，也不是最後一天
 
-                    })
+                    // 找第一天
+                    if (future && !cover) {
+                        left = idx
+                        crossDay = true
+                    }
+
+                    // 找最後一天
+                    if (before && !cover) {
+                        right = 6 - idx
+                        crossDay = true
+                    }
+
+                    // 當天
+                    if (between) {
+                        left = idx
+                        right = 6 - idx
+                        crossDay = false
+                    }
+
+                    if (!before && !between && !future) return
+                    if (idx > 0 && idx < 6 && cover) return
+
+                    if (cover) crossDay = true
+
+                    return {
+                        ...date,
+                        left,
+                        right,
+                        level: index,
+                        crossDay,
+                    }
+
+                }).filter(date => !!date)
+
+                return newData
+
+            }).filter(day => !!day[0])
+
+            return newWeek
+
+        }).flat(3)
+            .sort((a, b) => (b.crossDay - a.crossDay) + (Number(b.sid) - Number(a.sid)))
+            .reduce((acc, date, index, arr) => {
+                if (date.crossDay === true &&
+                    arr[index + 1] && arr[index + 1].level === date.level &&
+                    arr[index + 1].sid === date.sid
+                ) {
+                    for (let i = date.left; i < 7 - arr[index + 1].right; i++) {
+                        const key = `${date.level}_${i}`
+                        subLevel[key] = subLevel[key] ? [...subLevel[key], date.sid] : [date.sid]
+                    }
+                    acc = [
+                        ...acc,
+                        {
+                            ...date,
+                            right: arr[index + 1].right,
+                            sort: subLevel[`${date.level}_${date.left}`].indexOf(date.sid),
+                        }
+                    ]
                 }
 
-                return {
-                    top: ``,
-                    right: `${future || contain ? '0' : ''}`,
-                    left: `${before || contain ? '0' : '' }`,
-                }
-            })
-        }, [])
-        console.log('weeks!!!', weeks)
+                if (!date.crossDay) {
+                    for (let i = date.left; i < 7 - date.right; i++) {
+                        const key = `${date.level}_${i}`
+                        subLevel[key] = subLevel[key] ? [...subLevel[key], date.sid] : [date.sid]
+                    }
+                    acc = [...acc, {
+                        ...date,
+                        sort: subLevel[`${date.level}_${date.left}`].indexOf(date.sid),
+                    }]
+                } 
+                return acc
+            }, [])
+
+        return newDatas
     }
 
     const renderNotes = () => {
-        formatCalendarData(newCalendarData)
-        const notes = newCalendarData.map((date) => (
-            <div draggable='true'>
-                <div className='absolute cursor-pointer box-border' style={{ left: '14.2857%', right: '42.8571%', top: `calc(60% + 34px)`, height: '23px' }}>今天</div>
-            </div>
-        ))
 
-        return (
-            <div draggable='true'>
-                <div className='absolute cursor-pointer box-border bg-blue-300 mr-2 rounded opacity-70 text-blue-800' style={{ left: '14.2857%', right: '42.8571%', top: 'calc(60% + 34px)', height: '23px' }}>
-                    <div className='px-2 truncate'>今天</div>
+        const notes = formatCalendarData(newCalendarData)
+
+        return notes.map((note, index) => (
+            <div key={index} draggable='true'>
+                <div className='absolute cursor-pointer box-border bg-blue-300 mr-2 rounded opacity-70 text-blue-800' style={{ left: `${(100 / 7) * note.left}%`, right: `${(100 / 7) * note.right}%`, top: `calc(${20 * note.level}% + 34px + ${note.sort * 23}px + ${note.sort ? '1' : '0'}px)`, height: '23px' }}>
+                    <div className='px-2 truncate'>{note.title}</div>
                 </div>
             </div>
-        )
+        ))
     }
 
     return (

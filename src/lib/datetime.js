@@ -140,9 +140,9 @@ export function filterDate({ btime, etime, showData, dayCount, isWeek, isMonth }
 	const before = dateB < firstDate && dateE > firstDate
 	const between = dateB > firstDate && dateE < lastDate
 	const future = dateB < lastDate && dateE > lastDate
-	const contain = dateB < firstDate && dateE > lastDate
+	const cover = dateB < firstDate && dateE > lastDate
 
-	return before || between || future || contain
+	return before || between || future || cover
 }
 
 
