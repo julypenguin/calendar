@@ -24,6 +24,8 @@
     "sunday": "星期日",
     "sun": "日",
     "week_sun": "週日",
+    "am": "上午",
+    "pm": "下午",
     "category": {
         "red": "紅色",
         "pink": "粉色",

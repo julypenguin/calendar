@@ -37,13 +37,24 @@ const CalendarD = (props) => {
         return left
     }
 
+    const renderTime = (index) => {
+        const time = (index % 12) + 1
+        const twelveHourClock = (index / 12) >= 1 ?  'pm' : 'am'
+        return (
+            <>
+                <span className='mr-1 text-xs flex-shrink-0'><FormattedMessage id={`calendar.${twelveHourClock}`} /></span>
+                <span className='text-xs flex-shrink-0'>{time}</span>
+            </>
+        )
+    }
+
     const renderTitleNote = () => {
         const moreDayArr = newCalendarData.filter((d) => dateDiff({ ...d })) || []
         return moreDayArr.map((data, index, arr) => (
             <div key={index} style={{ height: `${(arr.length * 30) + 8}px` }}>
                 <div draggable='true'>
                     <div
-                        className={`absolute cursor-pointer px-2 flex items-center bg-blue-200 border-l-4 border-blue-600 opacity-70 hover:bg-blue-300`}
+                        className={`absolute cursor-pointer px-2 flex items-center border-l-4 opacity-70 ${data.tag_color ? `bg-${data.tag_color}-200 border-${data.tag_color}-600 hover:bg-${data.tag_color}-300 text-${data.tag_color}-800` : 'bg-blue-200 border-blue-600 hover:bg-blue-300 text-blue-800'}`}
                         style={{ height: '29px', marginTop: '4px', marginRight: '12px', marginBottom: '4px', left: `${calcLeftAndRight(data, 'left')}%`, right: `${calcLeftAndRight(data, 'right')}%`, top: `${30 * index}px` }}
                     >
                         {data.title}
@@ -78,7 +89,7 @@ const CalendarD = (props) => {
         })
     }
 
-    const renderNote = ({ btime, etime, title, bg_color, today, index }) => {
+    const renderNote = ({ btime, etime, title, tag_color, today, index }) => {
         const tomorrow = addDays(1, today)
 
         if (!new Date(today).getDate()) return
@@ -95,7 +106,7 @@ const CalendarD = (props) => {
         return (
             <div
                 key={index}
-                className={`absolute cursor-pointer opacity-70 box-border border-l-4 border-blue-600 w-full hover:bg-blue-300 ${bg_color ? bg_color : 'bg-blue-200'}`}
+                className={`absolute cursor-pointer opacity-70 box-border border-l-4 w-full ${tag_color ? `bg-${tag_color}-200 border-${tag_color}-600 hover:bg-${tag_color}-300 text-${tag_color}-800` : 'bg-blue-200 border-blue-600 hover:bg-blue-300 text-blue-800'}`}
                 style={{ inset: `${secPercent * minB}% 0% ${100 - (secPercent * minE)}%` }}
             >
                 <div className='p-1'>
@@ -105,7 +116,7 @@ const CalendarD = (props) => {
         )
     }
 
-    const renderColumnNote = ({ btime, etime, title, bg_color, today, index }) => {
+    const renderColumnNote = ({ btime, etime, title, tag_color, today, index }) => {
         const tomorrow = addDays(1, today)
         const dateB = new Date(btime)
         const dateE = new Date(etime)
@@ -133,7 +144,7 @@ const CalendarD = (props) => {
                 <div draggable='true'>
                     <div
                         key={index}
-                        className={`absolute opacity-70 w-full ${bg_color ? bg_color : 'bg-blue-200'}`}
+                        className={`absolute opacity-70 w-full ${tag_color ? `bg-${tag_color}-200` : 'bg-blue-200'}`}
                         style={{ inset: `${top}% 0% ${bottom}%` }}
                     >
                         <div className='p-1'>
@@ -199,8 +210,10 @@ const CalendarD = (props) => {
                             <div className='flex flex-shrink-0 flex-grow-0 flex-col relative' style={{ height: '1440px', width: '59px' }}>
                                 {hourArr.map((data, index) => (
                                     <div key={index} className='text-right w-full absolute' style={{ top: `${(100 / 24) * (index + 1)}%` }}>
-                                        <div className='relative' style={{ bottom: '8px', marginRight: '11px' }}>
-                                            <div className='text-xs'>上午 {index + 1}</div>
+                                        <div className='relative' style={{ bottom: '8px' }}>
+                                            <div className='flex flex-nowrap justify-center'>
+                                                {renderTime(index)}
+                                            </div>
                                         </div>
                                     </div>
                                 ))}

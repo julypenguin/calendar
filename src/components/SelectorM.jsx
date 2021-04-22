@@ -70,7 +70,7 @@ const SelectorM = ({
                         .map(d => (
                             <div
                                 key={d.month}
-                                className={`mr-1 text-xs text-center inline-block cursor-pointer ${d.month === selectedM && y === selectedY ? 'bg-blue-200' : 'bg-white hover:bg-gray-100'}`}
+                                className={`mr-1 text-xs text-center inline-block cursor-pointer ${d.month === selectedM && y === selectedY ? 'bg-blue-100' : 'bg-white hover:bg-gray-100'}`}
                                 role='gridcell'
                                 style={{ width: '40px', height: '40px', lineHeight: '40px' }}
                                 onClick={() => handleSetMonth(d.month - 1)}
@@ -101,7 +101,7 @@ const SelectorM = ({
                         .map(d => (
                             <div
                                 key={d.year}
-                                className={`mr-1 text-xs text-center inline-block cursor-pointer ${d.year === y ? 'bg-blue-200' : 'bg-white hover:bg-gray-100'}`}
+                                className={`mr-1 text-xs text-center inline-block cursor-pointer ${d.year === y ? 'bg-blue-100' : 'bg-white hover:bg-gray-100'}`}
                                 role='gridcell'
                                 style={{ width: '40px', height: '40px', lineHeight: '40px' }}
                                 onClick={() => handleSetYear(d.year)}

@@ -1,19 +1,23 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome'
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, FormattedTime, injectIntl } from 'react-intl';
 import { createPortal } from 'react-dom'
+import { getFullDate, parseToDateString } from 'lib/datetime'
 
 const EditorNote = ({
     show,
     handleClose,
+    defaultValue,
+    intl,
 }) => {
 
+    const [detailDate, setDetailDate] = useState({ tag_color: 'blue' })
     const [btime, etime] = useState('')
     const [category, setCategory] = useState('blue')
     const [showCategory, setShowCategory] = useState(false)
 
     const categoryRef = useRef()
-
+    console.log('detailDate', detailDate)
     const categoryList = [
         {
             name: 'red',
@@ -50,9 +54,27 @@ const EditorNote = ({
     ]
 
     const onClose = () => {
-        console.log('2222', handleClose)
         if (typeof handleClose === 'function') handleClose()
     }
+
+    // dateType=btime or etime
+    const setDate = (e, oriData, dateType) => {
+        let newDate = new Date(e.target.value)
+        if (!newDate.getDate()) {
+            newDate = new Date(oriData)
+        }
+
+        setDetailDate({
+            ...detailDate,
+            [dateType]: parseToDateString(newDate),
+        })
+    }
+
+    // const checkDate = () => {
+    //     const btime = new Date(detailDate.btime)
+    //     const etime = new Date(detailDate.etime)
+    //     if (btime > etime) setDetailDate({ ...detailDate, etime: parseToDateString(btime) })
+    // }
 
     const detectPosition = (ref, rightAndBottom) => {
         if (!ref) return {}
@@ -69,10 +91,10 @@ const EditorNote = ({
     const renderCategoryList = (data, index) => {
         if (!data) return null
         return (
-            <li 
-                key={index} 
+            <li
+                key={index}
                 className={`flex flex-nowrap items-center pl-2 py-2 pr-8 hover:bg-gray-100 cursor-pointer`}
-                onClick={() => setCategory(data.color && data.color.toLowerCase())}
+                onClick={() => setDetailDate({ ...detailDate, tag_color: data.color.toLowerCase() })}
             >
                 <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 mr-2 text-${data.color}-500`} viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M17.707 9.293a1 1 0 010 1.414l-7 7a1 1 0 01-1.414 0l-7-7A.997.997 0 012 10V5a3 3 0 013-3h5c.256 0 .512.098.707.293l7 7zM5 6a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
@@ -84,21 +106,25 @@ const EditorNote = ({
         )
     }
 
+    const parseTime = (dateTime) => {
+        if (!dateTime) return ''
+        return intl.formatTime(dateTime)
+    }
+
+    useEffect(() => {
+        let tag_color = 'blue'
+        const parseBtime = parseTime(defaultValue.btime)
+        const parseEtime = parseTime(defaultValue.etime)
+        if (defaultValue.tag_color) tag_color = defaultValue.tag_color
+        setDetailDate({ ...defaultValue, tag_color, parseBtime, parseEtime })
+    }, [defaultValue])
+
     return (
         <div className={`fixed z-10 inset-0 overflow-y-auto ${show ? 'h-auto' : 'h-0'}`} aria-labelledby="modal-title" role="dialog" aria-modal="true">
             <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
 
-                {/* Background overlay, show/hide based on modal state.
-
-      Entering: "ease-out duration-300"
-        From: "opacity-0"
-        To: "opacity-100"
-      Leaving: "ease-in duration-200"
-        From: "opacity-100"
-        To: "opacity-0"
-     */}
-                <div 
-                    className={`fixed inset-0 bg-gray-400 bg-opacity-75 transition-opacity ${show ? 'h-auto' : 'h-0'}`}
+                <div
+                    className={`fixed inset-0 bg-gray-400 bg-opacity-75 transition-opacity ease-out duration-300 ${show ? 'h-auto' : 'h-0'}`}
                     aria-hidden="true"
                     onClick={onClose}
                 />
@@ -106,28 +132,21 @@ const EditorNote = ({
                 {/* <!-- This element is to trick the browser into centering the modal contents. --> */}
                 <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true"></span>
 
-                {/* <!--
-      Modal panel, show/hide based on modal state.
-
-      Entering: "ease-out duration-300"
-        From: "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-        To: "opacity-100 translate-y-0 sm:scale-100"
-      Leaving: "ease-in duration-200"
-        From: "opacity-100 translate-y-0 sm:scale-100"
-        To: "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-    --> */}
                 <div
                     className={`inline-block align-middle bg-white rounded-lg text-left overflow-y-hidden shadow-xl transform transition-all ease-out duration-300 ${show ? 'opacity-100 translate-y-0 sm:scale-100' : 'opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95'}`}
                     style={{ minHeight: '0', minWidth: '0', maxHeight: 'calc(100% -32px)', width: '800px' }}
                 >
                     <div
-                        className='overflow-y-hidden flex-grow'
+                        className={`overflow-y-hidden flex-grow`}
                         style={{ maxHeight: '95vh' }}
                     >
                         <div className='bg-white rounded flex flex-col justify-between h-full'>
                             {/* 頁首 */}
-                            <div className={`bg-${category}-500 pl-2 pr-1 flex justify-end`}>
-                                <div className='p-2 text-white'>
+                            <div className={`bg-${detailDate.tag_color}-500 pl-2 pr-1 flex justify-end`}>
+                                <div
+                                    className='p-2 text-white cursor-pointer'
+                                    onClick={onClose}
+                                >
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                                     </svg>
@@ -135,13 +154,13 @@ const EditorNote = ({
                             </div>
 
                             {/* 功能按鈕 */}
-                            <div className={`bg-${category}-50 pl-8 pr-1 py-1 flex`}>
-                                <div className={`px-2 py-1 mr-2 rounded cursor-pointer text-${category}-600 hover:bg-${category}-100`}>
+                            <div className={`bg-${detailDate.tag_color}-50 pl-8 pr-1 py-1 flex`}>
+                                <div className={`px-2 py-1 mr-2 rounded cursor-pointer text-${detailDate.tag_color}-600 hover:bg-${detailDate.tag_color}-100`}>
                                     <Icon className='mr-2' icon={['far', 'save']} />
                                     <span>儲存</span>
                                 </div>
 
-                                <div className={`px-2 py-1 mr-2 rounded cursor-pointer text-${category}-600 hover:bg-${category}-100 flex flex-nowrap`}>
+                                <div className={`px-2 py-1 mr-2 rounded cursor-pointer text-${detailDate.tag_color}-600 hover:bg-${detailDate.tag_color}-100 flex flex-nowrap`}>
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-full w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                     </svg>
@@ -149,7 +168,7 @@ const EditorNote = ({
                                 </div>
 
                                 <div
-                                    className={`px-2 py-1 mr-2 rounded cursor-pointer text-${category}-600 hover:bg-${category}-100 flex flex-nowrap`}
+                                    className={`px-2 py-1 mr-2 rounded cursor-pointer text-${detailDate.tag_color}-600 hover:bg-${detailDate.tag_color}-100 flex flex-nowrap`}
                                     onClick={() => setShowCategory(!showCategory)}
                                     ref={categoryRef}
                                 >
@@ -157,7 +176,7 @@ const EditorNote = ({
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                                     </svg>
                                     <span className='px-2'>
-                                        <FormattedMessage id={`calendar.category.${category}`} />
+                                        <FormattedMessage id={`calendar.category.${detailDate.tag_color}`} />
                                     </span>
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-full w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -199,8 +218,10 @@ const EditorNote = ({
                                         </div>
                                         <div className='flex-grow flex'>
                                             <input
-                                                className={`text-${category}-600 mr-2 pb-1 pl-2 flex-grow text-2xl font-semibold border-b border-gray-300 focus:outline-none`}
+                                                className={`text-${detailDate.tag_color}-600 mr-2 pb-1 pl-2 flex-grow text-2xl font-semibold border-b border-gray-300 focus:outline-none`}
                                                 placeholder='新增標題'
+                                                value={detailDate.title}
+                                                onChange={e => setDetailDate({ ...detailDate, title: e.target.value })}
                                             />
                                         </div>
                                     </div>
@@ -220,7 +241,9 @@ const EditorNote = ({
                                                             className='pl-2 outline-none text-lg border-b border-gray-300 truncate flex-1 text-gray-600'
                                                             placeholder=''
                                                             type='date'
-                                                            defaultValue={new Date()}
+                                                            value={parseToDateString(detailDate.btime)}
+                                                            onChange={e => setDate(e, detailDate.btime, 'btime')}
+                                                            // onBlur={checkDate()}
                                                         />
                                                     </div>
                                                     <div className='pl-3 flex justify-between' style={{ minWidth: '96px' }}>
@@ -228,7 +251,10 @@ const EditorNote = ({
                                                             <input
                                                                 className='outline-none text-gray-600'
                                                                 style={{}}
-                                                                defaultValue={'下午 01:00'}
+                                                                value={detailDate.parseBtime}
+                                                                onChange={e => setDetailDate({ ...detailDate, parseBtime: e.target.value })}
+                                                                onBlur={() => setDetailDate({ ...detailDate, parseBtime: intl.formatTime(detailDate.btime) })}
+                                                                // defaultValue={'下午 01:00'}
                                                             />
                                                             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-300 cursor-pointer" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -243,7 +269,9 @@ const EditorNote = ({
                                                             className='pl-2 outline-none text-lg border-b border-gray-300 truncate flex-1 text-gray-600'
                                                             placeholder=''
                                                             type='date'
-                                                            defaultValue={new Date()}
+                                                            value={parseToDateString(detailDate.etime)}
+                                                            onChange={e => setDate(e, detailDate.etime, 'etime')}
+                                                            min={parseToDateString(detailDate.btime)}
                                                         />
                                                     </div>
                                                     <div className='pl-3 flex justify-between' style={{ minWidth: '96px' }}>
@@ -251,7 +279,8 @@ const EditorNote = ({
                                                             <input
                                                                 className='outline-none text-gray-600'
                                                                 style={{}}
-                                                                defaultValue={'下午 01:00'}
+                                                                value={detailDate.parseEtime}
+                                                                // defaultValue={'下午 01:00'}
                                                             />
                                                             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-300 cursor-pointer" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -276,6 +305,11 @@ const EditorNote = ({
                                             <textarea
                                                 className='border border-gray-300 w-full h-32'
                                                 style={{ padding: '8px' }}
+                                                value={detailDate.desc}
+                                                onChange={e => setDetailDate({
+                                                    ...detailDate,
+                                                    desc: e.target.value,
+                                                })}
                                             />
                                         </div>
                                     </div>
@@ -290,4 +324,4 @@ const EditorNote = ({
     );
 };
 
-export default EditorNote;
+export default injectIntl(EditorNote);

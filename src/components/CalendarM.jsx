@@ -23,6 +23,7 @@ const CalendarM = (props) => {
         isMonth,
     } = props
 
+    const [selectedDate, setSelectedDate] = useState({})
     const [showEditor, setShowEditor] = useState(false)
 
     const fullDate = getFullDate(showData)
@@ -30,11 +31,28 @@ const CalendarM = (props) => {
     const newCalendarData = calendarData && calendarData.data.filter((date) => filterDate({ ...props, ...date, dayCount: 30 })) || []
 
     const handleSetDate = data => {
-        setShowData(`${data.year}-${data.month}-${data.date}`)
-        if (typeof setOtherData === 'function') setOtherData(`${data.year}-${data.month}-${data.date}`)
+        const newDate = new Date(data.year, data.month - 1, data.date)
+        setShowData(newDate)
+        // setShowData(`${data.year}-${data.month}-${data.date}`)
+        // if (typeof setOtherData === 'function') setOtherData(`${data.year}-${data.month}-${data.date}`)
+        if (typeof setOtherData === 'function') setOtherData(newDate)
         if (typeof onClose === 'function') onClose()
-        if (canEdit) setShowEditor(true)
-        console.log('1111')
+        if (canEdit) {
+            if (selectedDate && (selectedDate.btime - newDate) === 0) setShowEditor(true)
+            else setSelectedDate({
+                sid: Date.now(),
+                title: "",
+                btime: newDate,
+                etime: newDate,
+                desc: "",
+                tag_color: "blue",
+            })
+        }
+    }
+
+    const handleSetDataAndShowEditor = (data) => {
+        setSelectedDate(data)
+        setShowEditor(true)
     }
 
     const formatCalendarData = (data) => {
@@ -128,7 +146,7 @@ const CalendarM = (props) => {
                         ...date,
                         sort: subLevel[`${date.level}_${date.left}`].indexOf(date.sid),
                     }]
-                } 
+                }
                 return acc
             }, [])
 
@@ -139,10 +157,14 @@ const CalendarM = (props) => {
 
         const notes = formatCalendarData(newCalendarData)
 
-        return notes.map((note, index) => (
-            <div key={index} draggable='true'>
-                <div className='absolute cursor-pointer box-border bg-blue-300 mr-2 rounded opacity-70 text-blue-800' style={{ left: `${(100 / 7) * note.left}%`, right: `${(100 / 7) * note.right}%`, top: `calc(${20 * note.level}% + 34px + ${note.sort * 23}px + ${note.sort ? '1' : '0'}px)`, height: '23px' }}>
-                    <div className='px-2 truncate'>{note.title}</div>
+        return notes.map(({ title, tag_color, left, right, sort, level, ...data }, index) => (
+            <div
+                key={index}
+                draggable='true'
+                onClick={() => handleSetDataAndShowEditor({ ...data, title, tag_color })}
+            >
+                <div className={`absolute cursor-pointer box-border mr-2 rounded opacity-70 ${tag_color ? `bg-${tag_color}-200 text-${tag_color}-800 hover:bg-${tag_color}-300` : 'bg-blue-200 text-blue-800 hover:bg-blue-300'}`} style={{ left: `${(100 / 7) * left}%`, right: `${(100 / 7) * right}%`, top: `calc(${20 * level}% + 34px + ${sort * 23}px + ${sort ? '1' : '0'}px)`, height: '23px' }}>
+                    <div className='px-2 truncate'>{title}</div>
                 </div>
             </div>
         ))
@@ -177,7 +199,7 @@ const CalendarM = (props) => {
                             week.map((data, i) => (
                                 <div
                                     key={i}
-                                    className={`whitespace-nowrap text-sm font-medium text-gray-900 absolute cursor-pointer ${Number(data.date) === Number(fullDate.d) && Number(data.month) === Number(fullDate.m) && Number(data.year) === Number(fullDate.y) ? 'bg-blue-200 opacity-70' : 'bg-white hover:bg-gray-100'}
+                                    className={`whitespace-nowrap text-sm font-medium text-gray-900 absolute cursor-pointer ${Number(data.date) === Number(fullDate.d) && Number(data.month) === Number(fullDate.m) && Number(data.year) === Number(fullDate.y) ? 'bg-blue-100 opacity-70' : 'bg-white'} ${!selector ? '' : 'hover:bg-gray-100'}
                                         ${!selector ?
                                             data.isToday ? 'calendar-today border-t'
                                                 : data.isOverdue ? 'bg-gray-100 border-t' : 'bg-white border-t'
@@ -224,9 +246,10 @@ const CalendarM = (props) => {
                 </div>
             </div>
 
-            <EditorNote 
+            <EditorNote
                 show={showEditor}
                 handleClose={() => setShowEditor(false)}
+                defaultValue={selectedDate}
             />
 
         </>
