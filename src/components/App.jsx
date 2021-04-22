@@ -117,7 +117,7 @@ const App = (props) => {
 
     return (
         <IntlProvider defaultLocale='zh' {...language}>
-            <EditorNote />
+            {/* <EditorNote /> */}
             <div className='h-full w-full absolute'>
                 <div className='h-full w-full overflow-hidden flex flex-col relative'>
                     <Navbar
@@ -137,6 +137,7 @@ const App = (props) => {
                             renderDate={renderDate}
                             calendarData={testData}
                             isMonth={cycle === 30}
+                            canEdit
                         />
                         :
                         <CalendarD

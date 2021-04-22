@@ -81,6 +81,7 @@ import {
     faBookReader,
     faEyeSlash,
     faCalendarAlt,
+    faSave,
 } from '@fortawesome/free-solid-svg-icons'
 
 import {
@@ -100,6 +101,7 @@ import {
     faCalendar as farCalendar,
     faEyeSlash as farEyeSlash,
     faCalendarAlt as farCalendarAlt,
+    faSave as farSave,
 } from '@fortawesome/free-regular-svg-icons'
 
 export default () => library.add(
@@ -200,4 +202,6 @@ export default () => library.add(
     faBookReader,
     faCalendarAlt,
     farCalendarAlt,
+    faSave,
+    farSave,
 )

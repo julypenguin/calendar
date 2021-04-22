@@ -5,6 +5,7 @@ import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome'
 import '../styl/styles.css'
 import { getFullDate, filterDate, dateDiff } from 'lib/datetime'
 import { weeks } from './formateDate'
+import EditorNote from './EditorNote'
 
 const CalendarM = (props) => {
     const {
@@ -18,8 +19,11 @@ const CalendarM = (props) => {
         center, // 文字置中
         selector, // 點擊後會選取
         calendarData, // 從外部填入日曆的資料
+        canEdit,
         isMonth,
     } = props
+
+    const [showEditor, setShowEditor] = useState(false)
 
     const fullDate = getFullDate(showData)
 
@@ -29,6 +33,8 @@ const CalendarM = (props) => {
         setShowData(`${data.year}-${data.month}-${data.date}`)
         if (typeof setOtherData === 'function') setOtherData(`${data.year}-${data.month}-${data.date}`)
         if (typeof onClose === 'function') onClose()
+        if (canEdit) setShowEditor(true)
+        console.log('1111')
     }
 
     const formatCalendarData = (data) => {
@@ -217,6 +223,12 @@ const CalendarM = (props) => {
                     </div>
                 </div>
             </div>
+
+            <EditorNote 
+                show={showEditor}
+                handleClose={() => setShowEditor(false)}
+            />
+
         </>
     );
 };

@@ -80,11 +80,11 @@ const Navbar = ({
         if (typeof setData === 'function') setData(newShowDate)
     }
 
-    const detectPosition = (ref, rightAndBottom, parentRef) => {
+    const detectPosition = (ref, rightAndBottom) => {
         if (!ref) return {}
         const elementRef = ref.current
         const ele = elementRef.getBoundingClientRect()
-        let parentEle = parentRef && parentRef.current && parentRef.current.getBoundingClientRect()
+        // let parentEle = parentRef && parentRef.current && parentRef.current.getBoundingClientRect()
 
         if (rightAndBottom && parentEle) {
             return { top: ele.bottom, right: parentEle.right - ele.right, zIndex: 6666666 }
@@ -166,7 +166,7 @@ const Navbar = ({
                     ref={selectCycleRef}
                 >
                     <span className='w-5 h-5 mr-2 text-blue-700'>
-                        <Icon style={{ width: '100%', height: '100%' }} icon={['far', 'calendar-alt']} />
+                        <Icon  icon={['far', 'calendar-alt']} />
                     </span>
                     <span className='mr-2 text-lg text-blue-700'>
                         {calendarType[cycle]}

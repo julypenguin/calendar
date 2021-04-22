@@ -23,5 +23,15 @@
     "week_sat": "週六",
     "sunday": "星期日",
     "sun": "日",
-    "week_sun": "週日"
+    "week_sun": "週日",
+    "category": {
+        "red": "紅色",
+        "pink": "粉色",
+        "yellow": "黃色",
+        "green": "綠色",
+        "blue": "藍色",
+        "indigo": "靛色",
+        "purple": "紫色",
+        "gray": "灰色"
+    }
 }
