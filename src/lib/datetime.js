@@ -1,3 +1,9 @@
+export function addMinutes(minutes = 0, date = new Date()) {
+	const dat = new Date(date);
+	dat.setMinutes(dat.getMinutes() + minutes);
+	return dat
+}
+
 export function addDays(days = 0, date = new Date()) {
 	const dat = new Date(date);
 	dat.setDate(dat.getDate() + days);
@@ -138,7 +144,7 @@ export function filterDate({ btime, etime, showData, dayCount, isWeek, isMonth }
 	const lastDate = addDays(1, new Date(dayArr[dayArr.length - 1]))
 
 	const before = dateB < firstDate && dateE > firstDate
-	const between = dateB > firstDate && dateE < lastDate
+	const between = dateB >= firstDate && dateE < lastDate
 	const future = dateB < lastDate && dateE > lastDate
 	const cover = dateB < firstDate && dateE > lastDate
 

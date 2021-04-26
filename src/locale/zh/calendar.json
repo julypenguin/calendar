@@ -1,4 +1,6 @@
 {
+    "save": "儲存",
+    "delete": "捨棄",
     "today": "今天",
     "week": "週",
     "month": "月",
@@ -26,6 +28,7 @@
     "week_sun": "週日",
     "am": "上午",
     "pm": "下午",
+    "allday": "全天",
     "category": {
         "red": "紅色",
         "pink": "粉色",

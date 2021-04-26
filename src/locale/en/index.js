@@ -1,6 +1,6 @@
 import flatjson from '../flatjson'
-import core from './core.json'
+import calendar from './calendar.json'
 
 export default flatjson({ 
-    core 
+    calendar 
 })

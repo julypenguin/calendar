@@ -3,15 +3,16 @@ import classNames from 'classnames'
 import { FormattedDate, FormattedMessage, FormattedTime, injectIntl } from 'react-intl'
 import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome'
 import '../styl/styles.css'
-import { getFullDate, filterDate, dateDiff } from 'lib/datetime'
+import { getFullDate, filterDate, addMinutes } from 'lib/datetime'
 import { weeks } from './formateDate'
 import EditorNote from './EditorNote'
+import Schedule from './Schedule'
 
 const CalendarM = (props) => {
     const {
-        showData,
+        showData, // 一個日期
         setShowData,
-        renderDate,
+        renderDate, // 給一個日期會回傳整個月的陣列
         setOtherData,
         onClose,
         abbr, // 讓 calendar 保持所寫文字
@@ -23,16 +24,18 @@ const CalendarM = (props) => {
         isMonth,
     } = props
 
+    const [newShowData, setNewShowData] = useState(new Date())
+    const [newCalendarData, setNewCalendarData] = useState([])
     const [selectedDate, setSelectedDate] = useState({})
     const [showEditor, setShowEditor] = useState(false)
 
-    const fullDate = getFullDate(showData)
+    const fullDate = getFullDate(newShowData)
 
-    const newCalendarData = calendarData && calendarData.data.filter((date) => filterDate({ ...props, ...date, dayCount: 30 })) || []
+    // const newCalendarData = calendarData && calendarData.data.filter((date) => filterDate({ ...props, ...date, dayCount: 30 })) || []
 
     const handleSetDate = data => {
         const newDate = new Date(data.year, data.month - 1, data.date)
-        setShowData(newDate)
+        setNewShowData(newDate)
         // setShowData(`${data.year}-${data.month}-${data.date}`)
         // if (typeof setOtherData === 'function') setOtherData(`${data.year}-${data.month}-${data.date}`)
         if (typeof setOtherData === 'function') setOtherData(newDate)
@@ -40,10 +43,10 @@ const CalendarM = (props) => {
         if (canEdit) {
             if (selectedDate && (selectedDate.btime - newDate) === 0) setShowEditor(true)
             else setSelectedDate({
-                sid: Date.now(),
+                sid: String(Date.now()),
                 title: "",
                 btime: newDate,
-                etime: newDate,
+                etime: addMinutes(60, newDate),
                 desc: "",
                 tag_color: "blue",
             })
@@ -72,7 +75,7 @@ const CalendarM = (props) => {
                     const dateE = new Date(date.etime)
 
                     const before = dateB < today && dateE > today // 不只一天，今天不是第一天
-                    const between = dateB > today && dateE < tomorrow // 當天
+                    const between = dateB >= today && dateE < tomorrow // 當天
                     const future = dateB < tomorrow && dateE > tomorrow // 不只一天，今天不是最後一天
                     const cover = dateB < today && dateE > tomorrow // 不只一天，今天不是第一天，也不是最後一天
 
@@ -117,7 +120,9 @@ const CalendarM = (props) => {
             return newWeek
 
         }).flat(3)
-            .sort((a, b) => (b.crossDay - a.crossDay) + (Number(b.sid) - Number(a.sid)))
+            .sort((a, b) => {
+                return ((b.crossDay - a.crossDay) * Date.now()) + (Number(b.sid) - Number(a.sid))
+            })
             .reduce((acc, date, index, arr) => {
                 if (date.crossDay === true &&
                     arr[index + 1] && arr[index + 1].level === date.level &&
@@ -163,12 +168,25 @@ const CalendarM = (props) => {
                 draggable='true'
                 onClick={() => handleSetDataAndShowEditor({ ...data, title, tag_color })}
             >
-                <div className={`absolute cursor-pointer box-border mr-2 rounded opacity-70 ${tag_color ? `bg-${tag_color}-200 text-${tag_color}-800 hover:bg-${tag_color}-300` : 'bg-blue-200 text-blue-800 hover:bg-blue-300'}`} style={{ left: `${(100 / 7) * left}%`, right: `${(100 / 7) * right}%`, top: `calc(${20 * level}% + 34px + ${sort * 23}px + ${sort ? '1' : '0'}px)`, height: '23px' }}>
+                <div className={`absolute cursor-pointer box-border mr-2 rounded opacity-70 ${tag_color ? `bg-${tag_color}-200 text-${tag_color}-800 hover:bg-${tag_color}-300` : 'bg-blue-200 text-blue-800 hover:bg-blue-300'}`} style={{ left: `${(100 / 7) * left}%`, right: `${(100 / 7) * right}%`, top: `calc(${20 * level}% + 34px + ${sort * 23}px + ${sort ? sort : '0'}px)`, height: '23px' }}>
                     <div className='px-2 truncate'>{title}</div>
                 </div>
             </div>
         ))
     }
+
+    useEffect(() => {
+        if (calendarData) {
+            const newData = calendarData && calendarData.data.filter((date) => filterDate({ ...props, ...date, dayCount: 30 })) || []
+            setNewCalendarData(newData)
+        }
+    }, [calendarData])
+
+    useEffect(() => {
+        if (showData) {
+            setNewShowData(showData)
+        }
+    }, [showData])
 
     return (
         <>
@@ -246,10 +264,16 @@ const CalendarM = (props) => {
                 </div>
             </div>
 
+            <Schedule
+            />
+
             <EditorNote
                 show={showEditor}
                 handleClose={() => setShowEditor(false)}
                 defaultValue={selectedDate}
+                calendarData={newCalendarData}
+                setCalendarData={setNewCalendarData}
+                setSelectedDate={setSelectedDate}
             />
 
         </>

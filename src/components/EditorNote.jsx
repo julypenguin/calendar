@@ -2,18 +2,24 @@ import React, { useState, useEffect, useRef } from 'react';
 import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome'
 import { FormattedMessage, FormattedTime, injectIntl } from 'react-intl';
 import { createPortal } from 'react-dom'
-import { getFullDate, parseToDateString } from 'lib/datetime'
+import { getFullDate, parseToDateString, parseToISOString } from 'lib/datetime'
+import { Datetimepicker } from '@iqs/datetimepicker'
+import '@iqs/datetimepicker/index.styl'
 
 const EditorNote = ({
     show,
     handleClose,
-    defaultValue,
+    defaultValue, // detail 的資料
+    calendarData, // 整個行程陣列資料
+    setCalendarData,
+    setSelectedDate,
     intl,
 }) => {
 
     const [detailDate, setDetailDate] = useState({ tag_color: 'blue' })
     const [btime, etime] = useState('')
     const [category, setCategory] = useState('blue')
+    const [isAllDay, setIsAllDay] = useState(false)
     const [showCategory, setShowCategory] = useState(false)
 
     const categoryRef = useRef()
@@ -55,6 +61,27 @@ const EditorNote = ({
 
     const onClose = () => {
         if (typeof handleClose === 'function') handleClose()
+        setSelectedDate({
+            sid: String(Date.now()),
+            title: "",
+            btime: defaultValue.btime,
+            etime: defaultValue.etime,
+            desc: "",
+            tag_color: "blue",
+        })
+    }
+
+    const onDelete = () => {
+        const newCalendarData = calendarData.filter((data, index) => data.sid !== detailDate.sid)
+        setCalendarData(newCalendarData)
+        onClose()
+    }
+
+    const onSave = () => {
+        const newCalendarData = calendarData.filter((data, index) => data.sid !== detailDate.sid)
+        newCalendarData.push(detailDate)
+        setCalendarData(newCalendarData)
+        onClose()
     }
 
     // dateType=btime or etime
@@ -155,16 +182,22 @@ const EditorNote = ({
 
                             {/* 功能按鈕 */}
                             <div className={`bg-${detailDate.tag_color}-50 pl-8 pr-1 py-1 flex`}>
-                                <div className={`px-2 py-1 mr-2 rounded cursor-pointer text-${detailDate.tag_color}-600 hover:bg-${detailDate.tag_color}-100`}>
+                                <div
+                                    className={`px-2 py-1 mr-2 rounded cursor-pointer text-${detailDate.tag_color}-600 hover:bg-${detailDate.tag_color}-100`}
+                                    onClick={onSave}
+                                >
                                     <Icon className='mr-2' icon={['far', 'save']} />
-                                    <span>儲存</span>
+                                    <span><FormattedMessage id='calendar.save' /></span>
                                 </div>
 
-                                <div className={`px-2 py-1 mr-2 rounded cursor-pointer text-${detailDate.tag_color}-600 hover:bg-${detailDate.tag_color}-100 flex flex-nowrap`}>
+                                <div
+                                    className={`px-2 py-1 mr-2 rounded cursor-pointer text-${detailDate.tag_color}-600 hover:bg-${detailDate.tag_color}-100 flex flex-nowrap`}
+                                    onClick={onDelete}
+                                >
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-full w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                     </svg>
-                                    <span>捨棄</span>
+                                    <span><FormattedMessage id='calendar.delete' /></span>
                                 </div>
 
                                 <div
@@ -234,58 +267,56 @@ const EditorNote = ({
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                 </svg>
                                             </div>
-                                            <div className='mt-2 flex-1'>
-                                                <div className='flex mb-4'>
-                                                    <div className='relative flex flex-1' style={{ minWidth: '140px' }}>
-                                                        <input
-                                                            className='pl-2 outline-none text-lg border-b border-gray-300 truncate flex-1 text-gray-600'
-                                                            placeholder=''
-                                                            type='date'
-                                                            value={parseToDateString(detailDate.btime)}
-                                                            onChange={e => setDate(e, detailDate.btime, 'btime')}
-                                                            // onBlur={checkDate()}
-                                                        />
-                                                    </div>
-                                                    <div className='pl-3 flex justify-between' style={{ minWidth: '96px' }}>
-                                                        <div className='flex border-b border-gray-300 pl-2'>
-                                                            <input
-                                                                className='outline-none text-gray-600'
-                                                                style={{}}
-                                                                value={detailDate.parseBtime}
-                                                                onChange={e => setDetailDate({ ...detailDate, parseBtime: e.target.value })}
-                                                                onBlur={() => setDetailDate({ ...detailDate, parseBtime: intl.formatTime(detailDate.btime) })}
-                                                                // defaultValue={'下午 01:00'}
+                                            <div className='mt-2 flex flex-1'>
+                                                {isAllDay ?
+                                                    <div className='flex-1'>
+                                                        <div className='datetimepicker-box flex mb-4'>
+                                                            <Datetimepicker
+                                                                name="btime"
+                                                                value={parseToISOString(detailDate.btime)}
+                                                                onChange={value => setDetailDate({ ...detailDate, btime: value })}
+                                                                notime
                                                             />
-                                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-300 cursor-pointer" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                                            </svg>
                                                         </div>
                                                     </div>
-                                                </div>
+                                                    :
+                                                    <div className='flex-1'>
+                                                        <div className='datetimepicker-box flex mb-4'>
+                                                            <Datetimepicker
+                                                                name="btime"
+                                                                value={parseToISOString(detailDate.btime)}
+                                                                onChange={value => setDetailDate({ ...detailDate, btime: value })}
+                                                            />
+                                                        </div>
 
-                                                <div className='flex'>
-                                                    <div className='relative flex flex-1' style={{ minWidth: '140px' }}>
-                                                        <input
-                                                            className='pl-2 outline-none text-lg border-b border-gray-300 truncate flex-1 text-gray-600'
-                                                            placeholder=''
-                                                            type='date'
-                                                            value={parseToDateString(detailDate.etime)}
-                                                            onChange={e => setDate(e, detailDate.etime, 'etime')}
-                                                            min={parseToDateString(detailDate.btime)}
-                                                        />
-                                                    </div>
-                                                    <div className='pl-3 flex justify-between' style={{ minWidth: '96px' }}>
-                                                        <div className='flex border-b border-gray-300 pl-2'>
-                                                            <input
-                                                                className='outline-none text-gray-600'
-                                                                style={{}}
-                                                                value={detailDate.parseEtime}
-                                                                // defaultValue={'下午 01:00'}
+                                                        <div className='datetimepicker-box flex' onBlur={() => setDetailDate({ ...detailDate, etime: detailDate.btime })}>
+                                                            <Datetimepicker
+                                                                name="etime"
+                                                                value={parseToISOString(detailDate.etime)}
+                                                                min={parseToISOString(detailDate.btime)}
+                                                                onChange={value => setDetailDate({ ...detailDate, etime: value })}
                                                             />
-                                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-300 cursor-pointer" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                                            </svg>
                                                         </div>
+                                                    </div>
+                                                }
+
+                                                <div className='p-1'>
+                                                    <div className='flex flex-nowrap p-1'>
+                                                        <span className='flex flex-shrink-0 mr-2'>
+                                                            <FormattedMessage id='calendar.allday' />
+                                                        </span>
+                                                        <button
+                                                            type="button"
+                                                            className={`relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${isAllDay ? 'bg-blue-500' : 'bg-gray-200'}`}
+                                                            role="switch"
+                                                            aria-checked="false"
+                                                            onClick={() => setIsAllDay(!isAllDay)}
+                                                        >
+                                                            <span
+                                                                aria-hidden="true"
+                                                                className={`translate-x-0 pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200 ${isAllDay ? 'translate-x-5' : 'translate-x-0'}`}
+                                                            />
+                                                        </button>
                                                     </div>
                                                 </div>
 

@@ -79,7 +79,7 @@ const CalendarD = (props) => {
                         {moreDayArr.length ? null :
                             <>
                                 <div className='whitespace-nowrap overflow-hidden' style={{ marginRight: '8px', flex: '0 0 auto' }}>{renderFullDate({ data: data, noYear: true, noMonth: true, className: 'text-2xl' })}</div>
-                                <div className='' style={{ marginBottom: '2px' }}>{weeks[index].week_name}</div>
+                                <div className='hidden lg:block' style={{ marginBottom: '2px' }}>{weeks[index].week_name}</div>
                             </>
                         }
                     </div>
