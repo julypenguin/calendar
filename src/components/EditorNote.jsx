@@ -13,17 +13,13 @@ const EditorNote = ({
     calendarData, // 整個行程陣列資料
     setCalendarData,
     setSelectedDate,
-    intl,
 }) => {
 
     const [detailDate, setDetailDate] = useState({ tag_color: 'blue' })
-    const [btime, etime] = useState('')
-    const [category, setCategory] = useState('blue')
     const [isAllDay, setIsAllDay] = useState(false)
     const [showCategory, setShowCategory] = useState(false)
 
     const categoryRef = useRef()
-    console.log('detailDate', detailDate)
     const categoryList = [
         {
             name: 'red',
@@ -78,30 +74,19 @@ const EditorNote = ({
     }
 
     const onSave = () => {
-        const newCalendarData = calendarData.filter((data, index) => data.sid !== detailDate.sid)
-        newCalendarData.push(detailDate)
+        if ((new Date(detailDate.etime) - new Date(detailDate.btime)) < 0) {
+            detailDate.etime = detailDate.btime
+        } 
+
+        const addLength = calendarData.filter((data, index) => data.sid === detailDate.sid).length
+        const newCalendarData = calendarData.map((data, index) => {
+            if (data.sid === detailDate.sid) return detailDate
+            return data
+        })
+        if (!addLength) newCalendarData.push(detailDate)
         setCalendarData(newCalendarData)
         onClose()
     }
-
-    // dateType=btime or etime
-    const setDate = (e, oriData, dateType) => {
-        let newDate = new Date(e.target.value)
-        if (!newDate.getDate()) {
-            newDate = new Date(oriData)
-        }
-
-        setDetailDate({
-            ...detailDate,
-            [dateType]: parseToDateString(newDate),
-        })
-    }
-
-    // const checkDate = () => {
-    //     const btime = new Date(detailDate.btime)
-    //     const etime = new Date(detailDate.etime)
-    //     if (btime > etime) setDetailDate({ ...detailDate, etime: parseToDateString(btime) })
-    // }
 
     const detectPosition = (ref, rightAndBottom) => {
         if (!ref) return {}
@@ -133,17 +118,10 @@ const EditorNote = ({
         )
     }
 
-    const parseTime = (dateTime) => {
-        if (!dateTime) return ''
-        return intl.formatTime(dateTime)
-    }
-
     useEffect(() => {
         let tag_color = 'blue'
-        const parseBtime = parseTime(defaultValue.btime)
-        const parseEtime = parseTime(defaultValue.etime)
         if (defaultValue.tag_color) tag_color = defaultValue.tag_color
-        setDetailDate({ ...defaultValue, tag_color, parseBtime, parseEtime })
+        setDetailDate({ ...defaultValue, tag_color })
     }, [defaultValue])
 
     return (
@@ -181,7 +159,7 @@ const EditorNote = ({
                             </div>
 
                             {/* 功能按鈕 */}
-                            <div className={`bg-${detailDate.tag_color}-50 pl-8 pr-1 py-1 flex`}>
+                            <div className={`bg-${detailDate.tag_color}-50 pl-8 pr-1 py-1 flex select-none`}>
                                 <div
                                     className={`px-2 py-1 mr-2 rounded cursor-pointer text-${detailDate.tag_color}-600 hover:bg-${detailDate.tag_color}-100`}
                                     onClick={onSave}
@@ -250,12 +228,12 @@ const EditorNote = ({
 
                                         </div>
                                         <div className='flex-grow flex'>
-                                            <input
+                                            {show && <input
                                                 className={`text-${detailDate.tag_color}-600 mr-2 pb-1 pl-2 flex-grow text-2xl font-semibold border-b border-gray-300 focus:outline-none`}
                                                 placeholder='新增標題'
                                                 value={detailDate.title}
                                                 onChange={e => setDetailDate({ ...detailDate, title: e.target.value })}
-                                            />
+                                            />}
                                         </div>
                                     </div>
 
@@ -355,4 +333,4 @@ const EditorNote = ({
     );
 };
 
-export default injectIntl(EditorNote);
+export default EditorNote;

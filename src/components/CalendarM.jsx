@@ -28,6 +28,7 @@ const CalendarM = (props) => {
     const [newCalendarData, setNewCalendarData] = useState([])
     const [selectedDate, setSelectedDate] = useState({})
     const [showEditor, setShowEditor] = useState(false)
+    const [showSchedule, setShowSchedule] = useState(false)
 
     const fullDate = getFullDate(newShowData)
 
@@ -41,15 +42,20 @@ const CalendarM = (props) => {
         if (typeof setOtherData === 'function') setOtherData(newDate)
         if (typeof onClose === 'function') onClose()
         if (canEdit) {
-            if (selectedDate && (selectedDate.btime - newDate) === 0) setShowEditor(true)
-            else setSelectedDate({
-                sid: String(Date.now()),
-                title: "",
-                btime: newDate,
-                etime: addMinutes(60, newDate),
-                desc: "",
-                tag_color: "blue",
-            })
+            if (selectedDate && (selectedDate.btime - newDate) === 0) {
+                setShowEditor(true)
+            } else {
+                setShowSchedule(true)
+                setSelectedDate({
+                    sid: String(Date.now()),
+                    title: "",
+                    btime: newDate,
+                    etime: addMinutes(60, newDate),
+                    desc: "",
+                    tag_color: "blue",
+                })
+            }
+
         }
     }
 
@@ -191,62 +197,63 @@ const CalendarM = (props) => {
     return (
         <>
             <div className="relative flex flex-1 w-full h-full">
-                {/* 大月曆(月) */}
-                <div className="inset-0 absolute flex flex-col">
-                    {/* 週 */}
-                    <div className='flex flex-1 select-none'>
-                        {weeks.map((week, index) => (
-                            <div key={index} className={`relative flex flex-1 text-xs items-end mb-4 ${!center ? 'px-4 h-8' : 'justify-center items-center h-full'}`}>
-                                {abbr ?
-                                    <div className={`text-gray-500 ${!textSm ? '' : 'text-xs'}`}>{week.abb_name}</div>
-                                    :
-                                    <>
-                                        <div className="text-gray-500 hidden md:block">{week.name}</div>
-                                        <div className="text-gray-500 md:hidden">{week.abb_name}</div>
-                                    </>
-                                }
-                            </div>
-                        ))}
-                    </div>
-                    {/* 日 */}
-                    <div
-                        className={`relative height-full flex-row overflow-visible bg-gray-100`}
-                        style={{ flex: '1 1 100%' }}
-                    >
-                        {renderDate(showData).map((week, index, datas) => (
-                            week.map((data, i) => (
-                                <div
-                                    key={i}
-                                    className={`whitespace-nowrap text-sm font-medium text-gray-900 absolute cursor-pointer ${Number(data.date) === Number(fullDate.d) && Number(data.month) === Number(fullDate.m) && Number(data.year) === Number(fullDate.y) ? 'bg-blue-100 opacity-70' : 'bg-white'} ${!selector ? '' : 'hover:bg-gray-100'}
+                <div className="relative flex flex-1 w-full h-full">
+                    {/* 大月曆(月) */}
+                    <div className="inset-0 absolute flex flex-col">
+                        {/* 週 */}
+                        <div className='flex flex-1 select-none'>
+                            {weeks.map((week, index) => (
+                                <div key={index} className={`relative flex flex-1 text-xs items-end mb-4 ${!center ? 'px-4 h-8' : 'justify-center items-center h-full'}`}>
+                                    {abbr ?
+                                        <div className={`text-gray-500 ${!textSm ? '' : 'text-xs'}`}>{week.abb_name}</div>
+                                        :
+                                        <>
+                                            <div className="text-gray-500 hidden md:block">{week.name}</div>
+                                            <div className="text-gray-500 md:hidden">{week.abb_name}</div>
+                                        </>
+                                    }
+                                </div>
+                            ))}
+                        </div>
+                        {/* 日 */}
+                        <div
+                            className={`relative height-full flex-row overflow-visible bg-gray-100`}
+                            style={{ flex: '1 1 100%' }}
+                        >
+                            {renderDate(showData).map((week, index, datas) => (
+                                week.map((data, i) => (
+                                    <div
+                                        key={i}
+                                        className={`whitespace-nowrap text-sm font-medium text-gray-900 absolute cursor-pointer ${Number(data.date) === Number(fullDate.d) && Number(data.month) === Number(fullDate.m) && Number(data.year) === Number(fullDate.y) ? 'bg-blue-100 opacity-70' : 'bg-white'} ${!selector ? '' : 'hover:bg-gray-100'}
                                         ${!selector ?
-                                            data.isToday ? 'calendar-today border-t'
-                                                : data.isOverdue ? 'bg-gray-100 border-t' : 'bg-white border-t'
-                                            : ''}`}
-                                    style={{
-                                        inset: `
+                                                data.isToday ? 'calendar-today border-t'
+                                                    : data.isOverdue ? 'bg-gray-100 border-t' : 'bg-white border-t'
+                                                : ''}`}
+                                        style={{
+                                            inset: `
                                             ${index * (100 / datas.length).toFixed(4)}% 
                                             ${(100 / 7 * (6 - i)).toFixed(4)}% 
                                             ${100 - (100 / datas.length) * (index + 1)}% 
                                             ${(100 / 7 * (i)).toFixed(4)}%`
-                                    }}
-                                    onClick={() => handleSetDate(data)}
-                                >
-                                    <div className={`py-2 flex flex-col w-full h-full overflow-hidden ${selector && data.isToday ? 'rounded-full bg-blue-600' : ''} `}>
-                                        <div className={`px-4 top w-full select-none ${!center ? '' : 'flex justify-center items-center h-full'}`}>
-                                            {data.formateDate ?
-                                                abbr ?
-                                                    <div className={`${!textSm ? '' : 'text-xs'} ${selector && data.isToday ? 'text-white' : selector && !data.main ? 'text-gray-300' : 'text-gray-500'}`}>{data.date}</div>
-                                                    :
-                                                    <>
-                                                        <div className={`hidden md:block ${!textSm ? '' : 'text-xs'} ${selector && data.isToday ? 'text-white' : selector && !data.main ? 'text-gray-300' : 'text-gray-500'}`}>{data.formateDate}</div>
-                                                        <div className={`md:hidden ${!textSm ? '' : 'text-xs'} ${selector && data.isToday ? 'text-white' : selector && !data.main ? 'text-gray-300' : 'text-gray-500'}`}>{data.date}</div>
-                                                    </>
+                                        }}
+                                        onClick={() => handleSetDate(data)}
+                                    >
+                                        <div className={`py-2 flex flex-col w-full h-full overflow-hidden ${selector && data.isToday ? 'rounded-full bg-blue-600' : ''} `}>
+                                            <div className={`px-4 top w-full select-none ${!center ? '' : 'flex justify-center items-center h-full'}`}>
+                                                {data.formateDate ?
+                                                    abbr ?
+                                                        <div className={`${!textSm ? '' : 'text-xs'} ${selector && data.isToday ? 'text-white' : selector && !data.main ? 'text-gray-300' : 'text-gray-500'}`}>{data.date}</div>
+                                                        :
+                                                        <>
+                                                            <div className={`hidden md:block ${!textSm ? '' : 'text-xs'} ${selector && data.isToday ? 'text-white' : selector && !data.main ? 'text-gray-300' : 'text-gray-500'}`}>{data.formateDate}</div>
+                                                            <div className={`md:hidden ${!textSm ? '' : 'text-xs'} ${selector && data.isToday ? 'text-white' : selector && !data.main ? 'text-gray-300' : 'text-gray-500'}`}>{data.date}</div>
+                                                        </>
 
-                                                :
-                                                <span className={`${!textSm ? '' : 'text-xs'} ${selector && data.isToday ? 'text-white' : selector && !data.main ? 'text-gray-300' : 'text-gray-500'}`}>{data.date}</span>
-                                            }
-                                        </div>
-                                        {/* {!center &&
+                                                    :
+                                                    <span className={`${!textSm ? '' : 'text-xs'} ${selector && data.isToday ? 'text-white' : selector && !data.main ? 'text-gray-300' : 'text-gray-500'}`}>{data.date}</span>
+                                                }
+                                            </div>
+                                            {/* {!center &&
                                             data.date === 19 && <div className="px-2 bottom flex-grow h-30 py-1 w-full cursor-pointer">
                                                 <div
                                                     className="event text-blue-600 rounded p-1 text-sm mb-1 hover:bg-blue-100 leading-6"
@@ -255,17 +262,24 @@ const CalendarM = (props) => {
                                                 </div>
                                             </div>
                                         } */}
+                                        </div>
                                     </div>
-                                </div>
-                            ))
-                        ))}
-                        {renderNotes()}
+                                ))
+                            ))}
+                            {renderNotes()}
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <Schedule
-            />
+                {!showSchedule ? null : <Schedule
+                    calendarData={newCalendarData}
+                    showData={newShowData}
+                    handleClose={() => setShowSchedule(false)}
+                    showEditor={showEditor}
+                    setShowEditor={setShowEditor}
+                    setSelectedDate={setSelectedDate}
+                />}
+            </div>
 
             <EditorNote
                 show={showEditor}
