@@ -32,6 +32,14 @@ const CalendarD = (props) => {
         return elm.offsetTop + calcParentsHeight(elm.offsetParent)
     }
 
+    const calcParentsWidth = (elm) => {
+        if (!elm) return 0
+        const elmWidth = elm.clientWidth
+        const newElmWidth = calcParentsWidth(elm.offsetParent)
+
+        return elmWidth > newElmWidth ? elmWidth : newElmWidth        
+    }
+
     const handleSetDate = (e) => {
         const showDaysBox = showDaysRef.current
         const dayArr = getCycleDays({ date: showData, dayCount: days, isWeek })
@@ -46,16 +54,17 @@ const CalendarD = (props) => {
         const viewHeight = showDaysBox.clientHeight // 畫面高度
         const inherentHeight = calcParentsHeight(showDaysBox) // 計算上方佔了多少高度
         const halfHourHeight = fullHeight / 48
-        const clickDate = clickPositionX / (fullWidth / days)
+        const fullScreenWidth = calcParentsWidth(showDaysBox) // 最上層的寬度
+        const leftWidth = fullScreenWidth - fullWidth // showDaysBox 左邊空了多少寬度出來
+        const clickDate = Math.floor((clickPositionX - leftWidth) / (fullWidth / days)) 
         const time = Math.floor((clickPositionY - inherentHeight) / halfHourHeight) / 2
 
 
         console.log('clickPositionX', clickPositionX)
         console.log('fullWidth', fullWidth)
-        console.log('days', days)
-        console.log('inherentHeight', inherentHeight)
-
-        console.log('time', time)
+        console.log('fullScreenWidth', fullScreenWidth)
+        console.log('leftWidth', leftWidth)
+        console.log('clickDate', clickDate)
         // handleSetDataAndShowEditor({
         //     sid: String(Date.now()),
         //     title: "",
