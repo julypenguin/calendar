@@ -32,6 +32,7 @@
     "am": "上午",
     "pm": "下午",
     "allday": "全天",
+    "no_plans_today": "今天沒有任何計畫",
     "category": {
         "red": "紅色",
         "pink": "粉色",

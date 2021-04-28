@@ -90,7 +90,7 @@ const Schedule = (props) => {
                                 {weeks[new Date(showData).getDay()] && weeks[new Date(showData).getDay()]['week_name']}
                                 <span className='mx-1'>)</span>
                             </div>
-                            <div 
+                            <div
                                 className='p-2 mr-2 flex items-center cursor-pointer hover:bg-gray-100'
                                 onClick={onClose}
                             >
@@ -100,32 +100,41 @@ const Schedule = (props) => {
                             </div>
                         </div>
                         <div
-                            className='overflow-x-hidden overscroll-y-auto'
+                            className='overflow-x-hidden overscroll-y-auto h-full'
                         >
-                            <div className='flex flex-col min-h-0 flex-auto h-full'>
+                            {newCalendarData && !newCalendarData.length ?
 
-                                {newCalendarData.map((schedule, index) => (
-                                    <div 
-                                        key={index} 
-                                        className='px-4 py-2 flex cursor-pointer hover:bg-gray-100'
-                                        onClick={() => handleSetDataAndShowEditor(schedule)}
-                                    >
-                                        <div className={`border-l-4 mr-2 rounded-sm ${schedule.tag_color ? `border-${schedule.tag_color}-500` : 'border-blue-500'}`} />
-                                        <div className='flex flex-col py-2 w-full'>
-                                            <div className='flex mb-1'>
-                                                <div className='text-xs truncate mr-1' style={{ width: '58px' }}>
-                                                    <FormattedTime value={schedule.btime} />
+                                <div className='flex flex-col flex-auto h-full justify-center items-center text-lg text-bold'>
+                                    <FormattedMessage id='calendar.no_plans_today' />
+                                </div>
+
+                                :
+
+                                <div className='flex flex-col min-h-0 flex-auto h-full'>
+
+                                    {newCalendarData.map((schedule, index) => (
+                                        <div
+                                            key={index}
+                                            className='px-4 py-2 flex cursor-pointer hover:bg-gray-100'
+                                            onClick={() => handleSetDataAndShowEditor(schedule)}
+                                        >
+                                            <div className={`border-l-4 mr-2 rounded-sm ${schedule.tag_color ? `border-${schedule.tag_color}-500` : 'border-blue-500'}`} />
+                                            <div className='flex flex-col py-2 w-full'>
+                                                <div className='flex mb-1'>
+                                                    <div className='text-xs truncate mr-1' style={{ width: '58px' }}>
+                                                        <FormattedTime value={schedule.btime} />
+                                                    </div>
+                                                    <div className='truncate flex-1'>
+                                                        <div className='text-xs truncate pr-2'>{schedule.title}</div>
+                                                    </div>
                                                 </div>
-                                                <div className='truncate flex-1'>
-                                                    <div className='text-xs truncate pr-2'>{schedule.title}</div>
-                                                </div>
+                                                <div className='text-xs'>{calcDays(schedule.btime, schedule.etime)}</div>
                                             </div>
-                                            <div className='text-xs'>{calcDays(schedule.btime, schedule.etime)}</div>
                                         </div>
-                                    </div>
-                                ))}
+                                    ))}
 
-                            </div>
+                                </div>
+                            }
                         </div>
                     </div>
                 </div>

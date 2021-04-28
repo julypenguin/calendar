@@ -186,7 +186,7 @@ const CalendarM = (props) => {
             const newData = calendarData && calendarData.data.filter((date) => filterDate({ ...props, ...date, dayCount: 30 })) || []
             setNewCalendarData(newData)
         }
-    }, [calendarData])
+    }, [calendarData, showData])
 
     useEffect(() => {
         if (showData) {
@@ -285,9 +285,9 @@ const CalendarM = (props) => {
                 show={showEditor}
                 handleClose={() => setShowEditor(false)}
                 defaultValue={selectedDate}
+                setDefaultValue={setSelectedDate}
                 calendarData={newCalendarData}
                 setCalendarData={setNewCalendarData}
-                setSelectedDate={setSelectedDate}
             />
 
         </>

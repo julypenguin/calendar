@@ -4,17 +4,67 @@ import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome'
 import { renderFullDate } from './formateDate'
 import { getFullDate, addDays, getCycleDays, filterDate, dateDiff } from 'lib/datetime'
 import { weeks } from './formateDate'
+import EditorNote from './EditorNote'
 
 const CalendarD = (props) => {
     const { showData, isWeek, cycle, calendarData } = props
+
     const [days, setDays] = useState(1)
+    const [selectedDate, setSelectedDate] = useState({})
+    const [showEditor, setShowEditor] = useState(false)
+    const [newCalendarData, setNewCalendarData] = useState([])
 
     const timeRef = useRef()
+    const showDaysRef = useRef()
 
     const hourArr = new Array(23).fill('')
     const hourLineArr = new Array(47).fill('')
 
-    const newCalendarData = calendarData && calendarData.data.filter((date) => filterDate({ ...props, ...date, dayCount: days })) || []
+    // const newCalendarData = calendarData && calendarData.data.filter((date) => filterDate({ ...props, ...date, dayCount: days })) || []
+
+    const handleSetDataAndShowEditor = (data) => {
+        setSelectedDate(data)
+        setShowEditor(true)
+    }
+
+    const calcParentsHeight = (elm) => {
+        if (!elm) return 0
+        return elm.offsetTop + calcParentsHeight(elm.offsetParent)
+    }
+
+    const handleSetDate = (e) => {
+        const showDaysBox = showDaysRef.current
+        const dayArr = getCycleDays({ date: showData, dayCount: days, isWeek })
+        // console.log('e', e)
+        // console.log('showDaysBox', showDaysBox.getBoundingClientRect())
+        console.log('dayArr', dayArr)
+        const clickPositionX = e.clientX
+        const clickPositionY = e.clientY
+
+        const fullWidth = showDaysBox.clientWidth // 全寬
+        const fullHeight = showDaysBox.scrollHeight // 全高
+        const viewHeight = showDaysBox.clientHeight // 畫面高度
+        const inherentHeight = calcParentsHeight(showDaysBox) // 計算上方佔了多少高度
+        const halfHourHeight = fullHeight / 48
+        const clickDate = clickPositionX / (fullWidth / days)
+        const time = Math.floor((clickPositionY - inherentHeight) / halfHourHeight) / 2
+
+
+        console.log('clickPositionX', clickPositionX)
+        console.log('fullWidth', fullWidth)
+        console.log('days', days)
+        console.log('inherentHeight', inherentHeight)
+
+        console.log('time', time)
+        // handleSetDataAndShowEditor({
+        //     sid: String(Date.now()),
+        //     title: "",
+        //     btime: newDate,
+        //     etime: addMinutes(60, newDate),
+        //     desc: "",
+        //     tag_color: "blue",
+        // })
+    }
 
     const calcLeftAndRight = (data, direction) => {
         if (!data) return 0
@@ -39,7 +89,7 @@ const CalendarD = (props) => {
 
     const renderTime = (index) => {
         const time = (index % 12) + 1
-        const twelveHourClock = (index / 12) >= 1 ?  'pm' : 'am'
+        const twelveHourClock = (index / 12) >= 1 ? 'pm' : 'am'
         return (
             <>
                 <span className='mr-1 text-xs flex-shrink-0'><FormattedMessage id={`calendar.${twelveHourClock}`} /></span>
@@ -51,7 +101,11 @@ const CalendarD = (props) => {
     const renderTitleNote = () => {
         const moreDayArr = newCalendarData.filter((d) => dateDiff({ ...d })) || []
         return moreDayArr.map((data, index, arr) => (
-            <div key={index} style={{ height: `${(arr.length * 30) + 8}px` }}>
+            <div
+                key={index}
+                style={{ height: `${(arr.length * 30) + 8}px` }}
+                onClick={() => handleSetDataAndShowEditor(data)}
+            >
                 <div draggable='true'>
                     <div
                         className={`absolute cursor-pointer px-2 flex items-center border-l-4 opacity-70 ${data.tag_color ? `bg-${data.tag_color}-200 border-${data.tag_color}-600 hover:bg-${data.tag_color}-300 text-${data.tag_color}-800` : 'bg-blue-200 border-blue-600 hover:bg-blue-300 text-blue-800'}`}
@@ -89,7 +143,8 @@ const CalendarD = (props) => {
         })
     }
 
-    const renderNote = ({ btime, etime, title, tag_color, today, index }) => {
+    const renderNote = (data) => {
+        const { btime, etime, title, tag_color, today, index } = data
         const tomorrow = addDays(1, today)
 
         if (!new Date(today).getDate()) return
@@ -108,6 +163,10 @@ const CalendarD = (props) => {
                 key={index}
                 className={`absolute cursor-pointer opacity-70 box-border border-l-4 w-full ${tag_color ? `bg-${tag_color}-200 border-${tag_color}-600 hover:bg-${tag_color}-300 text-${tag_color}-800` : 'bg-blue-200 border-blue-600 hover:bg-blue-300 text-blue-800'}`}
                 style={{ inset: `${secPercent * minB}% 0% ${100 - (secPercent * minE)}%` }}
+                onClick={e => {
+                    e.stopPropagation()
+                    handleSetDataAndShowEditor(data)
+                }}
             >
                 <div className='p-1'>
                     {title}
@@ -160,7 +219,11 @@ const CalendarD = (props) => {
         const onlyOneDayArr = newCalendarData.filter((d) => !dateDiff({ ...d }))
         const moreDayArr = newCalendarData.filter((d) => dateDiff({ ...d }))
         return dayArr.map((data, index) => (
-            <div key={index} className='border-l border-r relative border-box flex-shrink-0' style={{ minWidth: '80px', flexBasis: `${(100 / days).toFixed(4)}%` }}>
+            <div
+                key={index}
+                className='border-l border-r relative border-box flex-shrink-0'
+                style={{ minWidth: '80px', flexBasis: `${(100 / days).toFixed(4)}%` }}
+            >
 
                 {moreDayArr.map((dataDetail, index) => renderColumnNote({ ...dataDetail, today: data, index }))}
 
@@ -184,6 +247,13 @@ const CalendarD = (props) => {
         if (cycle === 77) setDays(7)
         else if (cycle > 0 && cycle < 8) setDays(cycle)
     }, [cycle])
+
+    useEffect(() => {
+        if (calendarData) {
+            const newData = calendarData && calendarData.data.filter((date) => filterDate({ ...props, ...date, dayCount: days })) || []
+            setNewCalendarData(newData)
+        }
+    }, [calendarData, days, showData])
 
     return (
         <div className="relative flex flex-1 w-full h-full">
@@ -224,9 +294,13 @@ const CalendarD = (props) => {
                         className='relative flex flex-1'
                         style={{ paddingRight: '18px', paddingLeft: '2px', marginLeft: '-2px', overflow: 'overlay' }}
                         onScroll={onScroll}
+                        ref={showDaysRef}
+                        onClick={e => handleSetDate(e)}
                     >
                         <div className='flex flex-1' style={{ height: '1440px' }}>
-                            <div className='relative flex flex-1 w-full'>
+                            <div
+                                className='relative flex flex-1 w-full'
+                            >
                                 {hourLineArr.map((line, index) => (
                                     <div key={index} className={`absolute left-0 right-0 border-t ${index % 2 === 1 ? 'border-solid' : 'border-dashed'}`} style={{ top: `${(100 / 48) * (index + 1)}%` }}></div>
                                 ))}
@@ -238,6 +312,15 @@ const CalendarD = (props) => {
                     </div>
                 </div>
             </div>
+
+            <EditorNote
+                show={showEditor}
+                handleClose={() => setShowEditor(false)}
+                defaultValue={selectedDate}
+                setDefaultValue={setSelectedDate}
+                calendarData={newCalendarData}
+                setCalendarData={setNewCalendarData}
+            />
         </div>
     );
 };

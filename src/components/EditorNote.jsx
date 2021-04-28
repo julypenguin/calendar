@@ -10,9 +10,9 @@ const EditorNote = ({
     show,
     handleClose,
     defaultValue, // detail 的資料
+    setDefaultValue, // 重置 default
     calendarData, // 整個行程陣列資料
-    setCalendarData,
-    setSelectedDate,
+    setCalendarData, // 將資料傳出去
 }) => {
 
     const [detailDate, setDetailDate] = useState({ tag_color: 'blue' })
@@ -57,7 +57,7 @@ const EditorNote = ({
 
     const onClose = () => {
         if (typeof handleClose === 'function') handleClose()
-        setSelectedDate({
+        setDefaultValue({
             sid: String(Date.now()),
             title: "",
             btime: defaultValue.btime,

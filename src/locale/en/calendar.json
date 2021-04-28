@@ -32,6 +32,7 @@
     "am": "am",
     "pm": "pm",
     "allday": "All Day",
+    "no_plans_today": "No Plans Today",
     "category": {
         "red": "red",
         "pink": "pink",
