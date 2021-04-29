@@ -28,7 +28,7 @@ const CalendarM = (props) => {
     const [newCalendarData, setNewCalendarData] = useState([])
     const [selectedDate, setSelectedDate] = useState({})
     const [showEditor, setShowEditor] = useState(false)
-    const [showSchedule, setShowSchedule] = useState(false)
+    const [showSchedule, setShowSchedule] = useState(true)
 
     const cellRef = useRef()
 
