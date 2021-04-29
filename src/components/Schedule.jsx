@@ -32,7 +32,10 @@ const Schedule = (props) => {
     }
 
     // 計算開始到結束共有多久
-    const calcDays = (btime, etime) => {
+    const calcDays = (btime, etime, allDay) => {
+        if (allDay) return (
+            <FormattedMessage id='calendar.allday' />
+        )
         const dateB = new Date(btime)
         const dateD = new Date(etime)
         if (!dateB.getDate() || !dateD.getDate()) return 0
@@ -91,12 +94,33 @@ const Schedule = (props) => {
                                 <span className='mx-1'>)</span>
                             </div>
                             <div
-                                className='p-2 mr-2 flex items-center cursor-pointer hover:bg-gray-100'
-                                onClick={onClose}
+                                className='flex items-center'
                             >
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fillRule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clipRule="evenodd" />
-                                </svg>
+                                <span
+                                    // className='flex flex-shrink-0 text-blue-600 border border-blue-600 rounded-lg px-2 mr-2 bg-blue-50 cursor-pointer hover:bg-blue-100'
+                                    className='flex flex-shrink-0 text-white bg-blue-600 rounded mr-2 cursor-pointer hover:bg-blue-700'
+                                    onClick={() => handleSetDataAndShowEditor({
+                                        sid: String(Date.now()),
+                                        title: "",
+                                        btime: showData,
+                                        etime: addMinutes(60, showData),
+                                        desc: "",
+                                        tag_color: "blue",
+                                    })}
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                    </svg>
+                                    {/* <span>新增</span> */}
+                                </span>
+                                <span
+                                    className='p-2 mr-2 flex items-center cursor-pointer hover:bg-gray-100'
+                                    onClick={onClose}
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fillRule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clipRule="evenodd" />
+                                    </svg>
+                                </span>
                             </div>
                         </div>
                         <div
@@ -128,7 +152,7 @@ const Schedule = (props) => {
                                                         <div className='text-xs truncate pr-2'>{schedule.title}</div>
                                                     </div>
                                                 </div>
-                                                <div className='text-xs'>{calcDays(schedule.btime, schedule.etime)}</div>
+                                                <div className='text-xs'>{calcDays(schedule.btime, schedule.etime, schedule.allDay)}</div>
                                             </div>
                                         </div>
                                     ))}

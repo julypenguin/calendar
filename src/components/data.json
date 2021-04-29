@@ -6,7 +6,8 @@
             "btime": "2021-04-17T17:30:00.000Z",
             "etime": "2021-04-17T19:30:00.000Z",
             "desc": "測試測試",
-            "tag_color": ""
+            "tag_color": "green",
+            "allDay": true
         },
         {
             "sid": "2",
@@ -14,7 +15,8 @@
             "btime": "2021-04-18T17:30:00.000Z",
             "etime": "2021-04-18T18:30:00.000Z",
             "desc": "測試測試",
-            "tag_color": "green"
+            "tag_color": "green",
+            "allDay": false
         },
         {
             "sid": "3",
@@ -22,7 +24,8 @@
             "btime": "2021-04-20T17:30:00.000Z",
             "etime": "2021-04-22T19:30:00.000Z",
             "desc": "測試測試",
-            "tag_color": "yellow"
+            "tag_color": "yellow",
+            "allDay": false
         },
         {
             "sid": "4",
@@ -30,7 +33,8 @@
             "btime": "2021-04-11T17:30:00.000Z",
             "etime": "2021-04-28T19:30:00.000Z",
             "desc": "測試測試",
-            "tag_color": "red"
+            "tag_color": "red",
+            "allDay": false
         },
         {
             "sid": "5",
@@ -38,7 +42,8 @@
             "btime": "2021-04-02T17:30:00.000Z",
             "etime": "2021-04-02T19:30:00.000Z",
             "desc": "測試測試",
-            "tag_color": "gray"
+            "tag_color": "gray",
+            "allDay": false
         },
         {
             "sid": "6",
@@ -46,7 +51,8 @@
             "btime": "2021-04-05T17:30:00.000Z",
             "etime": "2021-04-08T19:30:00.000Z",
             "desc": "測試測試",
-            "tag_color": "indigo"
+            "tag_color": "indigo",
+            "allDay": false
         },
         {
             "sid": "7",
@@ -54,7 +60,8 @@
             "btime": "2021-03-28T17:30:00.000Z",
             "etime": "2021-03-28T19:30:00.000Z",
             "desc": "測試測試",
-            "tag_color": "purple"
+            "tag_color": "purple",
+            "allDay": false
         },
         {
             "sid": "8",
@@ -62,7 +69,8 @@
             "btime": "2021-03-28T20:30:00.000Z",
             "etime": "2021-03-28T23:30:00.000Z",
             "desc": "測試測試",
-            "tag_color": "pink"
+            "tag_color": "pink",
+            "allDay": false
         },
         {
             "sid": "9",
@@ -70,7 +78,8 @@
             "btime": "2021-03-12T20:30:00.000Z",
             "etime": "2021-03-12T23:30:00.000Z",
             "desc": "測試測試",
-            "tag_color": "pink"
+            "tag_color": "pink",
+            "allDay": false
         },
         {
             "sid": "10",
@@ -78,7 +87,8 @@
             "btime": "2021-04-18T17:30:00.000Z",
             "etime": "2021-04-18T18:30:00.000Z",
             "desc": "測試測試",
-            "tag_color": "green"
+            "tag_color": "green",
+            "allDay": false
         },
         {
             "sid": "11",
@@ -86,7 +96,8 @@
             "btime": "2021-04-18T17:30:00.000Z",
             "etime": "2021-04-18T18:30:00.000Z",
             "desc": "測試測試",
-            "tag_color": "green"
+            "tag_color": "green",
+            "allDay": false
         },
         {
             "sid": "12",
@@ -94,7 +105,8 @@
             "btime": "2021-04-18T17:30:00.000Z",
             "etime": "2021-04-18T18:30:00.000Z",
             "desc": "測試測試",
-            "tag_color": "green"
+            "tag_color": "green",
+            "allDay": false
         }
     ]
 }

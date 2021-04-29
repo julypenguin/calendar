@@ -179,7 +179,7 @@ const CalendarD = (props) => {
         )
     }
 
-    const renderColumnNote = ({ btime, etime, title, tag_color, today, index }) => {
+    const renderColumnNote = ({ btime, etime, title, tag_color, today, allDay, index }) => {
         const tomorrow = addDays(1, today)
         const dateB = new Date(btime)
         const dateE = new Date(etime)
@@ -195,8 +195,13 @@ const CalendarD = (props) => {
         const minE = Number(fullDateE.h) * 60 + Number(fullDateE.mm)
         const secPercent = (100 / 1440).toFixed(4)
 
-        const top = isFirstDate ? `${secPercent * minB}` : '0'
-        const bottom = isLastDate ? `${100 - (secPercent * minE)}` : '0'
+        let top = isFirstDate ? `${secPercent * minB}` : '0'
+        let bottom = isLastDate ? `${100 - (secPercent * minE)}` : '0'
+
+        if (allDay) {
+            top = '0'
+            bottom = '0'
+        }
 
         return (
             <div

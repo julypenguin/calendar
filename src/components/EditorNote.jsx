@@ -16,7 +16,6 @@ const EditorNote = ({
 }) => {
 
     const [detailDate, setDetailDate] = useState({ tag_color: 'blue' })
-    const [isAllDay, setIsAllDay] = useState(false)
     const [showCategory, setShowCategory] = useState(false)
 
     const categoryRef = useRef()
@@ -246,7 +245,7 @@ const EditorNote = ({
                                                 </svg>
                                             </div>
                                             <div className='mt-2 flex flex-1'>
-                                                {isAllDay ?
+                                                {detailDate.allDay ?
                                                     <div className='flex-1'>
                                                         <div className='datetimepicker-box flex mb-4'>
                                                             <Datetimepicker
@@ -285,14 +284,14 @@ const EditorNote = ({
                                                         </span>
                                                         <button
                                                             type="button"
-                                                            className={`relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${isAllDay ? 'bg-blue-500' : 'bg-gray-200'}`}
+                                                            className={`relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${detailDate.allDay ? 'bg-blue-500' : 'bg-gray-200'}`}
                                                             role="switch"
                                                             aria-checked="false"
-                                                            onClick={() => setIsAllDay(!isAllDay)}
+                                                            onClick={() => setDetailDate({ ...detailDate, allDay: !detailDate.allDay })}
                                                         >
                                                             <span
                                                                 aria-hidden="true"
-                                                                className={`translate-x-0 pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200 ${isAllDay ? 'translate-x-5' : 'translate-x-0'}`}
+                                                                className={`translate-x-0 pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200 ${detailDate.allDay ? 'translate-x-5' : 'translate-x-0'}`}
                                                             />
                                                         </button>
                                                     </div>
