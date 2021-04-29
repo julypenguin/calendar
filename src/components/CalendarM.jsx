@@ -180,7 +180,22 @@ const CalendarM = (props) => {
                     key={index}
                     draggable='true'
                     className='hidden lg:block'
-                // onClick={() => handleSetDataAndShowEditor({ ...data, title, tag_color })}
+                    onClick={() => {
+                        const newDate = new Date(data.btime)
+                        newDate.setHours(0)
+                        newDate.setMinutes(0)
+                        console.log('newDate', newDate)
+                        setShowSchedule(true)
+                        setNewShowData(newDate)
+                        setSelectedDate({
+                            sid: String(Date.now()),
+                            title: "",
+                            btime: newDate,
+                            etime: addMinutes(60, newDate),
+                            desc: "",
+                            tag_color: "blue",
+                        })
+                    }}
                 >
                     <div className={`absolute cursor-pointer box-border mr-2 rounded opacity-70 `} style={{ left: `${(100 / 7) * left}%`, right: `${(100 / 7) * right}%`, top: `calc(${20 * level}% + 34px + ${sort * noteHeight}px + ${sort ? sort : '0'}px)`, height: '23px' }}>
                         <div className='px-2 truncate flex justify-center items-center'>
