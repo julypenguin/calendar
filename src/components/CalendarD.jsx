@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { FormattedDate, FormattedMessage, FormattedTime, injectIntl } from 'react-intl'
 import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome'
 import { renderFullDate } from './formateDate'
-import { getFullDate, addDays, getCycleDays, filterDate, dateDiff } from 'lib/datetime'
+import { getFullDate, addDays, getCycleDays, filterDate, dateDiff, addMinutes } from 'lib/datetime'
 import { weeks } from './formateDate'
 import EditorNote from './EditorNote'
 
@@ -20,8 +20,6 @@ const CalendarD = (props) => {
     const hourArr = new Array(23).fill('')
     const hourLineArr = new Array(47).fill('')
 
-    // const newCalendarData = calendarData && calendarData.data.filter((date) => filterDate({ ...props, ...date, dayCount: days })) || []
-
     const handleSetDataAndShowEditor = (data) => {
         setSelectedDate(data)
         setShowEditor(true)
@@ -37,42 +35,39 @@ const CalendarD = (props) => {
         const elmWidth = elm.clientWidth
         const newElmWidth = calcParentsWidth(elm.offsetParent)
 
-        return elmWidth > newElmWidth ? elmWidth : newElmWidth        
+        return elmWidth > newElmWidth ? elmWidth : newElmWidth
     }
 
     const handleSetDate = (e) => {
         const showDaysBox = showDaysRef.current
         const dayArr = getCycleDays({ date: showData, dayCount: days, isWeek })
-        // console.log('e', e)
-        // console.log('showDaysBox', showDaysBox.getBoundingClientRect())
-        console.log('dayArr', dayArr)
         const clickPositionX = e.clientX
         const clickPositionY = e.clientY
 
-        const fullWidth = showDaysBox.clientWidth // 全寬
-        const fullHeight = showDaysBox.scrollHeight // 全高
-        const viewHeight = showDaysBox.clientHeight // 畫面高度
+        const fullWidth = showDaysBox.clientWidth // showDaysBox 全寬
+        const fullHeight = showDaysBox.scrollHeight // showDaysBox 全高
         const inherentHeight = calcParentsHeight(showDaysBox) // 計算上方佔了多少高度
-        const halfHourHeight = fullHeight / 48
+        const halfHourHeight = fullHeight / 48 // 
         const fullScreenWidth = calcParentsWidth(showDaysBox) // 最上層的寬度
-        const leftWidth = fullScreenWidth - fullWidth // showDaysBox 左邊空了多少寬度出來
-        const clickDate = Math.floor((clickPositionX - leftWidth) / (fullWidth / days)) 
-        const time = Math.floor((clickPositionY - inherentHeight) / halfHourHeight) / 2
+        const showDaysBoxLeft = fullScreenWidth - fullWidth + 1 // showDaysBox 左邊的定位點
+        const showDaysBoxRight = fullScreenWidth - 18 // showDaysBox 右邊的定位點，18 為滾動軸寬度
+        const clickDate = Math.floor((clickPositionX - showDaysBoxLeft) / ((showDaysBoxRight - showDaysBoxLeft) / days))
+        const time = Math.floor((clickPositionY - inherentHeight) / halfHourHeight)
 
-
-        console.log('clickPositionX', clickPositionX)
-        console.log('fullWidth', fullWidth)
-        console.log('fullScreenWidth', fullScreenWidth)
-        console.log('leftWidth', leftWidth)
-        console.log('clickDate', clickDate)
-        // handleSetDataAndShowEditor({
-        //     sid: String(Date.now()),
-        //     title: "",
-        //     btime: newDate,
-        //     etime: addMinutes(60, newDate),
-        //     desc: "",
-        //     tag_color: "blue",
-        // })
+        
+        if (clickDate < dayArr.length) {
+            const btime = new Date(dayArr[clickDate])
+            btime.setHours(Math.floor(time / 2))
+            btime.setMinutes(Math.floor((time % 2) * 30))
+            handleSetDataAndShowEditor({
+                sid: String(Date.now()),
+                title: "",
+                btime: btime,
+                etime: addMinutes(60, btime),
+                desc: "",
+                tag_color: "blue",
+            })
+        }
     }
 
     const calcLeftAndRight = (data, direction) => {
