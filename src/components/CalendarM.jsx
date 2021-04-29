@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import classNames from 'classnames'
 import { FormattedDate, FormattedMessage, FormattedTime, injectIntl } from 'react-intl'
 import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome'
@@ -30,15 +30,14 @@ const CalendarM = (props) => {
     const [showEditor, setShowEditor] = useState(false)
     const [showSchedule, setShowSchedule] = useState(false)
 
-    const fullDate = getFullDate(newShowData)
+    const cellRef = useRef()
 
-    // const newCalendarData = calendarData && calendarData.data.filter((date) => filterDate({ ...props, ...date, dayCount: 30 })) || []
+    const fullDate = getFullDate(newShowData)
 
     const handleSetDate = data => {
         const newDate = new Date(data.year, data.month - 1, data.date)
         setNewShowData(newDate)
-        // setShowData(`${data.year}-${data.month}-${data.date}`)
-        // if (typeof setOtherData === 'function') setOtherData(`${data.year}-${data.month}-${data.date}`)
+
         if (typeof setOtherData === 'function') setOtherData(newDate)
         if (typeof onClose === 'function') onClose()
         if (canEdit) {
@@ -167,18 +166,49 @@ const CalendarM = (props) => {
     const renderNotes = () => {
 
         const notes = formatCalendarData(newCalendarData)
+        const cellBox = cellRef.current && cellRef.current.getBoundingClientRect()
+        const noteHeight = 23
 
-        return notes.map(({ title, tag_color, left, right, sort, level, ...data }, index) => (
-            <div
-                key={index}
-                draggable='true'
-                onClick={() => handleSetDataAndShowEditor({ ...data, title, tag_color })}
-            >
-                <div className={`absolute cursor-pointer box-border mr-2 rounded opacity-70 ${tag_color ? `bg-${tag_color}-200 text-${tag_color}-800 hover:bg-${tag_color}-300` : 'bg-blue-200 text-blue-800 hover:bg-blue-300'}`} style={{ left: `${(100 / 7) * left}%`, right: `${(100 / 7) * right}%`, top: `calc(${20 * level}% + 34px + ${sort * 23}px + ${sort ? sort : '0'}px)`, height: '23px' }}>
-                    <div className='px-2 truncate'>{title}</div>
+        if (!cellBox) return
+        const minShowDetail = Math.floor(cellBox.height / noteHeight) - 3
+
+        return notes.map(({ title, tag_color, left, right, sort, level, ...data }, index) => {
+            const isCannotShow = minShowDetail < 0 && sort === 1
+
+            if (sort === minShowDetail || (isCannotShow)) return (
+                <div
+                    key={index}
+                    draggable='true'
+                    className='hidden lg:block'
+                // onClick={() => handleSetDataAndShowEditor({ ...data, title, tag_color })}
+                >
+                    <div className={`absolute cursor-pointer box-border mr-2 rounded opacity-70 `} style={{ left: `${(100 / 7) * left}%`, right: `${(100 / 7) * right}%`, top: `calc(${20 * level}% + 34px + ${sort * noteHeight}px + ${sort ? sort : '0'}px)`, height: '23px' }}>
+                        <div className='px-2 truncate flex justify-center items-center'>
+                            <div className='px-1 hover:bg-gray-300'>
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        ))
+            )
+
+            if (sort > minShowDetail) return null
+
+            return (
+                <div
+                    key={index}
+                    draggable='true'
+                    onClick={() => handleSetDataAndShowEditor({ ...data, title, tag_color })}
+                >
+                    <div className={`absolute cursor-pointer box-border mr-2 rounded opacity-70 ${tag_color ? `bg-${tag_color}-200 text-${tag_color}-800 hover:bg-${tag_color}-300` : 'bg-blue-200 text-blue-800 hover:bg-blue-300'}`} style={{ left: `${(100 / 7) * left}%`, right: `${(100 / 7) * right}%`, top: `calc(${20 * level}% + 34px + ${sort * noteHeight}px + ${sort ? sort : '0'}px)`, height: '23px' }}>
+                        <div className='px-2 truncate'>{title}</div>
+                    </div>
+                </div>
+
+            )
+        })
     }
 
     useEffect(() => {
@@ -238,7 +268,10 @@ const CalendarM = (props) => {
                                         }}
                                         onClick={() => handleSetDate(data)}
                                     >
-                                        <div className={`py-2 flex flex-col w-full h-full overflow-hidden ${selector && data.isToday ? 'rounded-full bg-blue-600' : ''} `}>
+                                        <div
+                                            className={`py-2 flex flex-col w-full h-full overflow-hidden ${selector && data.isToday ? 'rounded-full bg-blue-600' : ''} `}
+                                            ref={cellRef}
+                                        >
                                             <div className={`px-4 top w-full select-none ${!center ? '' : 'flex justify-center items-center h-full'}`}>
                                                 {data.formateDate ?
                                                     abbr ?
@@ -253,15 +286,6 @@ const CalendarM = (props) => {
                                                     <span className={`${!textSm ? '' : 'text-xs'} ${selector && data.isToday ? 'text-white' : selector && !data.main ? 'text-gray-300' : 'text-gray-500'}`}>{data.date}</span>
                                                 }
                                             </div>
-                                            {/* {!center &&
-                                            data.date === 19 && <div className="px-2 bottom flex-grow h-30 py-1 w-full cursor-pointer">
-                                                <div
-                                                    className="event text-blue-600 rounded p-1 text-sm mb-1 hover:bg-blue-100 leading-6"
-                                                >
-                                                    <div className="event-name truncate">下午 2 【充電時間：打造你的關鍵三力】</div>
-                                                </div>
-                                            </div>
-                                        } */}
                                         </div>
                                     </div>
                                 ))
