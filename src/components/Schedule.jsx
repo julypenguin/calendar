@@ -85,7 +85,7 @@ const Schedule = (props) => {
                     <div className='overflow-hidden flex flex-col w-full'>
                         <div
                             className='pl-3 border-b flex flex-row flex-nowrap items-center justify-between overflow-hidden'
-                            style={{ height: '48px', minHeight: '48px' }}
+                            style={{ height: '46px', minHeight: '46px' }}
                         >
                             <div className='flex flex-row items-center h-full'>
                                 {renderFullDate({ data: showData, noYear: true })}
