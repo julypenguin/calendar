@@ -5,6 +5,7 @@ import { renderFullDate } from './formateDate'
 import { getFullDate, addDays, getCycleDays, filterDate, dateDiff, addMinutes } from 'lib/datetime'
 import { weeks } from './formateDate'
 import EditorNote from './EditorNote'
+import Modal from './Modal'
 
 const CalendarD = (props) => {
     const { showData, isWeek, cycle, calendarData } = props
@@ -322,7 +323,8 @@ const CalendarD = (props) => {
                 </div>
             </div>
 
-            <EditorNote
+            <Modal
+                Content={EditorNote}
                 show={showEditor}
                 handleClose={() => setShowEditor(false)}
                 defaultValue={selectedDate}

@@ -7,6 +7,7 @@ import { getFullDate, filterDate, addMinutes } from 'lib/datetime'
 import { weeks } from './formateDate'
 import EditorNote from './EditorNote'
 import Schedule from './Schedule'
+import Modal from './Modal'
 
 const CalendarM = (props) => {
     const {
@@ -253,8 +254,8 @@ const CalendarM = (props) => {
                                         <div className={`text-gray-500 ${!textSm ? '' : 'text-xs'}`}>{week.abb_name}</div>
                                         :
                                         <>
-                                            <div className="text-gray-500 hidden md:block">{week.name}</div>
-                                            <div className="text-gray-500 md:hidden">{week.abb_name}</div>
+                                            <div className="text-gray-500 hidden lg:block">{week.name}</div>
+                                            <div className="text-gray-500 lg:hidden">{week.abb_name}</div>
                                         </>
                                     }
                                 </div>
@@ -320,7 +321,8 @@ const CalendarM = (props) => {
                 />}
             </div>
 
-            <EditorNote
+            <Modal
+                Content={EditorNote}
                 show={showEditor}
                 handleClose={() => setShowEditor(false)}
                 defaultValue={selectedDate}
