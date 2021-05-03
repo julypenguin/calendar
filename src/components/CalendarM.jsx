@@ -4,8 +4,9 @@ import { FormattedDate, FormattedMessage, FormattedTime, injectIntl } from 'reac
 import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome'
 import '../styl/styles.css'
 import { getFullDate, filterDate, addMinutes } from 'lib/datetime'
-import { weeks } from './formateDate'
+import { weeks, renderCalendarMonthDate } from './formateDate'
 import EditorNote from './EditorNote'
+import SchedualDetail from './SchedualDetail'
 import Schedule from './Schedule'
 import Modal from './Modal'
 
@@ -28,10 +29,12 @@ const CalendarM = (props) => {
     const [newShowData, setNewShowData] = useState(new Date())
     const [newCalendarData, setNewCalendarData] = useState([])
     const [selectedDate, setSelectedDate] = useState({})
+    const [showDetail, setShowDetail] = useState(false)
     const [showEditor, setShowEditor] = useState(false)
     const [showSchedule, setShowSchedule] = useState(true)
 
     const cellRef = useRef()
+    const testRef = useRef()
 
     const fullDate = getFullDate(newShowData)
 
@@ -59,9 +62,9 @@ const CalendarM = (props) => {
         }
     }
 
-    const handleSetDataAndShowEditor = (data) => {
+    const handleSetDataAndShowDetail = (data) => {
         setSelectedDate(data)
-        setShowEditor(true)
+        setShowDetail(true)
     }
 
     const formatCalendarData = (data) => {
@@ -169,7 +172,6 @@ const CalendarM = (props) => {
         const notes = formatCalendarData(newCalendarData)
         const cellBox = cellRef.current && cellRef.current.getBoundingClientRect()
         const noteHeight = 23
-
         if (!cellBox) return
         const minShowDetail = Math.floor(cellBox.height / noteHeight) - 3
 
@@ -185,7 +187,6 @@ const CalendarM = (props) => {
                         const newDate = new Date(data.btime)
                         newDate.setHours(0)
                         newDate.setMinutes(0)
-                        console.log('newDate', newDate)
                         setShowSchedule(true)
                         setNewShowData(newDate)
                         setSelectedDate({
@@ -216,7 +217,7 @@ const CalendarM = (props) => {
                 <div
                     key={index}
                     draggable='true'
-                    onClick={() => handleSetDataAndShowEditor({ ...data, title, tag_color })}
+                    onClick={() => handleSetDataAndShowDetail({ ...data, title, tag_color })}
                 >
                     <div className={`absolute cursor-pointer box-border mr-2 rounded opacity-70 ${tag_color ? `bg-${tag_color}-200 text-${tag_color}-800 hover:bg-${tag_color}-300` : 'bg-blue-200 text-blue-800 hover:bg-blue-300'}`} style={{ left: `${(100 / 7) * left}%`, right: `${(100 / 7) * right}%`, top: `calc(${20 * level}% + 34px + ${sort * noteHeight}px + ${sort ? sort : '0'}px)`, height: '23px' }}>
                         <div className='px-2 truncate'>{title}</div>
@@ -266,7 +267,7 @@ const CalendarM = (props) => {
                             className={`relative height-full flex-row overflow-visible bg-gray-100`}
                             style={{ flex: '1 1 100%' }}
                         >
-                            {renderDate(showData).map((week, index, datas) => (
+                            {renderCalendarMonthDate(showData).map((week, index, datas) => (
                                 week.map((data, i) => (
                                     <div
                                         key={i}
@@ -286,7 +287,7 @@ const CalendarM = (props) => {
                                     >
                                         <div
                                             className={`py-2 flex flex-col w-full h-full overflow-hidden ${selector && data.isToday ? 'rounded-full bg-blue-600' : ''} `}
-                                            ref={cellRef}
+                                            ref={elm => cellRef.current = elm}
                                         >
                                             <div className={`px-4 top w-full select-none ${!center ? '' : 'flex justify-center items-center h-full'}`}>
                                                 {data.formateDate ?
@@ -311,7 +312,7 @@ const CalendarM = (props) => {
                     </div>
                 </div>
 
-                {!showSchedule ? null : <Schedule
+                {showSchedule && canEdit && <Schedule
                     calendarData={newCalendarData}
                     showData={newShowData}
                     handleClose={() => setShowSchedule(false)}
@@ -320,6 +321,16 @@ const CalendarM = (props) => {
                     setSelectedDate={setSelectedDate}
                 />}
             </div>
+
+            <Modal
+                Content={SchedualDetail}
+                show={showDetail}
+                handleClose={() => setShowDetail(false)}
+                defaultValue={selectedDate}
+                setDefaultValue={setSelectedDate}
+                calendarData={newCalendarData}
+                setCalendarData={setNewCalendarData}
+            />
 
             <Modal
                 Content={EditorNote}

@@ -207,7 +207,7 @@ const Navbar = ({
                                 </ul>
                             </div>
                             <div className='flex-1'>
-                                <CalendarM
+                                {/* <CalendarM
                                     showData={previewData}
                                     setShowData={setPreviewData}
                                     renderDate={renderDate}
@@ -217,7 +217,7 @@ const Navbar = ({
                                     textSm
                                     center
                                     selector
-                                />
+                                /> */}
                             </div>
                         </div>}
                         <div className='top-0 border-r'></div>

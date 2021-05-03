@@ -1,6 +1,6 @@
 {
     "save": "儲存",
-    "delete": "捨棄",
+    "abandon": "捨棄",
     "today": "今天",
     "week": "週",
     "month": "月",
@@ -42,5 +42,9 @@
         "indigo": "靛色",
         "purple": "紫色",
         "gray": "灰色"
+    },
+    "detail": {
+        "edit": "編輯",
+        "delete": "刪除"
     }
 }

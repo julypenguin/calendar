@@ -76,7 +76,7 @@ const Schedule = (props) => {
     }
 
     return (
-        <div className='border-l hidden md:flex flex-col'>
+        <div className='border-l hidden md:flex flex-col bg-white'>
             <div
                 className='flex flex-col h-full'
                 style={{ width: '320px', minWidth: '320px', maxHeight: 'calc(100vh - 70px)' }}

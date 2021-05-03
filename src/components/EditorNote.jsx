@@ -11,7 +11,7 @@ const EditorNote = ({
     setCalendarData, // 將資料傳出去
     detailDate,
     setDetailDate,
-    onClose,
+    handleClose,
 }) => {
 
     const [showCategory, setShowCategory] = useState(false)
@@ -52,10 +52,8 @@ const EditorNote = ({
         },
     ]
 
-    const onDelete = () => {
-        const newCalendarData = calendarData.filter((data, index) => data.sid !== detailDate.sid)
-        setCalendarData(newCalendarData)
-        onClose()
+    const onAbandon = () => {
+        handleClose()
     }
 
     const onSave = () => {
@@ -70,7 +68,7 @@ const EditorNote = ({
         })
         if (!addLength) newCalendarData.push(detailDate)
         setCalendarData(newCalendarData)
-        onClose()
+        handleClose()
     }
 
     const detectPosition = (ref, rightAndBottom) => {
@@ -109,7 +107,7 @@ const EditorNote = ({
             <div className={`bg-${detailDate.tag_color}-500 pl-2 pr-1 flex justify-end`}>
                 <div
                     className='p-2 text-white cursor-pointer'
-                    onClick={onClose}
+                    onClick={handleClose}
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -129,12 +127,12 @@ const EditorNote = ({
 
                 <div
                     className={`px-2 py-1 mr-2 rounded cursor-pointer flex-shrink-0 text-${detailDate.tag_color}-600 hover:bg-${detailDate.tag_color}-100 flex flex-nowrap`}
-                    onClick={onDelete}
+                    onClick={onAbandon}
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-full w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>
-                    <span><FormattedMessage id='calendar.delete' /></span>
+                    <span><FormattedMessage id='calendar.abandon' /></span>
                 </div>
 
                 <div
@@ -187,6 +185,7 @@ const EditorNote = ({
 
                         </div>
                         <div className='flex-grow flex'>
+                            {console.log('detailDate.title', detailDate.title)}
                             <input
                                 className={`text-${detailDate.tag_color}-600 mr-2 pb-1 pl-2 flex-grow text-2xl font-semibold border-b border-gray-300 focus:outline-none`}
                                 placeholder='新增標題'

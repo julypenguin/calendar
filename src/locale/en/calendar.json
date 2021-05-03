@@ -1,6 +1,6 @@
 {
     "save": "save",
-    "delete": "delete",
+    "abandon": "abandon",
     "today": "today",
     "week": "week",
     "month": "month",
@@ -42,5 +42,9 @@
         "indigo": "indigo",
         "purple": "purple",
         "gray": "gray"
+    },
+    "detail": {
+        "edit": "edit",
+        "delete": "delete"
     }
 }
