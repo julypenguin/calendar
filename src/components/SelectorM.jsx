@@ -9,7 +9,7 @@ const SelectorM = ({
     renderFullDate,
     setOtherData,
     cycle,
-    onClose={onClose}
+    onClose = { onClose }
 }) => {
     const [previewData, setPreviewData] = useState(new Date())
     const [mode, setMode] = useState(1) // 1:month, 2:year
@@ -34,7 +34,12 @@ const SelectorM = ({
             if (fullDate.y === fullDateDefault.y && fullDate.m === fullDateDefault.m) return
             setOtherData(date)
             if (typeof onClose === 'function') onClose()
-        } 
+        }
+    }
+
+    const toToday = () => {
+        const today = new Date()
+        setDefaultData(today)
     }
 
     const handleSetYear = year => {
@@ -177,7 +182,14 @@ const SelectorM = ({
                     </div>
                 </div>
             </div>
-            {cycle === 30 ? null : <div className='text-right px-6 text-xs hover:text-blue-400 cursor-pointer'>今天</div>}
+            {cycle === 30 ? null :
+                <div 
+                    className='text-right px-6 text-xs hover:text-blue-400 cursor-pointer'
+                    onClick={toToday}
+                >
+                    <FormattedMessage id='calendar.today' />
+                </div>
+            }
         </div>
     );
 };

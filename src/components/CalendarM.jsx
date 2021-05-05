@@ -4,7 +4,7 @@ import { FormattedDate, FormattedMessage, FormattedTime, injectIntl } from 'reac
 import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome'
 import '../styl/styles.css'
 import { getFullDate, filterDate, addMinutes } from 'lib/datetime'
-import { weeks, renderCalendarMonthDate } from './formateDate'
+import { weeks, renderCalendarMonthDate, colorMap } from './formateDate'
 import EditorNote from './EditorNote'
 import SchedualDetail from './SchedualDetail'
 import Schedule from './Schedule'
@@ -34,7 +34,6 @@ const CalendarM = (props) => {
     const [showSchedule, setShowSchedule] = useState(true)
 
     const cellRef = useRef()
-    const testRef = useRef()
 
     const fullDate = getFullDate(newShowData)
 
@@ -175,14 +174,15 @@ const CalendarM = (props) => {
         if (!cellBox) return
         const minShowDetail = Math.floor(cellBox.height / noteHeight) - 3
 
-        return notes.map(({ title, tag_color, left, right, sort, level, ...data }, index) => {
+        return notes.map(({ title, tag_color: hexColor, left, right, sort, level, ...data }, index) => {
             const isCannotShow = minShowDetail < 0 && sort === 1
+            const tag_color = colorMap[hexColor]
 
             if (sort === minShowDetail || (isCannotShow)) return (
                 <div
                     key={index}
                     draggable='true'
-                    className='hidden lg:block'
+                    className='calendar-month-notes'
                     onClick={() => {
                         const newDate = new Date(data.btime)
                         newDate.setHours(0)
@@ -195,14 +195,14 @@ const CalendarM = (props) => {
                             btime: newDate,
                             etime: addMinutes(60, newDate),
                             desc: "",
-                            tag_color: "blue",
+                            tag_color: "#BFDBFE",
                         })
                     }}
                 >
-                    <div className={`absolute cursor-pointer box-border mr-2 rounded opacity-70 `} style={{ left: `${(100 / 7) * left}%`, right: `${(100 / 7) * right}%`, top: `calc(${20 * level}% + 34px + ${sort * noteHeight}px + ${sort ? sort : '0'}px)`, height: '23px' }}>
+                    <div className={`calendar-month-notes-box absolute cursor-pointer opacity-70 `} style={{ left: `${(100 / 7) * left}%`, right: `${(100 / 7) * right}%`, top: `calc(${20 * level}% + 34px + ${sort * noteHeight}px + ${sort ? sort : '0'}px)` }}>
                         <div className='px-2 truncate flex justify-center items-center'>
-                            <div className='px-1 hover:bg-gray-300'>
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <div className='notes-box-outer'>
+                                <svg xmlns="http://www.w3.org/2000/svg" className="calendar-icon-md" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z" />
                                 </svg>
                             </div>
@@ -219,8 +219,8 @@ const CalendarM = (props) => {
                     draggable='true'
                     onClick={() => handleSetDataAndShowDetail({ ...data, title, tag_color })}
                 >
-                    <div className={`absolute cursor-pointer box-border mr-2 rounded opacity-70 ${tag_color ? `bg-${tag_color}-200 text-${tag_color}-800 hover:bg-${tag_color}-300` : 'bg-blue-200 text-blue-800 hover:bg-blue-300'}`} style={{ left: `${(100 / 7) * left}%`, right: `${(100 / 7) * right}%`, top: `calc(${20 * level}% + 34px + ${sort * noteHeight}px + ${sort ? sort : '0'}px)`, height: '23px' }}>
-                        <div className='px-2 truncate'>{title}</div>
+                    <div className={`calendar-month-notes-box absolute cursor-pointer opacity-70 ${tag_color ? `bg-${tag_color}-hover text-${tag_color}` : 'bg-blue-200 text-blue-800 hover:bg-blue-300'}`} style={{ left: `${(100 / 7) * left}%`, right: `${(100 / 7) * right}%`, top: `calc(${20 * level}% + 34px + ${sort * noteHeight}px + ${sort ? sort : '0'}px)` }}>
+                        <div className='notes-box-outer truncate'>{title}</div>
                     </div>
                 </div>
 
@@ -250,13 +250,13 @@ const CalendarM = (props) => {
                         {/* 週 */}
                         <div className='flex flex-1 select-none'>
                             {weeks.map((week, index) => (
-                                <div key={index} className={`relative flex flex-1 text-xs items-end mb-4 ${!center ? 'px-4 h-8' : 'justify-center items-center h-full'}`}>
+                                <div key={index} className={`calendar-month-title relative flex flex-1 items-end ${!center ? 'calendar-month-title-center' : 'justify-center items-center h-full'}`}>
                                     {abbr ?
-                                        <div className={`text-gray-500 ${!textSm ? '' : 'text-xs'}`}>{week.abb_name}</div>
+                                        <div className={`text-gray ${!textSm ? '' : 'calendar-text-sm'}`}>{week.abb_name}</div>
                                         :
                                         <>
-                                            <div className="text-gray-500 hidden lg:block">{week.name}</div>
-                                            <div className="text-gray-500 lg:hidden">{week.abb_name}</div>
+                                            <div className="calendar-month-title-weekname-lg">{week.name}</div>
+                                            <div className="calendar-month-title-weekname-md">{week.abb_name}</div>
                                         </>
                                     }
                                 </div>
@@ -264,17 +264,16 @@ const CalendarM = (props) => {
                         </div>
                         {/* 日 */}
                         <div
-                            className={`relative height-full flex-row overflow-visible bg-gray-100`}
-                            style={{ flex: '1 1 100%' }}
+                            className={`calendar-month-datebox relative flex-row overflow-visible`}
                         >
-                            {renderCalendarMonthDate(showData).map((week, index, datas) => (
+                            {renderDate(showData).map((week, index, datas) => (
                                 week.map((data, i) => (
                                     <div
                                         key={i}
-                                        className={`whitespace-nowrap text-sm font-medium text-gray-900 absolute cursor-pointer ${Number(data.date) === Number(fullDate.d) && Number(data.month) === Number(fullDate.m) && Number(data.year) === Number(fullDate.y) ? 'bg-blue-100 opacity-70' : 'bg-white'} ${!selector ? '' : 'hover:bg-gray-100'}
+                                        className={`whitespace-nowrap absolute cursor-pointer ${Number(data.date) === Number(fullDate.d) && Number(data.month) === Number(fullDate.m) && Number(data.year) === Number(fullDate.y) ? 'calendar-bg-today' : 'bg-white'} ${!selector ? '' : 'calendar-selector'}
                                         ${!selector ?
                                                 data.isToday ? 'calendar-today border-t'
-                                                    : data.isOverdue ? 'bg-gray-100 border-t' : 'bg-white border-t'
+                                                    : data.isOverdue ? 'calendar-overdue border-t' : 'bg-white border-t'
                                                 : ''}`}
                                         style={{
                                             inset: `
@@ -286,13 +285,13 @@ const CalendarM = (props) => {
                                         onClick={() => handleSetDate(data)}
                                     >
                                         <div
-                                            className={`py-2 flex flex-col w-full h-full overflow-hidden ${selector && data.isToday ? 'rounded-full bg-blue-600' : ''} `}
+                                            className={`calendar-month-date flex flex-col w-full h-full overflow-hidden ${selector && data.isToday ? 'calendar-month-date-selector' : ''} `}
                                             ref={elm => cellRef.current = elm}
                                         >
-                                            <div className={`px-4 top w-full select-none ${!center ? '' : 'flex justify-center items-center h-full'}`}>
+                                            <div className={`w-full select-none ${!center ? '' : 'flex justify-center items-center h-full'}`}>
                                                 {data.formateDate ?
                                                     abbr ?
-                                                        <div className={`${!textSm ? '' : 'text-xs'} ${selector && data.isToday ? 'text-white' : selector && !data.main ? 'text-gray-300' : 'text-gray-500'}`}>{data.date}</div>
+                                                        <div className={`${!textSm ? '' : 'calendar-text-sm'} ${selector && data.isToday ? 'text-white' : selector && !data.main ? 'text-gray-300' : 'text-gray-500'}`}>{data.date}</div>
                                                         :
                                                         <>
                                                             <div className={`hidden md:block ${!textSm ? '' : 'text-xs'} ${selector && data.isToday ? 'text-white' : selector && !data.main ? 'text-gray-300' : 'text-gray-500'}`}>{data.formateDate}</div>

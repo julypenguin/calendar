@@ -97,7 +97,7 @@ const SchedualDetail = ({
                                 </svg>
                             </div>
                             <div className='mt-2 flex flex-1'>
-                                {detailDate.allDay ?
+                                {detailDate.all_day ?
                                     <div className='flex-1 px-2'>
                                         <div className='flex mb-4 flex-wrap'>
                                             <FormattedDate value={detailDate.btime} />

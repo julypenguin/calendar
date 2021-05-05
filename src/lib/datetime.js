@@ -153,8 +153,8 @@ export function filterDate({ btime, etime, showData, dayCount, isWeek, isMonth }
 
 
 // 判斷行事曆裡面的資料是否有跨日，跨日回傳 true
-export function dateDiff({ btime, etime, allDay }) {
-	if (allDay) return true
+export function dateDiff({ btime, etime, all_day }) {
+	if (all_day) return true
 	const fullDateB = getFullDate(btime)
 	const fullDateE = getFullDate(etime)
 	const fullDateDiff = (fullDateE.y - fullDateB.y) + (fullDateE.m - fullDateB.m) + (fullDateE.d - fullDateB.d)

@@ -7,3 +7,143 @@
         width 100%
         height 4px
         background-color rgb(37,144,239)
+
+.calendar-time-text
+    margin-right 0.25rem
+    font-size 0.75rem
+    line-height 1rem
+
+.calendar-time-num
+    font-size 0.75rem
+    line-height 1rem
+
+.calendar-day-title-left-space
+    width 59px
+    padding 10px 0 4px 0
+    z-index 10
+
+.calendar-day-title-right
+    padding-right 18px
+    padding-left 10px
+    margin-left -10px
+    min-height 48px
+    min-width 80px
+
+.calendar-day-title-note
+    padding 0 0.5rem
+    border-left-width 4px
+    opacity 0.7
+    height 29px
+    margin 4px 12px 4px 0
+
+.calendar-day-title
+    margin-right 0
+    border-right-width 1px
+    border-left-width 1px
+
+.calendar-day-title-date
+    font-size 1.5rem
+    line-height 2rem
+
+.calendar-day-title-weekname
+    display none
+    margin-bottom 2px
+    @media screen and (min-width: 1024px)
+        display block
+
+.calendar-day-notes
+    border-left-width 1px
+    border-right-width 1px
+    box-sizing border-box
+    min-width 80px
+
+.calendar-day-note
+    box-sizing border-box
+    border-left-width 4px
+    >.note-title
+        padding 0.25rem
+
+.calendar-day-notes-line
+    padding-right 18px
+    padding-left 2px
+    margin-left -2px
+    overflow overlay
+
+.calendar-month-title
+    font-size 0.75rem
+    line-height 1rem
+    margin-bottom 1rem
+
+.calendar-month-title-center
+    padding-left 1rem
+    padding-right 1rem
+    height 2rem
+
+.calendar-month-title-weekname-lg
+    @extend .text-gray
+    display none
+    @media screen and (min-width: 1024px)
+        display block
+
+.calendar-month-title-weekname-md
+    @extend .text-gray
+    display block
+    @media screen and (min-width: 1024px)
+        display none
+
+.calendar-month-notes
+    display none
+    @media screen and (min-width: 1024px)
+        display block
+
+.calendar-month-notes-box
+    box-sizing border-box
+    margin-right 0.5rem
+    border-radius 0.25rem
+    height 23px
+    >.notes-box-outer
+        padding-left 0.25rem
+        padding-right 0.25rem
+        height 100%
+        display flex
+        align-items center
+        // &:hover
+        //     background-color Gray300
+
+.calendar-month-datebox
+    background-color Gray100
+    flex 1 1 100%
+    >div
+        font-size 0.875rem
+        line-height 1.25rem
+        font-weight 500
+        color Gray900
+    >.calendar-selector
+        &:hover
+            background-color Gray100
+    >.calendar-bg-today
+        background-color Blue100
+        opacity 0.7
+        &:hover
+            background-color Blue100
+    >.calendar-overdue
+        background-color Gray100
+
+.calendar-month-date
+    padding-top 0.5rem
+    padding-bottom 0.5rem
+    >div
+        padding-left 1rem
+        padding-right 1rem
+
+.calendar-month-date-selector
+    border-radius 50%
+    background-color Blue600
+
+.calendar-icon-md
+    height 1.5rem
+    width 1.5rem
+
+.calendar-text-sm
+    font-size 0.75rem
+    line-height 1rem

@@ -32,9 +32,9 @@ const Schedule = (props) => {
     }
 
     // 計算開始到結束共有多久
-    const calcDays = (btime, etime, allDay) => {
-        if (allDay) return (
-            <FormattedMessage id='calendar.allday' />
+    const calcDays = (btime, etime, all_day) => {
+        if (all_day) return (
+            <FormattedMessage id='calendar.all_day' />
         )
         const dateB = new Date(btime)
         const dateD = new Date(etime)
@@ -152,7 +152,7 @@ const Schedule = (props) => {
                                                         <div className='text-xs truncate pr-2'>{schedule.title}</div>
                                                     </div>
                                                 </div>
-                                                <div className='text-xs'>{calcDays(schedule.btime, schedule.etime, schedule.allDay)}</div>
+                                                <div className='text-xs'>{calcDays(schedule.btime, schedule.etime, schedule.all_day)}</div>
                                             </div>
                                         </div>
                                     ))}

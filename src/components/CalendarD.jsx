@@ -1,11 +1,12 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { FormattedDate, FormattedMessage, FormattedTime, injectIntl } from 'react-intl'
 import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome'
-import { renderFullDate } from './formateDate'
+import { renderFullDate, colorMap } from './formateDate'
 import { getFullDate, addDays, getCycleDays, filterDate, dateDiff, addMinutes } from 'lib/datetime'
 import { weeks } from './formateDate'
 import EditorNote from './EditorNote'
 import Modal from './Modal'
+import { brightness } from 'lib/color'
 
 const CalendarD = (props) => {
     const { showData, isWeek, cycle, calendarData } = props
@@ -55,7 +56,7 @@ const CalendarD = (props) => {
         const clickDate = Math.floor((clickPositionX - showDaysBoxLeft) / ((showDaysBoxRight - showDaysBoxLeft) / days))
         const time = Math.floor((clickPositionY - inherentHeight) / halfHourHeight)
 
-        
+
         if (clickDate < dayArr.length) {
             const btime = new Date(dayArr[clickDate])
             btime.setHours(Math.floor(time / 2))
@@ -66,7 +67,7 @@ const CalendarD = (props) => {
                 btime: btime,
                 etime: addMinutes(60, btime),
                 desc: "",
-                tag_color: "blue",
+                tag_color: "#BFDBFE",
             })
         }
     }
@@ -97,30 +98,38 @@ const CalendarD = (props) => {
         const twelveHourClock = (index / 12) >= 1 ? 'pm' : 'am'
         return (
             <>
-                <span className='mr-1 text-xs flex-shrink-0'><FormattedMessage id={`calendar.${twelveHourClock}`} /></span>
-                <span className='text-xs flex-shrink-0'>{time}</span>
+                <span className='calendar-time-text flex-shrink-0'><FormattedMessage id={`calendar.${twelveHourClock}`} /></span>
+                <span className='calendar-time-num flex-shrink-0'>{time}</span>
             </>
         )
     }
 
     const renderTitleNote = () => {
         const moreDayArr = newCalendarData.filter((d) => dateDiff({ ...d })) || []
-        return moreDayArr.map((data, index, arr) => (
-            <div
-                key={index}
-                style={{ height: `${(arr.length * 30) + 8}px` }}
-                onClick={() => handleSetDataAndShowEditor(data)}
-            >
-                <div draggable='true'>
-                    <div
-                        className={`absolute cursor-pointer px-2 flex items-center border-l-4 opacity-70 ${data.tag_color ? `bg-${data.tag_color}-200 border-${data.tag_color}-600 hover:bg-${data.tag_color}-300 text-${data.tag_color}-800` : 'bg-blue-200 border-blue-600 hover:bg-blue-300 text-blue-800'}`}
-                        style={{ height: '29px', marginTop: '4px', marginRight: '12px', marginBottom: '4px', left: `${calcLeftAndRight(data, 'left')}%`, right: `${calcLeftAndRight(data, 'right')}%`, top: `${30 * index}px` }}
-                    >
-                        {data.title}
+        return moreDayArr.map((data, index, arr) => {
+            const { tag_color: hexColor } = data
+            const tag_color = colorMap[hexColor]
+            return (
+                <div
+                    key={index}
+                    style={{ height: `${(arr.length * 30) + 8}px` }}
+                    onClick={() => handleSetDataAndShowEditor(data)}
+                >
+                    <div draggable='true'>
+                        <div
+                            className={`calendar-day-title-note absolute cursor-pointer flex items-center ${tag_color ? `bg-${tag_color}-hover border-${tag_color} text-${tag_color}` : 'bg-blue border-blue text-blue'}`}
+                            style={{
+                                left: `${calcLeftAndRight(data, 'left')}%`,
+                                right: `${calcLeftAndRight(data, 'right')}%`,
+                                top: `${30 * index}px`,
+                            }}
+                        >
+                            {data.title}
+                        </div>
                     </div>
                 </div>
-            </div>
-        ))
+            )
+        })
     }
 
     const renderDaysTitle = (days, calendarData) => {
@@ -131,14 +140,14 @@ const CalendarD = (props) => {
             return (
                 <div
                     key={index}
-                    className={`mr-0 border-r border-l flex-col flex-shrink-0 ${calendarData ? 'border-b-2' : ''}`}
+                    className={`calendar-day-title flex-col flex-shrink-0 ${calendarData ? 'border-b-2' : ''}`}
                     style={{ flexBasis: `${(100 / days).toFixed(4)}%` }}
                 >
                     <div className='flex flex-row flex-nowrap items-end' style={{ padding: `${calendarData ? '' : '10px 0 0 10px'}`, marginBottom: `${calendarData ? '' : '8px'}` }}>
                         {moreDayArr.length ? null :
                             <>
-                                <div className='whitespace-nowrap overflow-hidden' style={{ marginRight: '8px', flex: '0 0 auto' }}>{renderFullDate({ data: data, noYear: true, noMonth: true, className: 'text-2xl' })}</div>
-                                <div className='hidden lg:block' style={{ marginBottom: '2px' }}>{weeks[index].week_name}</div>
+                                <div className='whitespace-nowrap overflow-hidden' style={{ marginRight: '8px', flex: '0 0 auto' }}>{renderFullDate({ data: data, noYear: true, noMonth: true, className: 'calendar-day-title-date' })}</div>
+                                <div className='calendar-day-title-weekname'>{weeks[index].week_name}</div>
                             </>
                         }
                     </div>
@@ -149,9 +158,9 @@ const CalendarD = (props) => {
     }
 
     const renderNote = (data) => {
-        const { btime, etime, title, tag_color, today, index } = data
+        const { btime, etime, title, tag_color: hexColor, today, index } = data
+        const tag_color = colorMap[hexColor]
         const tomorrow = addDays(1, today)
-
         if (!new Date(today).getDate()) return
 
         const diff = dateDiff({ btime, etime })
@@ -166,21 +175,22 @@ const CalendarD = (props) => {
         return (
             <div
                 key={index}
-                className={`absolute cursor-pointer opacity-70 box-border border-l-4 w-full ${tag_color ? `bg-${tag_color}-200 border-${tag_color}-600 hover:bg-${tag_color}-300 text-${tag_color}-800` : 'bg-blue-200 border-blue-600 hover:bg-blue-300 text-blue-800'}`}
+                className={`calendar-day-note absolute cursor-pointer opacity-70 w-full ${tag_color ? `bg-${tag_color}-hover border-${tag_color} text-${tag_color}` : 'bg-blue border-blue text-blue'}`}
                 style={{ inset: `${secPercent * minB}% 0% ${100 - (secPercent * minE)}%` }}
                 onClick={e => {
                     e.stopPropagation()
                     handleSetDataAndShowEditor(data)
                 }}
             >
-                <div className='p-1'>
+                <div className='note-title'>
                     {title}
                 </div>
             </div>
         )
     }
 
-    const renderColumnNote = ({ btime, etime, title, tag_color, today, allDay, index }) => {
+    const renderColumnNote = ({ btime, etime, title, tag_color: hexColor, today, all_day, index }) => {
+        const tag_color = colorMap[hexColor]
         const tomorrow = addDays(1, today)
         const dateB = new Date(btime)
         const dateE = new Date(etime)
@@ -199,7 +209,7 @@ const CalendarD = (props) => {
         let top = isFirstDate ? `${secPercent * minB}` : '0'
         let bottom = isLastDate ? `${100 - (secPercent * minE)}` : '0'
 
-        if (allDay) {
+        if (all_day) {
             top = '0'
             bottom = '0'
         }
@@ -207,13 +217,13 @@ const CalendarD = (props) => {
         return (
             <div
                 key={index}
-                className='absolute left-0 top-0 bottom-0'
-                style={{ right: '0px', minWidth: '6px' }}
+                className='absolute left-0 top-0 bottom-0 right-0'
+                // style={{ minWidth: '6px' }}
             >
                 <div draggable='true'>
                     <div
                         key={index}
-                        className={`absolute opacity-70 w-full ${tag_color ? `bg-${tag_color}-200` : 'bg-blue-200'}`}
+                        className={`absolute opacity-70 w-full ${tag_color ? `bg-${tag_color}` : 'bg-blue'}`}
                         style={{ inset: `${top}% 0% ${bottom}%` }}
                     >
                         <div className='p-1'>
@@ -231,8 +241,8 @@ const CalendarD = (props) => {
         return dayArr.map((data, index) => (
             <div
                 key={index}
-                className='border-l border-r relative border-box flex-shrink-0'
-                style={{ minWidth: '80px', flexBasis: `${(100 / days).toFixed(4)}%` }}
+                className='calendar-day-notes relative flex-shrink-0'
+                style={{ flexBasis: `${(100 / days).toFixed(4)}%` }}
             >
 
                 {moreDayArr.map((dataDetail, index) => renderColumnNote({ ...dataDetail, today: data, index }))}
@@ -272,9 +282,9 @@ const CalendarD = (props) => {
                 {/* 日期、星期 */}
                 <div className='flex flex-shrink-0'>
                     <div className='flex flex-shrink-0 bg-white'>
-                        <div className='text-center whitespace-nowrap z-10 flex flex-col flex-end' style={{ width: '59px', padding: '10px 0 4px 0' }}></div>
+                        <div className='calendar-day-title-left-space text-center whitespace-nowrap flex flex-col flex-end'></div>
                     </div>
-                    <div className='overflow-hidden flex-1' style={{ paddingRight: '18px', paddingLeft: '10px', marginLeft: '-10px', minHeight: '48px', minWidth: '80px' }}>
+                    <div className='calendar-day-title-right overflow-hidden flex-1'>
                         <div className='flex'>{renderDaysTitle(days)}</div>
                         <div className='flex relative'>
                             {renderDaysTitle(days, newCalendarData)}
@@ -291,7 +301,7 @@ const CalendarD = (props) => {
                                 {hourArr.map((data, index) => (
                                     <div key={index} className='text-right w-full absolute' style={{ top: `${(100 / 24) * (index + 1)}%` }}>
                                         <div className='relative' style={{ bottom: '8px' }}>
-                                            <div className='flex flex-nowrap justify-center'>
+                                            <div className='flex flex-nowrap'>
                                                 {renderTime(index)}
                                             </div>
                                         </div>
@@ -301,8 +311,7 @@ const CalendarD = (props) => {
                         </div>
                     </div>
                     <div
-                        className='relative flex flex-1'
-                        style={{ paddingRight: '18px', paddingLeft: '2px', marginLeft: '-2px', overflow: 'overlay' }}
+                        className='calendar-day-notes-line relative flex flex-1'
                         onScroll={onScroll}
                         ref={showDaysRef}
                         onClick={e => handleSetDate(e)}

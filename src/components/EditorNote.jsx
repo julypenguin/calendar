@@ -204,7 +204,7 @@ const EditorNote = ({
                                 </svg>
                             </div>
                             <div className='mt-2 flex flex-1'>
-                                {detailDate.allDay ?
+                                {detailDate.all_day ?
                                     <div className='flex-1'>
                                         <div className='datetimepicker-box flex mb-4'>
                                             <Datetimepicker
@@ -239,18 +239,18 @@ const EditorNote = ({
                                 <div className='p-1'>
                                     <div className='flex flex-nowrap p-1'>
                                         <span className='flex flex-shrink-0 mr-2'>
-                                            <FormattedMessage id='calendar.allday' />
+                                            <FormattedMessage id='calendar.all_day' />
                                         </span>
                                         <button
                                             type="button"
-                                            className={`relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${detailDate.allDay ? 'bg-blue-500' : 'bg-gray-200'}`}
+                                            className={`relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${detailDate.all_day ? 'bg-blue-500' : 'bg-gray-200'}`}
                                             role="switch"
                                             aria-checked="false"
-                                            onClick={() => setDetailDate({ ...detailDate, allDay: !detailDate.allDay })}
+                                            onClick={() => setDetailDate({ ...detailDate, all_day: !detailDate.all_day })}
                                         >
                                             <span
                                                 aria-hidden="true"
-                                                className={`translate-x-0 pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200 ${detailDate.allDay ? 'translate-x-5' : 'translate-x-0'}`}
+                                                className={`translate-x-0 pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200 ${detailDate.all_day ? 'translate-x-5' : 'translate-x-0'}`}
                                             />
                                         </button>
                                     </div>
