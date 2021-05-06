@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom'
 import { getFullDate, parseToDateString, parseToISOString } from 'lib/datetime'
 import { Datetimepicker } from '@iqs/datetimepicker'
 import '@iqs/datetimepicker/index.styl'
+import { colorMap } from './formateDate'
 
 const EditorNote = ({
     calendarData, // 整個行程陣列資料
@@ -15,6 +16,7 @@ const EditorNote = ({
 }) => {
 
     const [showCategory, setShowCategory] = useState(false)
+    const tag_color = colorMap[detailDate.tag_color]
 
     const categoryRef = useRef()
     const categoryList = [
@@ -144,7 +146,7 @@ const EditorNote = ({
     return (
         <>
             {/* 頁首 */}
-            <div className={`bg-${detailDate.tag_color}-500 pl-2 pr-1 flex justify-end`}>
+            <div className={`bg-${tag_color}-500 pl-2 pr-1 flex justify-end`}>
                 <div
                     className='p-2 text-white cursor-pointer'
                     onClick={handleClose}
@@ -156,9 +158,9 @@ const EditorNote = ({
             </div>
 
             {/* 功能按鈕 */}
-            <div className={`bg-${detailDate.tag_color}-50 pl-8 pr-1 py-1 flex select-none`}>
+            <div className={`bg-${tag_color}-50 pl-8 pr-1 py-1 flex select-none`}>
                 <div
-                    className={`px-2 py-1 mr-2 rounded cursor-pointer flex-shrink-0 text-${detailDate.tag_color}-600 hover:bg-${detailDate.tag_color}-100`}
+                    className={`px-2 py-1 mr-2 rounded cursor-pointer flex-shrink-0 text-${tag_color}-600 hover:bg-${tag_color}-100`}
                     onClick={onSave}
                 >
                     <Icon className='mr-2' icon={['far', 'save']} />
@@ -166,7 +168,7 @@ const EditorNote = ({
                 </div>
 
                 <div
-                    className={`px-2 py-1 mr-2 rounded cursor-pointer flex-shrink-0 text-${detailDate.tag_color}-600 hover:bg-${detailDate.tag_color}-100 flex flex-nowrap`}
+                    className={`px-2 py-1 mr-2 rounded cursor-pointer flex-shrink-0 text-${tag_color}-600 hover:bg-${tag_color}-100 flex flex-nowrap`}
                     onClick={onAbandon}
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-full w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -176,15 +178,15 @@ const EditorNote = ({
                 </div>
 
                 <div
-                    className={`px-2 py-1 mr-2 rounded cursor-pointer flex-shrink-0 text-${detailDate.tag_color}-600 hover:bg-${detailDate.tag_color}-100 flex flex-nowrap`}
+                    className={`px-2 py-1 mr-2 rounded cursor-pointer flex-shrink-0 text-${tag_color}-600 hover:bg-${tag_color}-100 flex flex-nowrap`}
                     onClick={() => setShowCategory(!showCategory)}
                     ref={categoryRef}
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-full w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                     </svg>
-                    <span className='px-2'>
-                        <FormattedMessage id={`calendar.category.${detailDate.tag_color}`} />
+                    <span className='px-2'>{console.log('detailDate', detailDate)}
+                        <FormattedMessage id={`calendar.category.${tag_color}`} />
                     </span>
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-full w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -225,9 +227,8 @@ const EditorNote = ({
 
                         </div>
                         <div className='flex-grow flex'>
-                            {console.log('detailDate.title', detailDate.title)}
                             <input
-                                className={`text-${detailDate.tag_color}-600 mr-2 pb-1 pl-2 flex-grow text-2xl font-semibold border-b border-gray-300 focus:outline-none`}
+                                className={`text-${tag_color}-600 mr-2 pb-1 pl-2 flex-grow text-2xl font-semibold border-b border-gray-300 focus:outline-none`}
                                 placeholder='新增標題'
                                 value={detailDate.title}
                                 onChange={e => setDetailDate({ ...detailDate, title: e.target.value })}

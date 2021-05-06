@@ -15,7 +15,7 @@ const EditorNote = ({
     ...otherProps
 }) => {
 
-    const [detailDate, setDetailDate] = useState({ title: '', tag_color: 'blue' })
+    const [detailDate, setDetailDate] = useState({ title: '', tag_color: '#BFDBFE' })
 
     const onClose = () => {
         if (typeof handleClose === 'function') handleClose()
@@ -26,12 +26,12 @@ const EditorNote = ({
             btime: defaultValue.btime,
             etime: defaultValue.etime,
             desc: "",
-            tag_color: "blue",
+            tag_color: "#BFDBFE",
         })
     }
 
     useEffect(() => {
-        let tag_color = 'blue'
+        let tag_color = '#BFDBFE'
         if (defaultValue) {
             if (defaultValue.tag_color) tag_color = defaultValue.tag_color
             setDetailDate({ ...defaultValue, tag_color })
