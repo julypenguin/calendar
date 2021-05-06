@@ -54,7 +54,7 @@ const CalendarM = (props) => {
                     btime: newDate,
                     etime: addMinutes(60, newDate),
                     desc: "",
-                    tag_color: "blue",
+                    tag_color: "#BFDBFE",
                 })
             }
 
@@ -73,7 +73,7 @@ const CalendarM = (props) => {
         // 先把一天一天跑起來，再來看特定日子有哪幾個資料
         const newDatas = weeks.map((week, index, arr) => {
             const newWeek = week.map((day, idx) => {
-                const newData = data.map((date) => {
+                const newData = data.map((date, i) => {
                     let left = 0
                     let right = 0
                     let crossDay = false
@@ -116,6 +116,7 @@ const CalendarM = (props) => {
                         left,
                         right,
                         level: index,
+                        index: i,
                         crossDay,
                     }
 
@@ -123,14 +124,13 @@ const CalendarM = (props) => {
 
                 return newData
 
-            }).filter(day => !!day[0])
+            }).filter(day => !!day.length)
 
             return newWeek
 
         }).flat(3)
-            .sort((a, b) => {
-                return ((b.crossDay - a.crossDay) * Date.now()) + (Number(b.sid) - Number(a.sid))
-            })
+            .sort((a, b) => b.index - a.index)
+            .sort((a, b) => b.crossDay - a.crossDay)
             .reduce((acc, date, index, arr) => {
                 if (date.crossDay === true &&
                     arr[index + 1] && arr[index + 1].level === date.level &&
@@ -219,7 +219,17 @@ const CalendarM = (props) => {
                     draggable='true'
                     onClick={() => handleSetDataAndShowDetail({ ...data, title, tag_color })}
                 >
-                    <div className={`calendar-month-notes-box absolute cursor-pointer opacity-70 ${tag_color ? `bg-${tag_color}-hover text-${tag_color}` : 'bg-blue-200 text-blue-800 hover:bg-blue-300'}`} style={{ left: `${(100 / 7) * left}%`, right: `${(100 / 7) * right}%`, top: `calc(${20 * level}% + 34px + ${sort * noteHeight}px + ${sort ? sort : '0'}px)` }}>
+                    <div
+                        className={`calendar-month-notes-box absolute cursor-pointer opacity-70 
+                            ${tag_color ?
+                                `bg-${tag_color}-hover text-${tag_color}` :
+                                'bg-blue-200 text-blue-800 hover:bg-blue-300'}`
+                        }
+                        style={{
+                            left: `${(100 / 7) * left}%`,
+                            right: `${(100 / 7) * right}%`,
+                            top: `calc(${20 * level}% + 34px + ${sort * noteHeight}px + ${sort}px)`
+                        }}>
                         <div className='notes-box-outer truncate'>{title}</div>
                     </div>
                 </div>

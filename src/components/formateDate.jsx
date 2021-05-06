@@ -53,6 +53,12 @@ export const colorMap = {
     "#9FC2BA": "mystical-green",
     "#BEE9E4": "light-heart",
     "#7CE0F9": "glass-gall",
+    "#CAECCF": "silly-fizz",
+    "#D3D2B5": "brain-sand",
+    "#CABD80": "mustard-addicted",
+    "#E1CEB1": "magic-powder",
+    "#DDB0A0": "true-blush",
+    "#D86C70": "merry-cranesbill",
 }
 
 export const calendarType = {

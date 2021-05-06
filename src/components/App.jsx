@@ -85,9 +85,8 @@ const App = (props) => {
         }
 
         // 紀錄下個月有哪幾天(如果這個月的最後一天不是禮拜六才會紀錄)
-        let i = 1
         if (new Date(y, m, days).getDay() != 6) {
-            for (i; i < 7 - new Date(y, m, days).getDay(); i++) {
+            for (let i = 1; i < 7 - new Date(y, m, days).getDay(); i++) {
                 const newY = new Date(y, m + 1, 1).getFullYear()
                 const newM = new Date(y, m + 1, 1).getMonth() + 1
                 const newD = i

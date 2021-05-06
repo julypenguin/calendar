@@ -42,7 +42,7 @@ const CalendarD = (props) => {
 
     const handleSetDate = (e) => {
         const showDaysBox = showDaysRef.current
-        const dayArr = getCycleDays({ date: showData, dayCount: days, isWeek })
+        const dayList = getCycleDays({ date: showData, dayCount: days, isWeek })
         const clickPositionX = e.clientX
         const clickPositionY = e.clientY
 
@@ -57,8 +57,8 @@ const CalendarD = (props) => {
         const time = Math.floor((clickPositionY - inherentHeight) / halfHourHeight)
 
 
-        if (clickDate < dayArr.length) {
-            const btime = new Date(dayArr[clickDate])
+        if (clickDate < dayList.length) {
+            const btime = new Date(dayList[clickDate])
             btime.setHours(Math.floor(time / 2))
             btime.setMinutes(Math.floor((time % 2) * 30))
             handleSetDataAndShowEditor({
@@ -75,10 +75,10 @@ const CalendarD = (props) => {
     const calcLeftAndRight = (data, direction) => {
         if (!data) return 0
         const { btime, etime } = data
-        const dayArr = getCycleDays({ date: showData, dayCount: days, isWeek })
+        const dayList = getCycleDays({ date: showData, dayCount: days, isWeek })
         const dateB = new Date(btime)
         const dateE = new Date(etime)
-        const newDayArr = dayArr.map((today, index) => {
+        const newDayList = dayList.map((today, index) => {
             const tomorrow = addDays(1, today)
             const isFirstDate = dateB > today && dateB < tomorrow
             const isLastDate = dateE > today && dateE < tomorrow
@@ -87,8 +87,8 @@ const CalendarD = (props) => {
             return isFirstDate || isLastDate || isBetweenDates
         })
 
-        const left = (100 / days) * newDayArr.indexOf(true)
-        const right = 100 - ((100 / days) * (newDayArr.lastIndexOf(true) + 1))
+        const left = (100 / days) * newDayList.indexOf(true)
+        const right = 100 - ((100 / days) * (newDayList.lastIndexOf(true) + 1))
         if (direction === 'right') return right
         return left
     }
@@ -105,8 +105,8 @@ const CalendarD = (props) => {
     }
 
     const renderTitleNote = () => {
-        const moreDayArr = newCalendarData.filter((d) => dateDiff({ ...d })) || []
-        return moreDayArr.map((data, index, arr) => {
+        const moreDayList = newCalendarData.filter((d) => dateDiff({ ...d })) || []
+        return moreDayList.map((data, index, arr) => {
             const { tag_color: hexColor } = data
             const tag_color = colorMap[hexColor]
             return (
@@ -133,25 +133,24 @@ const CalendarD = (props) => {
     }
 
     const renderDaysTitle = (days, calendarData) => {
-        const dayArr = getCycleDays({ date: showData, dayCount: days, isWeek })
-        const moreDayArr = calendarData && calendarData.filter((d) => dateDiff({ ...d })) || []
-        return dayArr.map((data, index) => {
-            if (calendarData && !moreDayArr.length) return null
+        const dayList = getCycleDays({ date: showData, dayCount: days, isWeek })
+        const moreDayList = calendarData && calendarData.filter((d) => dateDiff({ ...d })) || []
+        return dayList.map((data, index) => {
+            if (calendarData && !moreDayList.length) return null
             return (
                 <div
                     key={index}
-                    className={`calendar-day-title flex-col flex-shrink-0 ${calendarData ? 'border-b-2' : ''}`}
+                    className={`calendar-day-title flex-col flex-shrink-0`}
                     style={{ flexBasis: `${(100 / days).toFixed(4)}%` }}
                 >
                     <div className='flex flex-row flex-nowrap items-end' style={{ padding: `${calendarData ? '' : '10px 0 0 10px'}`, marginBottom: `${calendarData ? '' : '8px'}` }}>
-                        {moreDayArr.length ? null :
+                        {moreDayList.length ? null :
                             <>
                                 <div className='whitespace-nowrap overflow-hidden' style={{ marginRight: '8px', flex: '0 0 auto' }}>{renderFullDate({ data: data, noYear: true, noMonth: true, className: 'calendar-day-title-date' })}</div>
                                 <div className='calendar-day-title-weekname'>{weeks[index].week_name}</div>
                             </>
                         }
                     </div>
-
                 </div>
             )
         })
@@ -168,15 +167,15 @@ const CalendarD = (props) => {
         if (new Date(btime) < today || new Date(etime) >= tomorrow) return
         const fullDateB = getFullDate(btime)
         const fullDateE = getFullDate(etime)
-        const minB = Number(fullDateB.h) * 60 + Number(fullDateB.mm)
-        const minE = Number(fullDateE.h) * 60 + Number(fullDateE.mm)
-        const secPercent = (100 / 1440).toFixed(4)
+        const minuteB = Number(fullDateB.h) * 60 + Number(fullDateB.mm)
+        const minuteE = Number(fullDateE.h) * 60 + Number(fullDateE.mm)
+        const minutePercent = (100 / 1440).toFixed(4)
 
         return (
             <div
                 key={index}
                 className={`calendar-day-note absolute cursor-pointer opacity-70 w-full ${tag_color ? `bg-${tag_color}-hover border-${tag_color} text-${tag_color}` : 'bg-blue border-blue text-blue'}`}
-                style={{ inset: `${secPercent * minB}% 0% ${100 - (secPercent * minE)}%` }}
+                style={{ inset: `${minutePercent * minuteB}% 0% ${100 - (minutePercent * minuteE)}%` }}
                 onClick={e => {
                     e.stopPropagation()
                     handleSetDataAndShowEditor(data)
@@ -202,12 +201,12 @@ const CalendarD = (props) => {
 
         const fullDateB = getFullDate(btime)
         const fullDateE = getFullDate(etime)
-        const minB = Number(fullDateB.h) * 60 + Number(fullDateB.mm)
-        const minE = Number(fullDateE.h) * 60 + Number(fullDateE.mm)
-        const secPercent = (100 / 1440).toFixed(4)
+        const minuteB = Number(fullDateB.h) * 60 + Number(fullDateB.mm)
+        const minuteE = Number(fullDateE.h) * 60 + Number(fullDateE.mm)
+        const minutePercent = (100 / 1440).toFixed(4)
 
-        let top = isFirstDate ? `${secPercent * minB}` : '0'
-        let bottom = isLastDate ? `${100 - (secPercent * minE)}` : '0'
+        let top = isFirstDate ? `${minutePercent * minuteB}` : '0'
+        let bottom = isLastDate ? `${100 - (minutePercent * minuteE)}` : '0'
 
         if (all_day) {
             top = '0'
@@ -235,21 +234,21 @@ const CalendarD = (props) => {
     }
 
     const renderNotes = (days) => {
-        const dayArr = getCycleDays({ date: showData, dayCount: days, isWeek })
-        const onlyOneDayArr = newCalendarData.filter((d) => !dateDiff({ ...d }))
-        const moreDayArr = newCalendarData.filter((d) => dateDiff({ ...d }))
-        return dayArr.map((data, index) => (
+        const dayList = getCycleDays({ date: showData, dayCount: days, isWeek })
+        const onlyOneDayList = newCalendarData.filter((d) => !dateDiff({ ...d }))
+        const moreDayList = newCalendarData.filter((d) => dateDiff({ ...d }))
+        return dayList.map((data, index) => (
             <div
                 key={index}
                 className='calendar-day-notes relative flex-shrink-0'
                 style={{ flexBasis: `${(100 / days).toFixed(4)}%` }}
             >
 
-                {moreDayArr.map((dataDetail, index) => renderColumnNote({ ...dataDetail, today: data, index }))}
+                {moreDayList.map((dataDetail, index) => renderColumnNote({ ...dataDetail, today: data, index }))}
 
                 <div className='absolute left-0 top-0 bottom-0' style={{ right: '10px', minWidth: '6px' }}>
                     <div draggable='true'>
-                        {onlyOneDayArr.map((dataDetail, index) => renderNote({ ...dataDetail, today: data, index }))}
+                        {onlyOneDayList.map((dataDetail, index) => renderNote({ ...dataDetail, today: data, index }))}
                     </div>
                 </div>
 
@@ -286,7 +285,7 @@ const CalendarD = (props) => {
                     </div>
                     <div className='calendar-day-title-right overflow-hidden flex-1'>
                         <div className='flex'>{renderDaysTitle(days)}</div>
-                        <div className='flex relative'>
+                        <div className='flex relative border-b-2'>
                             {renderDaysTitle(days, newCalendarData)}
                             {renderTitleNote()}
                         </div>
@@ -321,7 +320,11 @@ const CalendarD = (props) => {
                                 className='relative flex flex-1 w-full'
                             >
                                 {hourLineArr.map((line, index) => (
-                                    <div key={index} className={`absolute left-0 right-0 border-t ${index % 2 === 1 ? 'border-solid' : 'border-dashed'}`} style={{ top: `${(100 / 48) * (index + 1)}%` }}></div>
+                                    <div 
+                                        key={index} 
+                                        className={`absolute left-0 right-0 border-t ${index % 2 === 1 ? 'border-solid' : 'border-dashed'}`} 
+                                        style={{ top: `${(100 / 48) * (index + 1)}%` }}
+                                    />
                                 ))}
 
                                 {renderNotes(days)}

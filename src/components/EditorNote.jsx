@@ -20,35 +20,75 @@ const EditorNote = ({
     const categoryList = [
         {
             name: 'red',
-            color: 'red',
+            hexColor: '#FECACA',
         },
         {
             name: 'pink',
-            color: 'pink',
+            hexColor: '#FBCFE8',
         },
         {
             name: 'yellow',
-            color: 'yellow',
+            hexColor: '#FDE68A',
         },
         {
             name: 'green',
-            color: 'green',
+            hexColor: '#A7F3D0',
         },
         {
             name: 'blue',
-            color: 'blue',
+            hexColor: '#BFDBFE',
         },
         {
             name: 'indigo',
-            color: 'indigo',
+            hexColor: '#C7D2FE',
         },
         {
             name: 'purple',
-            color: 'purple',
+            hexColor: '#DDD6FE',
         },
         {
             name: 'gray',
-            color: 'gray',
+            hexColor: '#E5E7EB',
+        },
+        {
+            name: 'bewitched-tree',
+            hexColor: '#76C4AE',
+        },
+        {
+            name: 'mystical-green',
+            hexColor: '#9FC2BA',
+        },
+        {
+            name: 'light-heart',
+            hexColor: '#BEE9E4',
+        },
+        {
+            name: 'glass-gall',
+            hexColor: '#7CE0F9',
+        },
+        {
+            name: 'silly-fizz',
+            hexColor: '#CAECCF',
+        },
+        {
+            name: 'brain-sand',
+            hexColor: '#D3D2B5',
+        },
+        {
+            name: 'mustard-addicted',
+            hexColor: '#CABD80',
+        },
+        {
+            name: 'magic-powder',
+            hexColor: '#E1CEB1',
+        },
+        {
+            name: 'true-blush',
+            hexColor: '#DDB0A0',
+        },
+        {
+            name: 'merry-cranesbill',
+            hexColor: '#D86C70',
         },
     ]
 
@@ -89,13 +129,13 @@ const EditorNote = ({
             <li
                 key={index}
                 className={`flex flex-nowrap items-center pl-2 py-2 pr-8 hover:bg-gray-100 cursor-pointer`}
-                onClick={() => setDetailDate({ ...detailDate, tag_color: data.color.toLowerCase() })}
+                onClick={() => setDetailDate({ ...detailDate, tag_color: data.hexColor.toLowerCase() })}
             >
-                <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 mr-2 text-${data.color}-500`} viewBox="0 0 20 20" fill="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 mr-2 text-${data.name}-500`} viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M17.707 9.293a1 1 0 010 1.414l-7 7a1 1 0 01-1.414 0l-7-7A.997.997 0 012 10V5a3 3 0 013-3h5c.256 0 .512.098.707.293l7 7zM5 6a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
                 </svg>
                 <span>
-                    <FormattedMessage id={`calendar.category.${data.color}`} />
+                    <FormattedMessage id={`calendar.category.${data.name}`} />
                 </span>
             </li>
         )

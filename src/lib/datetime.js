@@ -136,12 +136,12 @@ function setStartTime(date) {
 
 // 過濾不必要的日期
 export function filterDate({ btime, etime, showData, dayCount, isWeek, isMonth }) {
-	const dayArr = getCycleDays({ date: showData, dayCount, isWeek, isMonth })
+	const dayList = getCycleDays({ date: showData, dayCount, isWeek, isMonth })
 	const dateB = new Date(btime)
 	const dateE = new Date(etime)
 
-	const firstDate = new Date(dayArr[0])
-	const lastDate = addDays(1, new Date(dayArr[dayArr.length - 1]))
+	const firstDate = new Date(dayList[0])
+	const lastDate = addDays(1, new Date(dayList[dayList.length - 1]))
 
 	const before = dateB < firstDate && dateE > firstDate
 	const between = dateB >= firstDate && dateE < lastDate

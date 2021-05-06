@@ -53,13 +53,12 @@ const SelectorM = ({
     //option=1: month, option=2: year
     const selectYearOrMonth = (setData, data, option) => {
         const fullDate = getFullDate(data)
-        // const fullDateSelected = getFullDate(data)
         const y = Number(fullDate.y)
         const selectedY = Number(fullDate.y)
         const m = Number(fullDate.m)
         const selectedM = Number(fullDate.m)
         const yearOrMonthArr = new Array(12).fill('')
-        const newArray = new Array(3).fill('')
+        const rowList = new Array(3).fill('')
 
         if (option === 1) {
             const newMonth = yearOrMonthArr.map((data, index) => {
@@ -69,7 +68,7 @@ const SelectorM = ({
                 }
             })
 
-            return newArray.map((data, index) => {
+            return rowList.map((data, index) => {
                 return <div key={index} className='mb-2' role='row'>
                     {newMonth.filter(d => d.level === index)
                         .map(d => (
@@ -100,7 +99,7 @@ const SelectorM = ({
                     level: Math.floor(index / 4),
                 }
             })
-            return newArray.map((data, index) => {
+            return rowList.map((data, index) => {
                 return <div key={index} className='mb-2' role='row'>
                     {newYear.filter(d => d.level === index)
                         .map(d => (
