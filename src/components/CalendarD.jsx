@@ -1,9 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { FormattedDate, FormattedMessage, FormattedTime, injectIntl } from 'react-intl'
 import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome'
-import { renderFullDate, colorMap } from './formateDate'
+import { renderFullDate, colorMap, weeks } from './formateDate'
 import { getFullDate, addDays, getCycleDays, filterDate, dateDiff, addMinutes } from 'lib/datetime'
-import { weeks } from './formateDate'
 import EditorNote from './EditorNote'
 import Modal from './Modal'
 import { brightness } from 'lib/color'
@@ -93,6 +92,57 @@ const CalendarD = (props) => {
         return left
     }
 
+    const formatCalendarData = (data) => {
+        const dayList = getCycleDays({ date: showData, dayCount: days, isWeek })
+
+        const newDatas = dayList.map((day, index) => {
+            const today = new Date(day)
+            const tomorrow = addDays(1, day)
+            let subColumn = {} // 紀錄分鐘有幾筆資料
+            let maxColumn = 0 // 紀錄最大的 sort 值
+
+            const newData = data.reduce((acc, date, i) => {
+                const dateB = new Date(date.btime)
+                const dateE = new Date(date.etime)
+                const between = dateB >= today && dateE < tomorrow // 有在這天的資料
+
+                if (!between) return acc
+
+                const fullDateB = getFullDate(date.btime)
+                const fullDateE = getFullDate(date.etime)
+                let minuteB = Number(fullDateB.h) * 60 + Number(fullDateB.mm)
+                const minuteE = Number(fullDateE.h) * 60 + Number(fullDateE.mm)
+
+                for (minuteB; minuteB <= minuteE; minuteB++) {
+                    subColumn[minuteB] = subColumn[minuteB] ? [...subColumn[minuteB], date.sid] : [date.sid]
+                }
+
+                let sort = 0
+                for (let minute in subColumn) {
+                    const newSort = subColumn[minute].indexOf(date.sid)
+                    if (newSort > sort) sort = newSort
+                    if ( newSort + 1 > maxColumn) maxColumn = newSort + 1
+                }
+
+                return [
+                    ...acc,
+                    {
+                        ...date,
+                        column: index,
+                        index: i,
+                        sort,
+                    }
+                ]
+            }, [])
+
+            return newData.map(date => ({ ...date, maxColumn }))
+        })
+        .filter(date => date[0])
+        .flat()
+
+        return newDatas
+    }
+
     const renderTime = (index) => {
         const time = (index % 12) + 1
         const twelveHourClock = (index / 12) >= 1 ? 'pm' : 'am'
@@ -170,18 +220,24 @@ const CalendarD = (props) => {
         const minuteB = Number(fullDateB.h) * 60 + Number(fullDateB.mm)
         const minuteE = Number(fullDateE.h) * 60 + Number(fullDateE.mm)
         const minutePercent = (100 / 1440).toFixed(4)
+        const maxColumnPercent = (100 / data.maxColumn).toFixed(4)
 
         return (
             <div
                 key={index}
-                className={`calendar-day-note absolute cursor-pointer opacity-70 w-full ${tag_color ? `bg-${tag_color}-hover border-${tag_color} text-${tag_color}` : 'bg-blue border-blue text-blue'}`}
-                style={{ inset: `${minutePercent * minuteB}% 0% ${100 - (minutePercent * minuteE)}%` }}
+                className={`calendar-day-note absolute cursor-pointer opacity-70 ${tag_color ? `bg-${tag_color}-hover border-${tag_color} text-${tag_color}` : 'bg-blue border-blue text-blue'}`}
+                style={{
+                    top: `${minutePercent * minuteB}%`,
+                    bottom: `${100 - (minutePercent * minuteE)}%`,
+                    left: `${data.sort * maxColumnPercent}%`,
+                    right: `calc(${(data.maxColumn - data.sort - 1) * maxColumnPercent}% + 2px)`
+                }}
                 onClick={e => {
                     e.stopPropagation()
                     handleSetDataAndShowEditor(data)
                 }}
             >
-                <div className='note-title'>
+                <div className='note-title truncate'>
                     {title}
                 </div>
             </div>
@@ -217,7 +273,7 @@ const CalendarD = (props) => {
             <div
                 key={index}
                 className='absolute left-0 top-0 bottom-0 right-0'
-                // style={{ minWidth: '6px' }}
+            // style={{ minWidth: '6px' }}
             >
                 <div draggable='true'>
                     <div
@@ -236,6 +292,7 @@ const CalendarD = (props) => {
     const renderNotes = (days) => {
         const dayList = getCycleDays({ date: showData, dayCount: days, isWeek })
         const onlyOneDayList = newCalendarData.filter((d) => !dateDiff({ ...d }))
+        const formatOneDayList = formatCalendarData(onlyOneDayList)
         const moreDayList = newCalendarData.filter((d) => dateDiff({ ...d }))
         return dayList.map((data, index) => (
             <div
@@ -248,7 +305,7 @@ const CalendarD = (props) => {
 
                 <div className='absolute left-0 top-0 bottom-0' style={{ right: '10px', minWidth: '6px' }}>
                     <div draggable='true'>
-                        {onlyOneDayList.map((dataDetail, index) => renderNote({ ...dataDetail, today: data, index }))}
+                        {formatOneDayList.map((dataDetail, index) => renderNote({ ...dataDetail, today: data, index }))}
                     </div>
                 </div>
 
@@ -320,9 +377,9 @@ const CalendarD = (props) => {
                                 className='relative flex flex-1 w-full'
                             >
                                 {hourLineArr.map((line, index) => (
-                                    <div 
-                                        key={index} 
-                                        className={`absolute left-0 right-0 border-t ${index % 2 === 1 ? 'border-solid' : 'border-dashed'}`} 
+                                    <div
+                                        key={index}
+                                        className={`absolute left-0 right-0 border-t ${index % 2 === 1 ? 'border-solid' : 'border-dashed'}`}
                                         style={{ top: `${(100 / 48) * (index + 1)}%` }}
                                     />
                                 ))}
