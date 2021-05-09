@@ -36,6 +36,7 @@ const CalendarM = (props) => {
     const cellRef = useRef()
 
     const fullDate = getFullDate(newShowData)
+    const weeks = renderDate(showData)
 
     const handleSetDate = data => {
         const newDate = new Date(data.year, data.month - 1, data.date)
@@ -67,7 +68,6 @@ const CalendarM = (props) => {
     }
 
     const formatCalendarData = (data) => {
-        const weeks = renderDate(showData)
         let subLevel = {} // 紀錄某一天有幾筆資料
 
         // 先把一天一天跑起來，再來看特定日子有哪幾個資料
@@ -173,6 +173,7 @@ const CalendarM = (props) => {
         const noteHeight = 23
         if (!cellBox) return
         const minShowDetail = Math.floor(cellBox.height / noteHeight) - 3
+        const totalLevels = weeks.length
 
         return notes.map(({ title, tag_color: hexColor, left, right, sort, level, ...data }, index) => {
             const isCannotShow = minShowDetail < 0 && sort === 1
@@ -199,7 +200,13 @@ const CalendarM = (props) => {
                         })
                     }}
                 >
-                    <div className={`calendar-month-notes-box absolute cursor-pointer opacity-70 `} style={{ left: `${(100 / 7) * left}%`, right: `${(100 / 7) * right}%`, top: `calc(${20 * level}% + 34px + ${sort * noteHeight}px + ${sort ? sort : '0'}px)` }}>
+                    <div
+                        className={`calendar-month-notes-box absolute cursor-pointer opacity-70 `}
+                        style={{
+                            left: `${(100 / 7) * left}%`,
+                            right: `${(100 / 7) * right}%`,
+                            top: `calc(${20 * level}% + 34px + ${sort * noteHeight}px + ${sort ? sort : '0'}px)`
+                        }}>
                         <div className='px-2 truncate flex justify-center items-center'>
                             <div className='notes-box-outer'>
                                 <svg xmlns="http://www.w3.org/2000/svg" className="calendar-icon-md" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -228,7 +235,7 @@ const CalendarM = (props) => {
                         style={{
                             left: `${(100 / 7) * left}%`,
                             right: `${(100 / 7) * right}%`,
-                            top: `calc(${20 * level}% + 34px + ${sort * noteHeight}px + ${sort}px)`
+                            top: `calc(${(100 / totalLevels) * level}% + 34px + ${sort * noteHeight}px + ${sort}px)`
                         }}>
                         <div className='notes-box-outer truncate'>{title}</div>
                     </div>
