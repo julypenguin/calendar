@@ -5,7 +5,7 @@ import { createPortal } from 'react-dom'
 import { getFullDate, parseToDateString, parseToISOString } from 'lib/datetime'
 import { Datetimepicker } from '@iqs/datetimepicker'
 import '@iqs/datetimepicker/index.styl'
-import { colorMap } from './formateDate'
+import { colorMap } from './formatDate'
 
 const EditorNote = ({
     calendarData, // 整個行程陣列資料

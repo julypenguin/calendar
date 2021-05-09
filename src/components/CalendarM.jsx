@@ -4,7 +4,7 @@ import { FormattedDate, FormattedMessage, FormattedTime, injectIntl } from 'reac
 import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome'
 import '../styl/styles.css'
 import { getFullDate, filterDate, addMinutes } from 'lib/datetime'
-import { weeks, renderCalendarMonthDate, colorMap } from './formateDate'
+import { weeks, renderCalendarMonthDate, colorMap } from './formatDate'
 import EditorNote from './EditorNote'
 import SchedualDetail from './SchedualDetail'
 import Schedule from './Schedule'
@@ -299,12 +299,12 @@ const CalendarM = (props) => {
                                             ref={elm => cellRef.current = elm}
                                         >
                                             <div className={`w-full select-none ${!center ? '' : 'flex justify-center items-center h-full'}`}>
-                                                {data.formateDate ?
+                                                {data.formatDate ?
                                                     abbr ?
                                                         <div className={`${!textSm ? '' : 'calendar-text-sm'} ${selector && data.isToday ? 'text-white' : selector && !data.main ? 'text-gray-300' : 'text-gray-500'}`}>{data.date}</div>
                                                         :
                                                         <>
-                                                            <div className={`hidden md:block ${!textSm ? '' : 'text-xs'} ${selector && data.isToday ? 'text-white' : selector && !data.main ? 'text-gray-300' : 'text-gray-500'}`}>{data.formateDate}</div>
+                                                            <div className={`hidden md:block ${!textSm ? '' : 'text-xs'} ${selector && data.isToday ? 'text-white' : selector && !data.main ? 'text-gray-300' : 'text-gray-500'}`}>{data.formatDate}</div>
                                                             <div className={`md:hidden ${!textSm ? '' : 'text-xs'} ${selector && data.isToday ? 'text-white' : selector && !data.main ? 'text-gray-300' : 'text-gray-500'}`}>{data.date}</div>
                                                         </>
 

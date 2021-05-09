@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { FormattedDate, FormattedMessage, FormattedTime, injectIntl } from 'react-intl'
 import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome'
-import { renderFullDate, colorMap, weeks } from './formateDate'
+import { renderFullDate, colorMap, weeks } from './formatDate'
 import { getFullDate, addDays, getCycleDays, filterDate, dateDiff, addMinutes } from 'lib/datetime'
 import EditorNote from './EditorNote'
 import Modal from './Modal'

@@ -2,8 +2,8 @@ import React, { useEffect } from 'react';
 import { FormattedDate, FormattedMessage, FormattedTime, injectIntl } from 'react-intl'
 
 import { getFullDate, filterDate, addMinutes } from 'lib/datetime'
-import { renderFullDate, calendarType } from './formateDate'
-import { weeks } from './formateDate'
+import { renderFullDate, calendarType } from './formatDate'
+import { weeks } from './formatDate'
 
 const Schedule = (props) => {
     const {

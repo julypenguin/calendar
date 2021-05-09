@@ -56,7 +56,7 @@ const App = (props) => {
                     year: newY,
                     isOverdue: checkOverdue({ y: newY, m: newM, d: newD, todayY, todayM, todayD }),
                     isToday: checkOverdue({ y: newY, m: newM, d: newD, todayY, todayM, todayD }, true),
-                    formateDate: <FormattedDate
+                    formatDate: <FormattedDate
                         value={`${newM}-${newD}`}
                         month="long"
                         day="2-digit"
@@ -75,7 +75,7 @@ const App = (props) => {
                 year: y,
                 isOverdue: checkOverdue({ y, m: m + 1, d: i, todayY, todayM, todayD }),
                 isToday,
-                formateDate: !isToday ? null : <FormattedDate
+                formatDate: !isToday ? null : <FormattedDate
                     value={`${m + 1}-${i}`}
                     month="long"
                     day="2-digit"
@@ -96,7 +96,7 @@ const App = (props) => {
                     year: newY,
                     isOverdue: checkOverdue({ y: newY, m: newM, d: newD, todayY, todayM, todayD }),
                     isToday: checkOverdue({ y: newY, m: newM, d: newD, todayY, todayM, todayD }, true),
-                    formateDate: <FormattedDate
+                    formatDate: <FormattedDate
                         value={`${newM}-${newD}`}
                         month="long"
                         day="2-digit"

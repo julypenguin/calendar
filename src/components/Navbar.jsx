@@ -5,7 +5,7 @@ import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome'
 import { getFullDate } from 'lib/datetime'
 import CalendarM from './CalendarM'
 import SelectorM from './SelectorM'
-import { renderFullDate, calendarType } from './formateDate'
+import { renderFullDate, calendarType } from './formatDate'
 
 const Navbar = ({
     showData,
