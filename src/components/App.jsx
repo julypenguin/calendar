@@ -16,7 +16,7 @@ const App = (props) => {
     const { intl: { language } } = props
 
     const [showData, setShowData] = useState(new Date().toISOString())
-    const [cycle, setCycle] = useState(30) // 1: 1天, 2:2天, 3:3天, 4:4天, 5:5天, 6:6天, 7:7天, 30: 1月, 77:1週
+    const [cycle, setCycle] = useState(7) // 1: 1天, 2:2天, 3:3天, 4:4天, 5:5天, 6:6天, 7:7天, 30: 1月, 77:1週
 
     const isWeek = cycle === 77 ? true : false
 

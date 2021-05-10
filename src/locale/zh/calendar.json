@@ -41,7 +41,17 @@
         "blue": "藍色",
         "indigo": "靛色",
         "purple": "紫色",
-        "gray": "灰色"
+        "gray": "灰色",
+        "bewitched-tree": "bewitched-tree",
+        "mystical-green": "mystical-green",
+        "light-heart": "light-heart",
+        "glass-gall": "glass-gall",
+        "silly-fizz": "silly-fizz",
+        "brain-sand": "brain-sand",
+        "mustard-addicted": "mustard-addicted",
+        "magic-powder": "magic-powder",
+        "true-blush": "true-blush",
+        "merry-cranesbill": "merry-cranesbill"
     },
     "detail": {
         "edit": "編輯",

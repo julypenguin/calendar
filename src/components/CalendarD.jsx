@@ -4,6 +4,7 @@ import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome'
 import { renderFullDate, colorMap, weeks } from './formatDate'
 import { getFullDate, addDays, getCycleDays, filterDate, dateDiff, addMinutes } from 'lib/datetime'
 import EditorNote from './EditorNote'
+import SchedualDetail from './SchedualDetail'
 import Modal from './Modal'
 import { brightness } from 'lib/color'
 
@@ -12,6 +13,7 @@ const CalendarD = (props) => {
 
     const [days, setDays] = useState(1)
     const [selectedDate, setSelectedDate] = useState({})
+    const [showDetail, setShowDetail] = useState(false)
     const [showEditor, setShowEditor] = useState(false)
     const [newCalendarData, setNewCalendarData] = useState([])
 
@@ -20,6 +22,11 @@ const CalendarD = (props) => {
 
     const hourArr = new Array(23).fill('')
     const hourLineArr = new Array(47).fill('')
+
+    const handleSetDataAndShowDetail = (data) => {
+        setSelectedDate(data)
+        setShowDetail(true)
+    }
 
     const handleSetDataAndShowEditor = (data) => {
         setSelectedDate(data)
@@ -163,7 +170,7 @@ const CalendarD = (props) => {
                 <div
                     key={index}
                     style={{ height: `${(arr.length * 30) + 8}px` }}
-                    onClick={() => handleSetDataAndShowEditor(data)}
+                    onClick={() => handleSetDataAndShowDetail(data)}
                 >
                     <div draggable='true'>
                         <div
@@ -225,7 +232,7 @@ const CalendarD = (props) => {
         return (
             <div
                 key={index}
-                className={`calendar-day-note absolute cursor-pointer opacity-70 ${tag_color ? `bg-${tag_color}-hover border-${tag_color} text-${tag_color}` : 'bg-blue border-blue text-blue'}`}
+                className={`calendar-day-note absolute cursor-pointer opacity-70 ${tag_color ? `bg-${tag_color}-hover border-${tag_color} text-${tag_color}-view` : 'bg-blue border-blue text-blue'}`}
                 style={{
                     top: `${minutePercent * minuteB}%`,
                     bottom: `${100 - (minutePercent * minuteE)}%`,
@@ -234,7 +241,7 @@ const CalendarD = (props) => {
                 }}
                 onClick={e => {
                     e.stopPropagation()
-                    handleSetDataAndShowEditor(data)
+                    handleSetDataAndShowDetail(data)
                 }}
             >
                 <div className='note-title truncate'>
@@ -391,6 +398,16 @@ const CalendarD = (props) => {
                     </div>
                 </div>
             </div>
+
+            <Modal
+                Content={SchedualDetail}
+                show={showDetail}
+                handleClose={() => setShowDetail(false)}
+                defaultValue={selectedDate}
+                setDefaultValue={setSelectedDate}
+                calendarData={newCalendarData}
+                setCalendarData={setNewCalendarData}
+            />
 
             <Modal
                 Content={EditorNote}
