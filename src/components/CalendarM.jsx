@@ -3,7 +3,7 @@ import classNames from 'classnames'
 import { FormattedDate, FormattedMessage, FormattedTime, injectIntl } from 'react-intl'
 import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome'
 import '../styl/styles.css'
-import { getFullDate, filterDate, addMinutes } from 'lib/datetime'
+import { getFullDate, filterDate, addMinutes, dateDiff } from 'lib/datetime'
 import { weeks, renderCalendarMonthDate, colorMap } from './formatDate'
 import EditorNote from './EditorNote'
 import SchedualDetail from './SchedualDetail'
@@ -229,8 +229,8 @@ const CalendarM = (props) => {
                     <div
                         className={`calendar-month-notes-box absolute cursor-pointer opacity-70 
                             ${tag_color ?
-                                `bg-${tag_color}-hover text-${tag_color}` :
-                                'bg-blue-200 text-blue-800 hover:bg-blue-300'}`
+                                `bg-${tag_color}-hover text-${tag_color}-view` :
+                                'bg-blue-hover text-blue-view'}`
                         }
                         style={{
                             left: `${(100 / 7) * left}%`,
@@ -287,7 +287,11 @@ const CalendarM = (props) => {
                                 week.map((data, i) => (
                                     <div
                                         key={i}
-                                        className={`whitespace-nowrap absolute cursor-pointer ${Number(data.date) === Number(fullDate.d) && Number(data.month) === Number(fullDate.m) && Number(data.year) === Number(fullDate.y) ? 'calendar-bg-today' : 'bg-white'} ${!selector ? '' : 'calendar-selector'}
+                                        className={`whitespace-nowrap absolute cursor-pointer ${classNames("bg-white", {
+                                            "calendar-bg-today": 
+                                            // !dateDiff({ btime: data.datetime, etime: newShowData })
+                                             Number(data.date) === Number(fullDate.d) && Number(data.month) === Number(fullDate.m) && Number(data.year) === Number(fullDate.y)
+                                        })}  ${!selector ? '' : 'calendar-selector'}
                                         ${!selector ?
                                                 data.isToday ? 'calendar-today border-t'
                                                     : data.isOverdue ? 'calendar-overdue border-t' : 'bg-white border-t'
@@ -300,7 +304,7 @@ const CalendarM = (props) => {
                                             ${(100 / 7 * (i)).toFixed(4)}%`
                                         }}
                                         onClick={() => handleSetDate(data)}
-                                    >
+                                    >{console.log('data', data)}
                                         <div
                                             className={`calendar-month-date flex flex-col w-full h-full overflow-hidden ${selector && data.isToday ? 'calendar-month-date-selector' : ''} `}
                                             ref={elm => cellRef.current = elm}
@@ -308,15 +312,18 @@ const CalendarM = (props) => {
                                             <div className={`w-full select-none ${!center ? '' : 'flex justify-center items-center h-full'}`}>
                                                 {data.formatDate ?
                                                     abbr ?
-                                                        <div className={`${!textSm ? '' : 'calendar-text-sm'} ${selector && data.isToday ? 'text-white' : selector && !data.main ? 'text-gray-300' : 'text-gray-500'}`}>{data.date}</div>
+                                                        <div 
+                                                            className={`${!textSm ? '' : 'calendar-text-sm'} ${selector && data.isToday ? 'text-white' : selector && !data.main ? 'text-gray-300' : 'text-gray-500'}`}>{data.date}</div>
                                                         :
                                                         <>
-                                                            <div className={`hidden md:block ${!textSm ? '' : 'text-xs'} ${selector && data.isToday ? 'text-white' : selector && !data.main ? 'text-gray-300' : 'text-gray-500'}`}>{data.formatDate}</div>
-                                                            <div className={`md:hidden ${!textSm ? '' : 'text-xs'} ${selector && data.isToday ? 'text-white' : selector && !data.main ? 'text-gray-300' : 'text-gray-500'}`}>{data.date}</div>
+                                                            <div 
+                                                                className={`calendar-month-date-name ${!textSm ? '' : 'calendar-text-sm'} ${selector && data.isToday ? 'text-white' : selector && !data.main ? 'text-gray-300' : 'text-gray-500'}`}>{data.formatDate}</div>
+                                                            <div 
+                                                                className={`calendar-month-date-date ${!textSm ? '' : 'calendar-text-sm'} ${selector && data.isToday ? 'text-white' : selector && !data.main ? 'text-gray-300' : 'text-gray-500'}`}>{data.date}</div>
                                                         </>
 
                                                     :
-                                                    <span className={`${!textSm ? '' : 'text-xs'} ${selector && data.isToday ? 'text-white' : selector && !data.main ? 'text-gray-300' : 'text-gray-500'}`}>{data.date}</span>
+                                                    <span className={`${!textSm ? '' : 'calendar-text-sm'} ${selector && data.isToday ? 'text-white' : selector && !data.main ? 'text-gray-300' : 'text-gray-500'}`}>{data.date}</span>
                                                 }
                                             </div>
                                         </div>
