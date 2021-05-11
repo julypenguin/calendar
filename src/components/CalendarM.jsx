@@ -224,7 +224,7 @@ const CalendarM = (props) => {
                 <div
                     key={index}
                     draggable='true'
-                    onClick={() => handleSetDataAndShowDetail({ ...data, title, tag_color })}
+                    onClick={() => handleSetDataAndShowDetail({ ...data, title })}
                 >
                     <div
                         className={`calendar-month-notes-box absolute cursor-pointer opacity-70 
@@ -304,7 +304,7 @@ const CalendarM = (props) => {
                                             ${(100 / 7 * (i)).toFixed(4)}%`
                                         }}
                                         onClick={() => handleSetDate(data)}
-                                    >{console.log('data', data)}
+                                    >
                                         <div
                                             className={`calendar-month-date flex flex-col w-full h-full overflow-hidden ${selector && data.isToday ? 'calendar-month-date-selector' : ''} `}
                                             ref={elm => cellRef.current = elm}
