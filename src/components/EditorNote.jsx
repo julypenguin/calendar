@@ -300,7 +300,62 @@ const EditorNote = ({
 
                             </div>
                         </div>
-                        <div></div>
+                    </div>
+
+                    {/* 重複 */}
+                    <div className='flex mb-4'>
+                        <div className='w-full flex'>
+                            <div className='p-2'>
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                </svg>
+                                {/* <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg> */}
+                            </div>
+                            <div className='mt-2 flex flex-1'>
+
+                                <div className='flex-1'>
+                                    <div className='datetimepicker-box flex mb-4'>
+                                        <Datetimepicker
+                                            name="btime"
+                                            value={parseToISOString(detailDate.btime)}
+                                            onChange={value => setDetailDate({ ...detailDate, btime: value })}
+                                        />
+                                    </div>
+
+                                    <div className='datetimepicker-box flex' onBlur={() => setDetailDate({ ...detailDate, etime: detailDate.btime })}>
+                                        <Datetimepicker
+                                            name="etime"
+                                            value={parseToISOString(detailDate.etime)}
+                                            min={parseToISOString(detailDate.btime)}
+                                            onChange={value => setDetailDate({ ...detailDate, etime: value })}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className='p-1'>
+                                    <div className='flex flex-nowrap p-1'>
+                                        <span className='flex flex-shrink-0 mr-2'>
+                                            <FormattedMessage id='calendar.all_day' />
+                                        </span>
+                                        <button
+                                            type="button"
+                                            className={`relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${detailDate.all_day ? 'bg-blue-500' : 'bg-gray-200'}`}
+                                            role="switch"
+                                            aria-checked="false"
+                                            onClick={() => setDetailDate({ ...detailDate, all_day: !detailDate.all_day })}
+                                        >
+                                            <span
+                                                aria-hidden="true"
+                                                className={`translate-x-0 pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200 ${detailDate.all_day ? 'translate-x-5' : 'translate-x-0'}`}
+                                            />
+                                        </button>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
                     </div>
 
                     {/* 備註 */}
