@@ -33,6 +33,8 @@
     "pm": "下午",
     "all_day": "全天",
     "no_plans_today": "今天沒有任何計畫",
+    "on_date": "於 {date} 日",
+    "repeat": "重複",
     "category": {
         "red": "紅色",
         "pink": "粉色",

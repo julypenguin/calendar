@@ -32,7 +32,7 @@ const EditorNote = ({
 
     useEffect(() => {
         let tag_color = '#BFDBFE'
-        if (defaultValue) {
+        if (defaultValue && defaultValue.btime) {
             if (defaultValue.tag_color) tag_color = defaultValue.tag_color
             setDetailDate({ ...defaultValue, tag_color })
         }

@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome'
-import { FormattedMessage, FormattedTime, injectIntl } from 'react-intl';
+import { FormattedDate, FormattedMessage, FormattedTime, injectIntl } from 'react-intl'
 import { createPortal } from 'react-dom'
 import { getFullDate, parseToDateString, parseToISOString } from 'lib/datetime'
 import { Datetimepicker } from '@iqs/datetimepicker'
 import '@iqs/datetimepicker/index.styl'
-import { colorMap } from './formatDate'
+import { colorMap, weeks } from './formatDate'
 
 const EditorNote = ({
     calendarData, // 整個行程陣列資料
@@ -15,8 +15,11 @@ const EditorNote = ({
     handleClose,
 }) => {
 
+    const [repeatWeekNumbers, setRepeatWeekNumbers] = useState(0)
+    const [repeatDateNumbers, setRepeatDateNumbers] = useState({})
     const [showCategory, setShowCategory] = useState(false)
-    const tag_color = colorMap[detailDate.tag_color]
+    const [showRepeatDate, setShowRepeatDate] = useState(false)
+    const tag_color = colorMap[detailDate.tag_color] || 'blue'
 
     const categoryRef = useRef()
     const categoryList = [
@@ -113,6 +116,13 @@ const EditorNote = ({
         handleClose()
     }
 
+    const handleSetReapeatDate = (num) => {
+        setRepeatDateNumbers({
+            // ...repeatDateNumbers,
+            [num]: !repeatDateNumbers[num],
+        })
+    }
+
     const detectPosition = (ref, rightAndBottom) => {
         if (!ref) return {}
         const elementRef = ref.current
@@ -143,6 +153,84 @@ const EditorNote = ({
             </li>
         )
     }
+
+    const renderMonths = () => {
+        const monthList = new Array(12).fill('')
+        return monthList.map((data, index) => (
+            <li
+                key={index}
+                className='flex justify-center items-center mr-3 rounded-full bg-gray-200 hover:bg-gray-300'
+                style={{ height: '38px', width: '38px' }}
+            >
+                <div className='text-sm'>
+                    <FormattedDate
+                        value={`${index + 1}-01`
+                        }
+                        month="numeric"
+                    />
+                </div>
+            </li>
+        ))
+    }
+
+    const renderOnDate = () => {
+        let dayString = ''
+        for (const key in repeatDateNumbers) {
+            if (Object.hasOwnProperty.call(repeatDateNumbers, key)) {
+                if (!dayString) dayString = key
+                else dayString = dayString + ', ' + key
+            }
+        }
+
+        return (
+            <FormattedMessage
+                id='calendar.on_date'
+                values={{ date: dayString }}
+            />
+        )
+    }
+
+    const renderDates = () => {
+        if (!detailDate.btime) return
+        if (!new Date(detailDate.btime).getDate()) return
+        const fullDate = getFullDate(detailDate.btime)
+        const y = Number(fullDate.y)
+        const m = Number(fullDate.m)
+        const d = Number(fullDate.d)
+        const days = (new Date(y, m, 1) - new Date(y, m - 1, 1)) / (86400 * 1000)
+        const dateList = new Array(days).fill('')
+
+        return dateList.map((date, index) => {
+            const day = index + 1
+            return (
+                <li
+                    key={index}
+                    className={`flex justify-center items-center mb-4 mr-3 rounded-full ${repeatDateNumbers[day] ? 'bg-blue-200' : 'bg-gray-200 hover:bg-gray-300'}`}
+                    style={{ height: '38px', width: '38px' }}
+                    onClick={() => handleSetReapeatDate(day)}
+                >
+                    <div className='text-sm'>
+                        <FormattedDate
+                            value={`${m > 9 ? m : '0' + m}-${index + 1 > 9 ? index + 1 : '0' + (index + 1)}`
+                            }
+                            day="numeric"
+                        />
+                    </div>
+                </li>
+            )
+        })
+
+    }
+
+    useEffect(() => {
+        if (detailDate.btime) {
+            const fullDay = getFullDate(detailDate.btime)
+            const d = fullDay.d
+            setRepeatDateNumbers({
+                [d]: true,
+            })
+        }
+    }, [detailDate])
 
     return (
         <>
@@ -186,7 +274,7 @@ const EditorNote = ({
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-full w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                     </svg>
-                    <span className='px-2'>{console.log('detailDate', detailDate)}
+                    <span className='px-2'>
                         <FormattedMessage id={`calendar.category.${tag_color}`} />
                     </span>
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-full w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -229,7 +317,7 @@ const EditorNote = ({
                         </div>
                         <div className='flex-grow flex'>
                             <input
-                                className={`text-${tag_color}-600 mr-2 pb-1 pl-2 flex-grow text-2xl font-semibold border-b border-gray-300 focus:outline-none`}
+                                className={`text-${tag_color}-600 mr-2 pb-1 pl-4 flex-grow text-2xl font-semibold border-b border-gray-300 hover:border-gray-600 focus:outline-none`}
                                 placeholder='新增標題'
                                 value={detailDate.title}
                                 onChange={e => setDetailDate({ ...detailDate, title: e.target.value })}
@@ -303,57 +391,123 @@ const EditorNote = ({
                     </div>
 
                     {/* 重複 */}
-                    <div className='flex mb-4'>
+                    <div className='flex mb-4 flex-wrap select-none'>
                         <div className='w-full flex'>
                             <div className='p-2'>
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                                 </svg>
-                                {/* <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg> */}
                             </div>
-                            <div className='mt-2 flex flex-1'>
-
-                                <div className='flex-1'>
-                                    <div className='datetimepicker-box flex mb-4'>
-                                        <Datetimepicker
-                                            name="btime"
-                                            value={parseToISOString(detailDate.btime)}
-                                            onChange={value => setDetailDate({ ...detailDate, btime: value })}
-                                        />
-                                    </div>
-
-                                    <div className='datetimepicker-box flex' onBlur={() => setDetailDate({ ...detailDate, etime: detailDate.btime })}>
-                                        <Datetimepicker
-                                            name="etime"
-                                            value={parseToISOString(detailDate.etime)}
-                                            min={parseToISOString(detailDate.btime)}
-                                            onChange={value => setDetailDate({ ...detailDate, etime: value })}
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className='p-1'>
-                                    <div className='flex flex-nowrap p-1'>
-                                        <span className='flex flex-shrink-0 mr-2'>
-                                            <FormattedMessage id='calendar.all_day' />
+                            <div className='mt-2 flex flex-wrap flex-1 mr-2 pb-1 pl-4 border-b border-gray-300 hover:border-gray-600'>
+                                <div className='flex'>
+                                    <div className='mr-2'>
+                                        <span className='mr-1'>
+                                            <FormattedMessage id='calendar.repeat' />
                                         </span>
-                                        <button
-                                            type="button"
-                                            className={`relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${detailDate.all_day ? 'bg-blue-500' : 'bg-gray-200'}`}
-                                            role="switch"
-                                            aria-checked="false"
-                                            onClick={() => setDetailDate({ ...detailDate, all_day: !detailDate.all_day })}
-                                        >
-                                            <span
-                                                aria-hidden="true"
-                                                className={`translate-x-0 pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200 ${detailDate.all_day ? 'translate-x-5' : 'translate-x-0'}`}
-                                            />
-                                        </button>
+                                        <span>:</span>
+                                    </div>
+                                    <div className='calendar-inner-icon-hover mr-2 flex flex-shrink-0 cursor-pointer'>
+                                        <span className='mr-1'>1</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                        </svg>
+                                    </div>
+                                    <div className='calendar-inner-icon-hover flex flex-shrink-0 cursor-pointer'>
+                                        <span className='mr-1'>週</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                        </svg>
                                     </div>
                                 </div>
 
+                                {/* 選擇特定日期 */}
+                                <fieldset className='w-full mt-2'>
+                                    <div className="bg-white rounded-md">
+                                        {/* 於...日 */}
+                                        <label className="relative py-2 flex cursor-pointer">
+                                            <input
+                                                type="radio"
+                                                name="privacy_setting"
+                                                value=""
+                                                className="mt-0.5 cursor-pointer text-indigo-600 border-gray-300 focus:ring-indigo-500"
+                                            />
+                                            <div className="ml-3 flex flex-col">
+                                                <span className="text-gray-900 block text-sm font-medium">
+                                                    <span className='mr-2'>{renderOnDate()}</span>
+                                                    <span>[ 自訂 ]</span>
+                                                </span>
+
+                                                {/* 選擇日期 */}
+                                                {showRepeatDate && <div className='w-full mt-2'>
+                                                    <ul className='flex flex-wrap py-2'>
+                                                        {renderDates()}
+                                                    </ul>
+                                                </div>}
+                                            </div>
+                                        </label>
+
+
+                                        <label className="relative py-2 flex cursor-pointer">
+                                            <input
+                                                type="radio"
+                                                name="privacy_setting"
+                                                value=""
+                                                className="mt-0.5 cursor-pointer text-indigo-600 border-gray-300 focus:ring-indigo-500"
+                                            />
+                                            <div className="ml-3 flex flex-col">
+                                                {/* <!-- Checked: "text-indigo-900", Not Checked: "text-gray-900" --> */}
+                                                <span className="text-gray-900 block text-sm font-medium">
+                                                    於第二個星期五
+                                                </span>
+
+                                                {/* 選擇星期幾 */}
+                                                <div className='w-full mt-2'>
+                                                    <ul className='flex py-2'>
+                                                        {weeks.map((day, index) => (
+                                                            <li
+                                                                key={index}
+                                                                className={`flex justify-center items-center mr-3 rounded-full ${index === repeatWeekNumbers ? 'bg-blue-200' : 'bg-gray-200 hover:bg-gray-300'}`}
+                                                                style={{ height: '38px', width: '38px' }}
+                                                                onClick={() => setRepeatWeekNumbers(index)}
+                                                            >
+                                                                <div className='text-sm'>{day.abb_name}</div>
+                                                            </li>
+                                                        ))}
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </fieldset>
+
+                                {/* 選擇月份 */}
+                                {/* <div className='w-full mt-2'>
+                                    <ul className='flex py-2'>
+                                        {renderMonths()}
+                                    </ul>
+                                </div> */}
+
+                                {/* 選擇日期 */}
+                                {/* <div className='w-full mt-2'>
+                                    <ul className='flex flex-wrap py-2'>
+                                        {renderDates()}
+                                    </ul>
+                                </div> */}
+
+                                {/* 選擇星期幾 */}
+                                {/* <div className='w-full mt-2'>
+                                    <ul className='flex py-2'>
+                                        {weeks.map((day, index) => (
+                                            <li
+                                                key={index}
+                                                className='flex justify-center items-center mr-3 rounded-full bg-gray-200 hover:bg-gray-300'
+                                                style={{ height: '38px', width: '38px' }}
+                                            >
+                                                <div className='text-sm'>{day.abb_name}</div>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div> */}
                             </div>
                         </div>
                     </div>

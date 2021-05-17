@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { FormattedDate, FormattedMessage, FormattedTime, injectIntl } from 'react-intl'
 
 import { getFullDate, filterDate, addMinutes } from 'lib/datetime'
-import { renderFullDate, calendarType } from './formatDate'
+import { renderFullDate, calendarType, colorMap } from './formatDate'
 import { weeks } from './formatDate'
 
 const Schedule = (props) => {
@@ -105,7 +105,7 @@ const Schedule = (props) => {
                                         btime: showData,
                                         etime: addMinutes(60, showData),
                                         desc: "",
-                                        tag_color: "blue",
+                                        tag_color: "#BFDBFE",
                                     })}
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -142,7 +142,7 @@ const Schedule = (props) => {
                                             className='px-4 py-2 flex cursor-pointer hover:bg-gray-100'
                                             onClick={() => handleSetDataAndShowEditor(schedule)}
                                         >
-                                            <div className={`border-l-4 mr-2 rounded-sm ${schedule.tag_color ? `border-${schedule.tag_color}-500` : 'border-blue-500'}`} />
+                                            <div className={`border-l-4 mr-2 rounded-sm ${colorMap[schedule.tag_color] ? `border-${colorMap[schedule.tag_color]}` : 'border-blue'}`} />
                                             <div className='flex flex-col py-2 w-full'>
                                                 <div className='flex mb-1'>
                                                     <div className='text-xs truncate mr-1' style={{ width: '58px' }}>

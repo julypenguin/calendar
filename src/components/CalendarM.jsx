@@ -205,7 +205,7 @@ const CalendarM = (props) => {
                         style={{
                             left: `${(100 / 7) * left}%`,
                             right: `${(100 / 7) * right}%`,
-                            top: `calc(${20 * level}% + 34px + ${sort * noteHeight}px + ${sort ? sort : '0'}px)`
+                            top: `calc(${(level / totalLevels) * 100}% + 34px + ${sort * noteHeight}px + ${sort ? sort : '0'}px)`
                         }}>
                         <div className='px-2 truncate flex justify-center items-center'>
                             <div className='notes-box-outer'>
@@ -224,7 +224,7 @@ const CalendarM = (props) => {
                 <div
                     key={index}
                     draggable='true'
-                    onClick={() => handleSetDataAndShowDetail({ ...data, title })}
+                    onClick={() => handleSetDataAndShowDetail({ ...data, tag_color: hexColor, title })}
                 >
                     <div
                         className={`calendar-month-notes-box absolute cursor-pointer opacity-70 
@@ -235,7 +235,7 @@ const CalendarM = (props) => {
                         style={{
                             left: `${(100 / 7) * left}%`,
                             right: `${(100 / 7) * right}%`,
-                            top: `calc(${(100 / totalLevels) * level}% + 34px + ${sort * noteHeight}px + ${sort}px)`
+                            top: `calc(${(level / totalLevels) * 100}% + 34px + ${sort * noteHeight}px + ${sort}px)`
                         }}>
                         <div className='notes-box-outer truncate'>{title}</div>
                     </div>

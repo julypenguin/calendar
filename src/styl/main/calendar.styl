@@ -91,10 +91,10 @@
     @media screen and (min-width: 1024px)
         display none
 
-.calendar-month-notes
-    display none
-    @media screen and (min-width: 1024px)
-        display block
+// .calendar-month-notes
+//     display none
+//     @media screen and (min-width: 1024px)
+//         display block
 
 .calendar-month-notes-box
     box-sizing border-box
@@ -121,13 +121,13 @@
     >.calendar-selector
         &:hover
             background-color Gray100
+    >.calendar-overdue
+        background-color Gray100
     >.calendar-bg-today
         background-color Blue100
         opacity 0.7
         &:hover
             background-color Blue100
-    >.calendar-overdue
-        background-color Gray100
 
 .calendar-month-date
     padding-top 0.5rem
@@ -153,6 +153,11 @@
 .calendar-icon-md
     height 1.5rem
     width 1.5rem
+
+.calendar-inner-icon-hover
+    &:hover
+        >svg
+            color Gray400
 
 .calendar-text-sm
     font-size 0.75rem
