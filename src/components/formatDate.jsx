@@ -6,37 +6,44 @@ export const weeks = [
     {
         name: <FormattedMessage id='calendar.sunday' />,
         abb_name: <FormattedMessage id='calendar.sun' />,
-        week_name: <FormattedMessage id='calendar.week_sun' />
+        week_name: <FormattedMessage id='calendar.week_sun' />,
+        day: 0,
     },
     {
         name: <FormattedMessage id='calendar.monday' />,
         abb_name: <FormattedMessage id='calendar.mon' />,
-        week_name: <FormattedMessage id='calendar.week_mon' />
+        week_name: <FormattedMessage id='calendar.week_mon' />,
+        day: 1,
     },
     {
         name: <FormattedMessage id='calendar.tuesday' />,
         abb_name: <FormattedMessage id='calendar.tue' />,
-        week_name: <FormattedMessage id='calendar.week_tue' />
+        week_name: <FormattedMessage id='calendar.week_tue' />,
+        day: 2,
     },
     {
         name: <FormattedMessage id='calendar.wednesday' />,
         abb_name: <FormattedMessage id='calendar.wed' />,
-        week_name: <FormattedMessage id='calendar.week_wed' />
+        week_name: <FormattedMessage id='calendar.week_wed' />,
+        day: 3,
     },
     {
         name: <FormattedMessage id='calendar.thursday' />,
         abb_name: <FormattedMessage id='calendar.thu' />,
-        week_name: <FormattedMessage id='calendar.week_thu' />
+        week_name: <FormattedMessage id='calendar.week_thu' />,
+        day: 4,
     },
     {
         name: <FormattedMessage id='calendar.friday' />,
         abb_name: <FormattedMessage id='calendar.fri' />,
-        week_name: <FormattedMessage id='calendar.week_fri' />
+        week_name: <FormattedMessage id='calendar.week_fri' />,
+        day: 5,
     },
     {
         name: <FormattedMessage id='calendar.saturday' />,
         abb_name: <FormattedMessage id='calendar.sat' />,
-        week_name: <FormattedMessage id='calendar.week_sat' />
+        week_name: <FormattedMessage id='calendar.week_sat' />,
+        day: 6,
     },
 ]
 

@@ -5,6 +5,7 @@
     "week": "週",
     "month": "月",
     "day": "天",
+    "year": "年",
     "days": "天",
     "minutes": "分鐘",
     "hours": "小時",
@@ -34,7 +35,10 @@
     "all_day": "全天",
     "no_plans_today": "今天沒有任何計畫",
     "on_date": "於 {date} 日",
+    "on_week": "於第 {number} 個",
     "repeat": "重複",
+    "everyday": "每天",
+    "never": "永不",
     "category": {
         "red": "紅色",
         "pink": "粉色",

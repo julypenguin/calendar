@@ -6,6 +6,7 @@ import { getFullDate, parseToDateString, parseToISOString } from 'lib/datetime'
 import { Datetimepicker } from '@iqs/datetimepicker'
 import '@iqs/datetimepicker/index.styl'
 import { colorMap, weeks } from './formatDate'
+import { Fragment } from 'react';
 
 const EditorNote = ({
     calendarData, // 整個行程陣列資料
@@ -15,13 +16,20 @@ const EditorNote = ({
     handleClose,
 }) => {
 
-    const [repeatWeekNumbers, setRepeatWeekNumbers] = useState(0)
+    const [repeatWeekNumbers, setRepeatWeekNumbers] = useState({})
     const [repeatDateNumbers, setRepeatDateNumbers] = useState({})
+    const [cycleNumber, setCycleNumber] = useState(1)
+    const [cycleName, setCycleName] = useState('never')
     const [showCategory, setShowCategory] = useState(false)
+    const [showCycleNumberList, setShowCycleNumberList] = useState(false)
+    const [showCycleList, setShowCycleList] = useState(false)
+    const [showRepeatWeek, setShowRepeatWeek] = useState(false)
     const [showRepeatDate, setShowRepeatDate] = useState(false)
     const tag_color = colorMap[detailDate.tag_color] || 'blue'
 
     const categoryRef = useRef()
+    const cycleNumberRef = useRef()
+    const cycleListRef = useRef()
     const categoryList = [
         {
             name: 'red',
@@ -116,11 +124,32 @@ const EditorNote = ({
         handleClose()
     }
 
+    // 設定要重複的日期(單選)
     const handleSetReapeatDate = (num) => {
+        if (repeatDateNumbers[num] && Object.keys(repeatDateNumbers).length === 1) return
+
         setRepeatDateNumbers({
             // ...repeatDateNumbers,
             [num]: !repeatDateNumbers[num],
         })
+    }
+
+    // 設定要重複的星期幾(複選)
+    const handleSetRepeatWeek = (name, day) => {
+        const newRepeatWeekNumbers = {
+            ...repeatWeekNumbers
+        }
+
+        if (repeatWeekNumbers[day]) {
+            if (Object.keys(newRepeatWeekNumbers).length === 1) return
+            delete newRepeatWeekNumbers[day]
+            setRepeatWeekNumbers(newRepeatWeekNumbers)
+        } else {
+            setRepeatWeekNumbers({
+                ...repeatWeekNumbers,
+                [day]: name,
+            })
+        }
     }
 
     const detectPosition = (ref, rightAndBottom) => {
@@ -173,6 +202,28 @@ const EditorNote = ({
         ))
     }
 
+    const renderOnWeek = () => {
+        let weekList = []
+        for (const key in repeatWeekNumbers) {
+            weekList.push(repeatWeekNumbers[key])
+        }
+
+        return (
+            <>
+                <FormattedMessage
+                    id='calendar.on_week'
+                    values={{ number: '2' }}
+                />
+                {weekList.map((week, index) => (
+                    <Fragment key={index}>
+                        {!index ? null : <span className='mr-2 text-sm'>,</span>}
+                        <span className='text-sm'>{week}</span>
+                    </Fragment>
+                ))}
+            </>
+        )
+    }
+
     const renderOnDate = () => {
         let dayString = ''
         for (const key in repeatDateNumbers) {
@@ -219,15 +270,55 @@ const EditorNote = ({
                 </li>
             )
         })
+    }
 
+    const renderCycleNumberList = () => {
+        return new Array(99).fill('').map((d, index) => (
+            <li
+                key={index}
+                className='flex justify-center items-center p-2 bg-gray-light-hover cursor-pointer'
+                onClick={() => {
+                    setCycleNumber(index + 1)
+                    setShowCycleNumberList(false)
+                }}
+            >
+                {index + 1}
+            </li>
+        ))
+    }
+
+    const renderCycleList = () => {
+        const cycleList = [
+            'never',
+            'day',
+            'week',
+            'year'
+        ]
+
+        return cycleList.map((cycle, index) => (
+            <li
+                key={index}
+                className='flex items-center p-2 bg-gray-light-hover cursor-pointer'
+                onClick={() => {
+                    setCycleName(cycle)
+                    setShowCycleList(false)
+                }}
+            >
+                <FormattedMessage id={`calendar.${cycle}`} />
+            </li>
+        ))
     }
 
     useEffect(() => {
         if (detailDate.btime) {
             const fullDay = getFullDate(detailDate.btime)
             const d = fullDay.d
+            const week = new Date(detailDate.btime).getDay()
             setRepeatDateNumbers({
                 [d]: true,
+            })
+            setRepeatWeekNumbers({
+                [week]: weeks[week].name
             })
         }
     }, [detailDate])
@@ -283,7 +374,10 @@ const EditorNote = ({
 
                     {!showCategory ? null : createPortal(
                         <div className={`fixed h-full w-full top-0 z-10`}>
-                            <div className='fixed h-full w-full top-0 left-0' onClick={() => setShowCategory(false)}></div>
+                            <div
+                                className='fixed h-full w-full top-0 left-0'
+                                onClick={() => setShowCategory(false)}
+                            ></div>
                             <div
                                 className={`absolute bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-10 transition ease-out duration-75 flex`}
                                 style={detectPosition(categoryRef)}
@@ -406,22 +500,84 @@ const EditorNote = ({
                                         </span>
                                         <span>:</span>
                                     </div>
-                                    <div className='calendar-inner-icon-hover mr-2 flex flex-shrink-0 cursor-pointer'>
-                                        <span className='mr-1'>1</span>
+                                    
+                                    {cycleName === 'never' ? null : <div
+                                        className='calendar-inner-icon-hover mr-2 flex flex-shrink-0 cursor-pointer'
+                                        ref={cycleNumberRef}
+                                        onClick={() => setShowCycleNumberList(!showCycleNumberList)}
+                                    >
+                                        <span className='px-2'>{cycleNumber}</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                        </svg>
+                                    </div>}
+
+                                    {/* 重複次數 */}
+                                    {!showCycleNumberList ? null : createPortal(
+                                        <div className={`fixed h-full w-full top-0 z-10`}>
+                                            <div
+                                                className='fixed h-full w-full top-0 left-0'
+                                                onClick={() => setShowCycleNumberList(false)}
+                                            ></div>
+                                            <div
+                                                className={`absolute bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-10 transition ease-out duration-75 flex`}
+                                                style={detectPosition(cycleNumberRef)}
+                                            >
+                                                <div className='flex flex-col select-none'>
+                                                    <ul
+                                                        className='flex flex-col overflow-x-hidden overscroll-y-auto'
+                                                        style={{ height: '296px' }}
+                                                    >
+                                                        {renderCycleNumberList()}
+                                                    </ul>
+                                                </div>
+                                                <div className='top-0 border-r'></div>
+                                            </div>
+                                        </div>,
+                                        document.body
+                                    )}
+
+                                    <div
+                                        className='calendar-inner-icon-hover flex flex-shrink-0 cursor-pointer'
+                                        ref={cycleListRef}
+                                        onClick={() => setShowCycleList(!showCycleList)}
+                                    >
+                                        <span className='px-2'>
+                                            <FormattedMessage id={`calendar.${cycleName}`} />
+                                        </span>
                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                         </svg>
                                     </div>
-                                    <div className='calendar-inner-icon-hover flex flex-shrink-0 cursor-pointer'>
-                                        <span className='mr-1'>週</span>
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                        </svg>
-                                    </div>
+
+                                    {/* 重複哪個週期 */}
+                                    {!showCycleList ? null : createPortal(
+                                        <div className={`fixed h-full w-full top-0 z-10`}>
+                                            <div
+                                                className='fixed h-full w-full top-0 left-0'
+                                                onClick={() => setShowCycleList(false)}
+                                            ></div>
+                                            <div
+                                                className={`absolute bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-10 transition ease-out duration-75 flex`}
+                                                style={detectPosition(cycleListRef)}
+                                            >
+                                                <div className='flex flex-col select-none'>
+                                                    <ul
+                                                        className='flex flex-col overflow-x-hidden overscroll-y-auto'
+                                                    // style={{ height: '296px' }}
+                                                    >
+                                                        {renderCycleList()}
+                                                    </ul>
+                                                </div>
+                                                <div className='top-0 border-r'></div>
+                                            </div>
+                                        </div>,
+                                        document.body
+                                    )}
                                 </div>
 
                                 {/* 選擇特定日期 */}
-                                <fieldset className='w-full mt-2'>
+                                {cycleName === 'never' ? null : <fieldset className='w-full mt-2'>
                                     <div className="bg-white rounded-md">
                                         {/* 於...日 */}
                                         <label className="relative py-2 flex cursor-pointer">
@@ -432,9 +588,16 @@ const EditorNote = ({
                                                 className="mt-0.5 cursor-pointer text-indigo-600 border-gray-300 focus:ring-indigo-500"
                                             />
                                             <div className="ml-3 flex flex-col">
-                                                <span className="text-gray-900 block text-sm font-medium">
-                                                    <span className='mr-2'>{renderOnDate()}</span>
-                                                    <span>[ 自訂 ]</span>
+                                                <span className="text-gray-900 font-medium flex">
+                                                    <span className='mr-2 text-sm'>{renderOnDate()}</span>
+                                                    <span
+                                                        className='flex justify-center items-center text-gray-400 text-sm hover:text-gray-500'
+                                                        onClick={() => setShowRepeatDate(!showRepeatDate)}
+                                                    >
+                                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                        </svg>
+                                                    </span>
                                                 </span>
 
                                                 {/* 選擇日期 */}
@@ -455,30 +618,38 @@ const EditorNote = ({
                                                 className="mt-0.5 cursor-pointer text-indigo-600 border-gray-300 focus:ring-indigo-500"
                                             />
                                             <div className="ml-3 flex flex-col">
-                                                {/* <!-- Checked: "text-indigo-900", Not Checked: "text-gray-900" --> */}
-                                                <span className="text-gray-900 block text-sm font-medium">
-                                                    於第二個星期五
-                                                </span>
+                                                <span className="text-gray-900 text-sm font-medium flex flex-wrap mr-2">
+                                                    <span className='mr-2 text-sm'>{renderOnWeek()}</span>
+                                                    <span
+                                                        className='flex justify-center items-center text-gray-400 text-sm hover:text-gray-500'
+                                                        onClick={() => setShowRepeatWeek(!showRepeatWeek)}
+                                                    >
+                                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                        </svg>
+                                                    </span>
 
-                                                {/* 選擇星期幾 */}
-                                                <div className='w-full mt-2'>
-                                                    <ul className='flex py-2'>
-                                                        {weeks.map((day, index) => (
-                                                            <li
-                                                                key={index}
-                                                                className={`flex justify-center items-center mr-3 rounded-full ${index === repeatWeekNumbers ? 'bg-blue-200' : 'bg-gray-200 hover:bg-gray-300'}`}
-                                                                style={{ height: '38px', width: '38px' }}
-                                                                onClick={() => setRepeatWeekNumbers(index)}
-                                                            >
-                                                                <div className='text-sm'>{day.abb_name}</div>
-                                                            </li>
-                                                        ))}
-                                                    </ul>
-                                                </div>
+                                                    {/* 選擇星期幾 */}
+                                                    {showRepeatWeek && <div className='w-full mt-2'>
+                                                        <ul className='flex py-2'>
+                                                            {weeks.map((day, index) => (
+                                                                <li
+                                                                    key={index}
+                                                                    className={`flex justify-center items-center mr-3 rounded-full ${repeatWeekNumbers[day.day] ? 'bg-blue-200' : 'bg-gray-200 hover:bg-gray-300'}`}
+                                                                    style={{ height: '38px', width: '38px' }}
+                                                                    onClick={() => handleSetRepeatWeek(day.name, day.day)}
+                                                                >
+                                                                    <div className='text-sm'>{day.abb_name}</div>
+                                                                </li>
+                                                            ))}
+                                                        </ul>
+                                                    </div>}
+
+                                                </span>
                                             </div>
                                         </label>
                                     </div>
-                                </fieldset>
+                                </fieldset>}
 
                                 {/* 選擇月份 */}
                                 {/* <div className='w-full mt-2'>

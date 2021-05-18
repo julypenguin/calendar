@@ -5,6 +5,7 @@
     "week": "week",
     "month": "month",
     "day": "day",
+    "year": "year",
     "days": "days",
     "minutes": "minutes",
     "hours": "hours",
@@ -35,6 +36,8 @@
     "no_plans_today": "No Plans Today",
     "on_date": "on {date}",
     "repeat": "repeat",
+    "everyday": "everyday",
+    "never": "never",
     "category": {
         "red": "red",
         "pink": "pink",
