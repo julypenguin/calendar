@@ -37,6 +37,7 @@
     "on_date": "於 {date} 日",
     "on_week": "於第 {number} 個",
     "repeat": "重複",
+    "interval": "間隔",
     "everyday": "每天",
     "never": "永不",
     "category": {

@@ -36,6 +36,7 @@
     "no_plans_today": "No Plans Today",
     "on_date": "on {date}",
     "repeat": "repeat",
+    "interval": "interval",
     "everyday": "everyday",
     "never": "never",
     "category": {

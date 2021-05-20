@@ -2,11 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome'
 import { FormattedDate, FormattedMessage, FormattedTime, injectIntl } from 'react-intl'
 import { createPortal } from 'react-dom'
-import { getFullDate, parseToDateString, parseToISOString } from 'lib/datetime'
+import { getFullDate, parseToDateString, parseToISOString, addDays } from 'lib/datetime'
 import { Datetimepicker } from '@iqs/datetimepicker'
 import '@iqs/datetimepicker/index.styl'
 import { colorMap, weeks } from './formatDate'
 import { Fragment } from 'react';
+import Dropdown from './Dropdown'
 
 const EditorNote = ({
     calendarData, // 整個行程陣列資料
@@ -212,7 +213,7 @@ const EditorNote = ({
             <>
                 <FormattedMessage
                     id='calendar.on_week'
-                    values={{ number: '2' }}
+                    values={{ number: '3' }}
                 />
                 {weekList.map((week, index) => (
                     <Fragment key={index}>
@@ -292,6 +293,7 @@ const EditorNote = ({
             'never',
             'day',
             'week',
+            'month',
             'year'
         ]
 
@@ -497,11 +499,13 @@ const EditorNote = ({
                                     <div className='mr-2'>
                                         <span className='mr-1'>
                                             <FormattedMessage id='calendar.repeat' />
+                                            {cycleName === 'never' ? null : <FormattedMessage id='calendar.interval' />}
                                         </span>
                                         <span>:</span>
                                     </div>
-                                    
-                                    {cycleName === 'never' ? null : <div
+
+                                    {/* 顯示重複間隔天數 */}
+                                    {cycleName === 'never' || cycleName === 'year' ? null : <div
                                         className='calendar-inner-icon-hover mr-2 flex flex-shrink-0 cursor-pointer'
                                         ref={cycleNumberRef}
                                         onClick={() => setShowCycleNumberList(!showCycleNumberList)}
@@ -512,33 +516,18 @@ const EditorNote = ({
                                         </svg>
                                     </div>}
 
-                                    {/* 重複次數 */}
-                                    {!showCycleNumberList ? null : createPortal(
-                                        <div className={`fixed h-full w-full top-0 z-10`}>
-                                            <div
-                                                className='fixed h-full w-full top-0 left-0'
-                                                onClick={() => setShowCycleNumberList(false)}
-                                            ></div>
-                                            <div
-                                                className={`absolute bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-10 transition ease-out duration-75 flex`}
-                                                style={detectPosition(cycleNumberRef)}
-                                            >
-                                                <div className='flex flex-col select-none'>
-                                                    <ul
-                                                        className='flex flex-col overflow-x-hidden overscroll-y-auto'
-                                                        style={{ height: '296px' }}
-                                                    >
-                                                        {renderCycleNumberList()}
-                                                    </ul>
-                                                </div>
-                                                <div className='top-0 border-r'></div>
-                                            </div>
-                                        </div>,
-                                        document.body
-                                    )}
+                                    {/* 重複間隔天數選擇 */}
+                                    {!showCycleNumberList ? null : <Dropdown
+                                        parentRef={cycleNumberRef}
+                                        handleClose={() => setShowCycleNumberList(false)}
+                                        style={{ height: '296px' }}
+                                    >
+                                        {renderCycleNumberList()}
+                                    </Dropdown>}
 
+                                    {/* 顯示重複哪個週期 */}
                                     <div
-                                        className='calendar-inner-icon-hover flex flex-shrink-0 cursor-pointer'
+                                        className='calendar-inner-icon-hover mr-2 flex flex-shrink-0 cursor-pointer'
                                         ref={cycleListRef}
                                         onClick={() => setShowCycleList(!showCycleList)}
                                     >
@@ -550,34 +539,19 @@ const EditorNote = ({
                                         </svg>
                                     </div>
 
-                                    {/* 重複哪個週期 */}
-                                    {!showCycleList ? null : createPortal(
-                                        <div className={`fixed h-full w-full top-0 z-10`}>
-                                            <div
-                                                className='fixed h-full w-full top-0 left-0'
-                                                onClick={() => setShowCycleList(false)}
-                                            ></div>
-                                            <div
-                                                className={`absolute bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-10 transition ease-out duration-75 flex`}
-                                                style={detectPosition(cycleListRef)}
-                                            >
-                                                <div className='flex flex-col select-none'>
-                                                    <ul
-                                                        className='flex flex-col overflow-x-hidden overscroll-y-auto'
-                                                    // style={{ height: '296px' }}
-                                                    >
-                                                        {renderCycleList()}
-                                                    </ul>
-                                                </div>
-                                                <div className='top-0 border-r'></div>
-                                            </div>
-                                        </div>,
-                                        document.body
-                                    )}
+                                    {/* 重複週期選擇 */}
+                                    {!showCycleList ? null : <Dropdown
+                                        parentRef={cycleListRef}
+                                        handleClose={() => setShowCycleList(false)}
+                                    >
+                                        {renderCycleList()}
+                                    </Dropdown>}
+
+
                                 </div>
 
                                 {/* 選擇特定日期 */}
-                                {cycleName === 'never' ? null : <fieldset className='w-full mt-2'>
+                                {cycleName !== 'month' && cycleName !== 'year' ? null : <fieldset className='w-full mt-2'>
                                     <div className="bg-white rounded-md">
                                         {/* 於...日 */}
                                         <label className="relative py-2 flex cursor-pointer">
@@ -590,26 +564,27 @@ const EditorNote = ({
                                             <div className="ml-3 flex flex-col">
                                                 <span className="text-gray-900 font-medium flex">
                                                     <span className='mr-2 text-sm'>{renderOnDate()}</span>
-                                                    <span
+                                                    {/* 自訂日期 */}
+                                                    {/* <span
                                                         className='flex justify-center items-center text-gray-400 text-sm hover:text-gray-500'
                                                         onClick={() => setShowRepeatDate(!showRepeatDate)}
                                                     >
                                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                                         </svg>
-                                                    </span>
+                                                    </span> */}
                                                 </span>
 
                                                 {/* 選擇日期 */}
-                                                {showRepeatDate && <div className='w-full mt-2'>
+                                                {/* {showRepeatDate && <div className='w-full mt-2'>
                                                     <ul className='flex flex-wrap py-2'>
                                                         {renderDates()}
                                                     </ul>
-                                                </div>}
+                                                </div>} */}
                                             </div>
                                         </label>
 
-
+                                        {/* 於第幾個星期幾 */}
                                         <label className="relative py-2 flex cursor-pointer">
                                             <input
                                                 type="radio"
@@ -620,36 +595,64 @@ const EditorNote = ({
                                             <div className="ml-3 flex flex-col">
                                                 <span className="text-gray-900 text-sm font-medium flex flex-wrap mr-2">
                                                     <span className='mr-2 text-sm'>{renderOnWeek()}</span>
-                                                    <span
+                                                    {/* 自訂星期幾 */}
+                                                    {/* <span
                                                         className='flex justify-center items-center text-gray-400 text-sm hover:text-gray-500'
                                                         onClick={() => setShowRepeatWeek(!showRepeatWeek)}
                                                     >
                                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                                         </svg>
-                                                    </span>
-
-                                                    {/* 選擇星期幾 */}
-                                                    {showRepeatWeek && <div className='w-full mt-2'>
-                                                        <ul className='flex py-2'>
-                                                            {weeks.map((day, index) => (
-                                                                <li
-                                                                    key={index}
-                                                                    className={`flex justify-center items-center mr-3 rounded-full ${repeatWeekNumbers[day.day] ? 'bg-blue-200' : 'bg-gray-200 hover:bg-gray-300'}`}
-                                                                    style={{ height: '38px', width: '38px' }}
-                                                                    onClick={() => handleSetRepeatWeek(day.name, day.day)}
-                                                                >
-                                                                    <div className='text-sm'>{day.abb_name}</div>
-                                                                </li>
-                                                            ))}
-                                                        </ul>
-                                                    </div>}
+                                                    </span> */}
 
                                                 </span>
                                             </div>
                                         </label>
                                     </div>
                                 </fieldset>}
+
+                                {/* 選擇星期幾 */}
+                                {(showRepeatWeek || (cycleName === 'day' && cycleNumber === 1) || cycleName === 'week') && <div className='w-full mt-2'>
+                                    <ul className='flex py-2'>
+                                        {weeks.map((day, index) => (
+                                            <li
+                                                key={index}
+                                                className={`flex justify-center items-center mr-3 rounded-full ${repeatWeekNumbers[day.day] ? 'bg-blue-200' : 'bg-gray-200 hover:bg-gray-300'}`}
+                                                style={{ height: '38px', width: '38px' }}
+                                                onClick={() => handleSetRepeatWeek(day.name, day.day)}
+                                            >
+                                                <div className='text-sm'>{day.abb_name}</div>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>}
+
+                                {/* 重複至 */}
+                                {cycleName !== 'never' && <div className='flex w-full mt-2'>
+                                    <div className='flex items-center'>
+                                        <span className=''>
+                                            重複至
+                                            {/* <FormattedMessage id='calendar.repeat' /> */}
+                                            {/* {cycleName === 'never' ? null : <FormattedMessage id='calendar.interval' />} */}
+                                        </span>
+                                    </div>
+
+                                    {/* 顯示重複次數 */}
+                                    <div
+                                        className='calendar-inner-icon-hover flex flex-shrink-0 cursor-pointer'
+                                    >
+                                        <div className='datetimepicker-box-no-borderb flex' onBlur={() => setDetailDate({ ...detailDate, etime: detailDate.btime })}>
+                                            <Datetimepicker
+                                                name="etime"
+                                                value={parseToISOString(addDays(30))}
+                                                // onChange={value => setDetailDate({ ...detailDate, etime: value })}
+                                                notime
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className='flex items-center text-sm text-blue-500 cursor-pointer'>移除結束日期</div>
+                                </div>}
 
                                 {/* 選擇月份 */}
                                 {/* <div className='w-full mt-2'>

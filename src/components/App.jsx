@@ -11,6 +11,7 @@ import { getFullDate } from 'lib/datetime'
 import EditorNote from './EditorNote'
 
 import testData from './data.json'
+import data from './data2.json'
 
 const App = (props) => {
     const { intl: { language } } = props
