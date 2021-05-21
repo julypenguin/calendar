@@ -247,7 +247,7 @@ const CalendarM = (props) => {
 
     useEffect(() => {
         if (calendarData) {
-            const newData = calendarData && calendarData.data.filter((date) => filterDate({ ...props, ...date, dayCount: 30 })) || []
+            const newData = Array.isArray(calendarData) && calendarData.filter((date) => filterDate({ ...props, ...date, dayCount: 30 })) || []
             setNewCalendarData(newData)
         }
     }, [calendarData, showData])

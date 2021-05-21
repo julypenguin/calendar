@@ -333,7 +333,7 @@ const CalendarD = (props) => {
 
     useEffect(() => {
         if (calendarData) {
-            const newData = calendarData && calendarData.data.filter((date) => filterDate({ ...props, ...date, dayCount: days })) || []
+            const newData = Array.isArray(calendarData) && calendarData.filter((date) => filterDate({ ...props, ...date, dayCount: days })) || []
             setNewCalendarData(newData)
         }
     }, [calendarData, days, showData])

@@ -8,9 +8,10 @@ import Navbar from './Navbar'
 import CalendarM from './CalendarM'
 import CalendarD from './CalendarD'
 import { getFullDate } from 'lib/datetime'
+import uuid from 'lib/uuid'
 import EditorNote from './EditorNote'
 
-import testData from './data.json'
+// import testData from './data.json'
 import data from './data2.json'
 
 const App = (props) => {
@@ -20,6 +21,30 @@ const App = (props) => {
     const [cycle, setCycle] = useState(30) // 1: 1天, 2:2天, 3:3天, 4:4天, 5:5天, 6:6天, 7:7天, 30: 1月, 77:1週
 
     const isWeek = cycle === 77 ? true : false
+
+    const testData = data.data.reduce((accList, schedual) => {
+        const newSchedual = schedual.display_dates.map(((dete, index) => {
+            const newUuid = uuid()
+            // console.log('newUuid', newUuid)
+            // console.log('btime', dete.start_time)
+            return {
+                sid: schedual.evt_sid || 0,
+                title: schedual.title || '',
+                btime: dete.start_time || new Date(),
+                etime: dete.end_time || new Date(),
+                start_time: schedual.start_time || new Date(),
+                end_time: schedual.end_time || new Date(),
+                desc: schedual.detail || '',
+                tag_color: schedual.color || '',
+                all_day: schedual.is_allday || false,
+                uuid: `${schedual.evt_sid}_${index}`,
+            }
+        }))
+
+        return [...accList, ...newSchedual]
+    }, [])
+
+    console.log('testData', testData)
 
     const checkOverdue = ({ y, m, d, todayY, todayM, todayD }, checkToday) => {
         if (checkToday) {
