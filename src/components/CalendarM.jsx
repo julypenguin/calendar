@@ -134,18 +134,27 @@ const CalendarM = (props) => {
             .reduce((acc, date, index, arr) => {
                 if (date.crossDay === true &&
                     arr[index + 1] && arr[index + 1].level === date.level &&
-                    arr[index + 1].sid === date.sid
+                    arr[index + 1].uuid === date.uuid
                 ) {
                     for (let i = date.left; i < 7 - arr[index + 1].right; i++) {
                         const key = `${date.level}_${i}`
-                        subLevel[key] = subLevel[key] ? [...subLevel[key], date.sid] : [date.sid]
+                        subLevel[key] = subLevel[key] ? [...subLevel[key], date.uuid] : [date.uuid]
                     }
-                    acc = [
+
+                    let sort = 0
+                    for (let sl in subLevel) {
+                        if (sl.substring(0, sl.indexOf('_')) === String(date.level)) {
+                            const newSort = subLevel[sl].indexOf(date.uuid)
+                            if (newSort > sort) sort = newSort
+                        }
+                    }
+
+                    return [
                         ...acc,
                         {
                             ...date,
                             right: arr[index + 1].right,
-                            sort: subLevel[`${date.level}_${date.left}`].indexOf(date.sid),
+                            sort,
                         }
                     ]
                 }
@@ -153,16 +162,17 @@ const CalendarM = (props) => {
                 if (!date.crossDay) {
                     for (let i = date.left; i < 7 - date.right; i++) {
                         const key = `${date.level}_${i}`
-                        subLevel[key] = subLevel[key] ? [...subLevel[key], date.sid] : [date.sid]
+                        subLevel[key] = subLevel[key] ? [...subLevel[key], date.uuid] : [date.uuid]
                     }
-                    acc = [...acc, {
+                    return [...acc, {
                         ...date,
-                        sort: subLevel[`${date.level}_${date.left}`].indexOf(date.sid),
+                        sort: subLevel[`${date.level}_${date.left}`].indexOf(date.uuid),
                     }]
                 }
+
                 return acc
             }, [])
-
+            
         return newDatas
     }
 

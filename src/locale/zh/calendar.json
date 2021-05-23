@@ -37,9 +37,12 @@
     "on_date": "於 {date} 日",
     "on_week": "於第 {number} 個",
     "repeat": "重複",
+    "repeat_until": "重複至",
     "interval": "間隔",
     "everyday": "每天",
     "never": "永不",
+    "remove_end_date": "移除結束日期",
+    "add_end_date": "新增結束日期",
     "category": {
         "red": "紅色",
         "pink": "粉色",

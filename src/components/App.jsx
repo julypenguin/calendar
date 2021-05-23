@@ -34,6 +34,7 @@ const App = (props) => {
                 etime: dete.end_time || new Date(),
                 start_time: schedual.start_time || new Date(),
                 end_time: schedual.end_time || new Date(),
+                final_date: schedual.final_date || new Date(),
                 desc: schedual.detail || '',
                 tag_color: schedual.color || '',
                 all_day: schedual.is_allday || false,

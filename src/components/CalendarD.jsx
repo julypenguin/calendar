@@ -121,14 +121,14 @@ const CalendarD = (props) => {
                 const minuteE = Number(fullDateE.h) * 60 + Number(fullDateE.mm)
 
                 for (minuteB; minuteB <= minuteE; minuteB++) {
-                    subColumn[minuteB] = subColumn[minuteB] ? [...subColumn[minuteB], date.sid] : [date.sid]
+                    subColumn[minuteB] = subColumn[minuteB] ? [...subColumn[minuteB], date.uuid] : [date.uuid]
                 }
 
                 let sort = 0
                 for (let minute in subColumn) {
-                    const newSort = subColumn[minute].indexOf(date.sid)
+                    const newSort = subColumn[minute].indexOf(date.uuid)
                     if (newSort > sort) sort = newSort
-                    if ( newSort + 1 > maxColumn) maxColumn = newSort + 1
+                    if (newSort + 1 > maxColumn) maxColumn = newSort + 1
                 }
 
                 return [
@@ -174,7 +174,7 @@ const CalendarD = (props) => {
                 >
                     <div draggable='true'>
                         <div
-                            className={`calendar-day-title-note absolute cursor-pointer flex items-center ${tag_color ? `bg-${tag_color}-hover border-${tag_color} text-${tag_color}` : 'bg-blue border-blue text-blue'}`}
+                            className={`calendar-day-title-note truncate absolute cursor-pointer flex items-center ${tag_color ? `bg-${tag_color}-hover border-${tag_color} text-${tag_color}` : 'bg-blue border-blue text-blue'}`}
                             style={{
                                 left: `${calcLeftAndRight(data, 'left')}%`,
                                 right: `${calcLeftAndRight(data, 'right')}%`,

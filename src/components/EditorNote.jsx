@@ -304,6 +304,11 @@ const EditorNote = ({
                 onClick={() => {
                     setCycleName(cycle)
                     setShowCycleList(false)
+                    if (cycle === 'never') {
+                        setDetailDate({ ...detailDate, final_date: parseToISOString(addDays(30)), is_repeat: false })
+                    } else {
+                        setDetailDate({ ...detailDate, final_date: parseToISOString(addDays(30)), is_repeat: true })
+                    }
                 }}
             >
                 <FormattedMessage id={`calendar.${cycle}`} />
@@ -437,6 +442,16 @@ const EditorNote = ({
                                                 name="btime"
                                                 value={parseToISOString(detailDate.btime)}
                                                 onChange={value => setDetailDate({ ...detailDate, btime: value })}
+                                                notime
+                                            />
+                                        </div>
+
+                                        <div className='datetimepicker-box flex' onBlur={() => setDetailDate({ ...detailDate, etime: detailDate.btime })}>
+                                            <Datetimepicker
+                                                name="etime"
+                                                value={parseToISOString(detailDate.etime)}
+                                                min={parseToISOString(detailDate.btime)}
+                                                onChange={value => setDetailDate({ ...detailDate, etime: value })}
                                                 notime
                                             />
                                         </div>
@@ -629,29 +644,44 @@ const EditorNote = ({
 
                                 {/* 重複至 */}
                                 {cycleName !== 'never' && <div className='flex w-full mt-2'>
-                                    <div className='flex items-center'>
+                                    {detailDate.is_repeat && <div className='flex items-center'>
                                         <span className=''>
-                                            重複至
-                                            {/* <FormattedMessage id='calendar.repeat' /> */}
-                                            {/* {cycleName === 'never' ? null : <FormattedMessage id='calendar.interval' />} */}
+                                            <FormattedMessage id='calendar.repeat_until' />
                                         </span>
-                                    </div>
+                                    </div>}
 
-                                    {/* 顯示重複次數 */}
-                                    <div
+                                    {/* 顯示重複的結束日期 */}
+                                    {detailDate.is_repeat && <div
                                         className='calendar-inner-icon-hover flex flex-shrink-0 cursor-pointer'
                                     >
                                         <div className='datetimepicker-box-no-borderb flex' onBlur={() => setDetailDate({ ...detailDate, etime: detailDate.btime })}>
                                             <Datetimepicker
-                                                name="etime"
-                                                value={parseToISOString(addDays(30))}
-                                                // onChange={value => setDetailDate({ ...detailDate, etime: value })}
+                                                name="final_date"
+                                                value={!detailDate.final_date || detailDate.final_date === '0001-01-01T00:00:00' ? parseToISOString(addDays(30)) : parseToISOString(detailDate.final_date)}
+                                                onChange={value => setDetailDate({ ...detailDate, final_date: value })}
                                                 notime
                                             />
                                         </div>
-                                    </div>
+                                    </div>}
 
-                                    <div className='flex items-center text-sm text-blue-500 cursor-pointer'>移除結束日期</div>
+                                    {detailDate.is_repeat ?
+                                        <div
+                                            className='flex items-center text-sm text-blue-500 cursor-pointer'
+                                            onClick={() => {
+                                                setDetailDate({ ...detailDate, final_date: '0001-01-01T00:00:00', is_repeat: false })
+                                            }}
+                                        >
+                                            <FormattedMessage id='calendar.remove_end_date' />
+                                        </div>
+                                        :
+                                        <div
+                                            className='flex items-center text-sm text-blue-500 cursor-pointer'
+                                            onClick={() => {
+                                                setDetailDate({ ...detailDate, final_date: parseToISOString(addDays(30)), is_repeat: true })
+                                            }}
+                                        >
+                                            <FormattedMessage id='calendar.add_end_date' />
+                                        </div>}
                                 </div>}
 
                                 {/* 選擇月份 */}
