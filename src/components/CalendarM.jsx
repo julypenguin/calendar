@@ -29,6 +29,7 @@ const CalendarM = (props) => {
     const [newShowData, setNewShowData] = useState(new Date())
     const [newCalendarData, setNewCalendarData] = useState([])
     const [selectedDate, setSelectedDate] = useState({})
+    const [mouseHover, setMouseHover] = useState('')
     const [showDetail, setShowDetail] = useState(false)
     const [showEditor, setShowEditor] = useState(false)
     const [showSchedule, setShowSchedule] = useState(true)
@@ -185,7 +186,7 @@ const CalendarM = (props) => {
         const minShowDetail = Math.floor(cellBox.height / noteHeight) - 3
         const totalLevels = weeks.length
 
-        return notes.map(({ title, tag_color: hexColor, left, right, sort, level, ...data }, index) => {
+        return notes.map(({ title, tag_color: hexColor, left, right, sort, level, uuid, ...data }, index) => {
             const isCannotShow = minShowDetail < 0 && sort === 1
             const tag_color = colorMap[hexColor]
 
@@ -193,7 +194,7 @@ const CalendarM = (props) => {
                 <div
                     key={index}
                     draggable='true'
-                    className='calendar-month-notes'
+                    className={`calendar-month-notes`}
                     onClick={() => {
                         const newDate = new Date(data.btime)
                         newDate.setHours(0)
@@ -247,7 +248,16 @@ const CalendarM = (props) => {
                             right: `${(100 / 7) * right}%`,
                             top: `calc(${(level / totalLevels) * 100}% + 34px + ${sort * noteHeight}px + ${sort}px)`
                         }}>
-                        <div className='notes-box-outer truncate'>{title}</div>
+                        <div 
+                            className={`notes-box-outer truncate ${mouseHover !== uuid ? '' : `bg-${tag_color}-hover-color`}`}
+                            onMouseEnter={e => {
+                                setMouseHover(uuid)
+                                console.log('mouseHover', mouseHover)
+                            }}
+                            onMouseLeave={e => setMouseHover('')}
+                        >
+                            {title}
+                        </div>
                     </div>
                 </div>
 

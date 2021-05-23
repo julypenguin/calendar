@@ -38,7 +38,7 @@ const App = (props) => {
                 desc: schedual.detail || '',
                 tag_color: schedual.color || '',
                 all_day: schedual.is_allday || false,
-                uuid: `${schedual.evt_sid}_${index}`,
+                uuid: uuid(),
             }
         }))
 
