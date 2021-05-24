@@ -1,49 +1,50 @@
 import React, { useEffect, useState } from 'react';
 import { IntlProvider } from 'react-intl'
 import { FormattedDate, FormattedMessage, FormattedTime, injectIntl } from 'react-intl'
-
+import { ConnectedRouter } from 'connected-react-router'
 import '../styl/index.styl'
 import '../styl/styles.css'
 import Navbar from './Navbar'
-import CalendarM from './CalendarM'
-import CalendarD from './CalendarD'
+import CalendarM from '../containers/CalendarM'
+import CalendarD from '../containers/CalendarD'
 import { getFullDate } from 'lib/datetime'
 import uuid from 'lib/uuid'
 import EditorNote from './EditorNote'
 
 // import testData from './data.json'
-import data from './data2.json'
+// import data from './data2.json'
 
 const App = (props) => {
-    const { intl: { language } } = props
+    const { intl: { language }, history } = props
 
+    const [testData, setTestData] = useState([])
     const [showData, setShowData] = useState(new Date().toISOString())
     const [cycle, setCycle] = useState(30) // 1: 1天, 2:2天, 3:3天, 4:4天, 5:5天, 6:6天, 7:7天, 30: 1月, 77:1週
 
     const isWeek = cycle === 77 ? true : false
 
-    const testData = data.data.reduce((accList, schedual) => {
-        const newSchedual = schedual.display_dates.map(((dete, index) => {
-            const newUuid = uuid()
-            // console.log('newUuid', newUuid)
-            // console.log('btime', dete.start_time)
-            return {
-                sid: schedual.evt_sid || 0,
-                title: schedual.title || '',
-                btime: dete.start_time || new Date(),
-                etime: dete.end_time || new Date(),
-                start_time: schedual.start_time || new Date(),
-                end_time: schedual.end_time || new Date(),
-                final_date: schedual.final_date || new Date(),
-                desc: schedual.detail || '',
-                tag_color: schedual.color || '',
-                all_day: schedual.is_allday || false,
-                uuid: uuid(),
-            }
-        }))
+    // const testData = data.data.reduce((accList, schedual) => {
+    //     const newSchedual = schedual.display_dates.map(((dete, index) => {
+    //         const newUuid = uuid()
+    //         // console.log('newUuid', newUuid)
+    //         // console.log('btime', dete.start_time)
+    //         return {
+    //             sid: schedual.evt_sid || 0,
+    //             title: schedual.title || '',
+    //             btime: dete.start_time || new Date(),
+    //             etime: dete.end_time || new Date(),
+    //             start_time: schedual.start_time || new Date(),
+    //             end_time: schedual.end_time || new Date(),
+    //             final_date: schedual.final_date || new Date(),
+    //             desc: schedual.detail || '',
+    //             tag_color: schedual.color || '',
+    //             all_day: schedual.is_allday || false,
+    //             uuid: uuid(),
+    //         }
+    //     }))
 
-        return [...accList, ...newSchedual]
-    }, [])
+    //     return [...accList, ...newSchedual]
+    // }, [])
 
     console.log('testData', testData)
 
@@ -144,43 +145,98 @@ const App = (props) => {
         return week
     }
 
+    useEffect(() => {
+        const options = {
+            headers: {
+                'Accept': '*',
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            mode: 'cors',
+        }
+
+        // fetch("https://support6-dev.iqs-t.com/api/core/login", {
+        //     ...options,
+        //     method: 'POST',
+        //     body: JSON.stringify({
+        //         account: 'iqadmin',
+        //         password: '1111',
+        //         ao_sid: '15',
+        //     }),
+        // }).then(res => {
+        //     console.log('login', res)
+        // })
+        fetch('https://support6-dev.iqs-t.com/teamweb/api/teamweb/calendar?start_time=2021-05-20&end_time=2021-05-21', {
+            ...options,
+        }).then(res => {
+            return res.json()
+        }).then(res => {
+            const tmpData = res.data.reduce((accList, schedual) => {
+                const newSchedual = schedual.display_dates.map(((dete, index) => {
+                    const newUuid = uuid()
+                    // console.log('newUuid', newUuid)
+                    // console.log('btime', dete.start_time)
+                    return {
+                        sid: schedual.evt_sid || 0,
+                        title: schedual.title || '',
+                        btime: dete.start_time || new Date(),
+                        etime: dete.end_time || new Date(),
+                        start_time: schedual.start_time || new Date(),
+                        end_time: schedual.end_time || new Date(),
+                        final_date: schedual.final_date || new Date(),
+                        desc: schedual.detail || '',
+                        tag_color: schedual.color || '',
+                        all_day: schedual.is_allday || false,
+                        uuid: uuid(),
+                    }
+                }))
+
+                return [...accList, ...newSchedual]
+            }, [])
+
+            setTestData(tmpData)
+        })
+
+    }, [])
+
     return (
         <IntlProvider defaultLocale='zh' {...language}>
-            {/* <EditorNote /> */}
-            <div className='h-full w-full absolute'>
-                <div className='h-full w-full overflow-hidden flex flex-col relative'>
-                    <Navbar
-                        {...props}
-                        showData={showData}
-                        setShowData={setShowData}
-                        renderDate={renderDate}
-                        cycle={cycle}
-                        setCycle={setCycle}
-                    />
-
-                    {cycle === 30 ?
-                        <CalendarM
+            <ConnectedRouter history={history}>
+                <div className='h-full w-full absolute'>
+                    <div className='h-full w-full overflow-hidden flex flex-col relative'>
+                        <Navbar
                             {...props}
                             showData={showData}
                             setShowData={setShowData}
                             renderDate={renderDate}
-                            calendarData={testData}
-                            isMonth={cycle === 30}
-                            canEdit
-                        />
-                        :
-                        <CalendarD
-                            {...props}
-                            showData={showData}
-                            setShowData={setShowData}
                             cycle={cycle}
-                            isWeek={isWeek}
-                            calendarData={testData}
+                            setCycle={setCycle}
                         />
-                    }
 
+                        {cycle === 30 ?
+                            <CalendarM
+                                {...props}
+                                showData={showData}
+                                setShowData={setShowData}
+                                renderDate={renderDate}
+                                calendarData={testData}
+                                isMonth={cycle === 30}
+                                canEdit
+                            />
+                            :
+                            <CalendarD
+                                {...props}
+                                showData={showData}
+                                setShowData={setShowData}
+                                cycle={cycle}
+                                isWeek={isWeek}
+                                calendarData={testData}
+                            />
+                        }
+
+                    </div>
                 </div>
-            </div>
+            </ConnectedRouter>
 
         </IntlProvider>
     );

@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import classNames from 'classnames'
 import { FormattedDate, FormattedMessage, FormattedTime, injectIntl } from 'react-intl'
 import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome'
+import { Route, Switch } from 'react-router'
 import '../styl/styles.css'
 import { getFullDate, filterDate, addMinutes, dateDiff } from 'lib/datetime'
 import { weeks, renderCalendarMonthDate, colorMap } from './formatDate'
@@ -24,6 +25,7 @@ const CalendarM = (props) => {
         calendarData, // 從外部填入日曆的資料
         canEdit,
         isMonth,
+        push,
     } = props
 
     const [newShowData, setNewShowData] = useState(new Date())
@@ -66,6 +68,8 @@ const CalendarM = (props) => {
     const handleSetDataAndShowDetail = (data) => {
         setSelectedDate(data)
         setShowDetail(true)
+        console.log('1111', data)
+        push(`/${data.sid}`)
     }
 
     const formatCalendarData = (data) => {
@@ -173,7 +177,7 @@ const CalendarM = (props) => {
 
                 return acc
             }, [])
-            
+
         return newDatas
     }
 
@@ -248,7 +252,7 @@ const CalendarM = (props) => {
                             right: `${(100 / 7) * right}%`,
                             top: `calc(${(level / totalLevels) * 100}% + 34px + ${sort * noteHeight}px + ${sort}px)`
                         }}>
-                        <div 
+                        <div
                             className={`notes-box-outer truncate ${mouseHover !== uuid ? '' : `bg-${tag_color}-hover-color`}`}
                             onMouseEnter={e => {
                                 setMouseHover(uuid)
@@ -308,9 +312,9 @@ const CalendarM = (props) => {
                                     <div
                                         key={i}
                                         className={`whitespace-nowrap absolute cursor-pointer ${classNames("bg-white", {
-                                            "calendar-bg-today": 
-                                            // !dateDiff({ btime: data.datetime, etime: newShowData })
-                                             Number(data.date) === Number(fullDate.d) && Number(data.month) === Number(fullDate.m) && Number(data.year) === Number(fullDate.y)
+                                            "calendar-bg-today":
+                                                // !dateDiff({ btime: data.datetime, etime: newShowData })
+                                                Number(data.date) === Number(fullDate.d) && Number(data.month) === Number(fullDate.m) && Number(data.year) === Number(fullDate.y)
                                         })}  ${!selector ? '' : 'calendar-selector'}
                                         ${!selector ?
                                                 data.isToday ? 'calendar-today border-t'
@@ -332,13 +336,13 @@ const CalendarM = (props) => {
                                             <div className={`w-full select-none ${!center ? '' : 'flex justify-center items-center h-full'}`}>
                                                 {data.formatDate ?
                                                     abbr ?
-                                                        <div 
+                                                        <div
                                                             className={`${!textSm ? '' : 'calendar-text-sm'} ${selector && data.isToday ? 'text-white' : selector && !data.main ? 'text-gray-300' : 'text-gray-500'}`}>{data.date}</div>
                                                         :
                                                         <>
-                                                            <div 
+                                                            <div
                                                                 className={`calendar-month-date-name ${!textSm ? '' : 'calendar-text-sm'} ${selector && data.isToday ? 'text-white' : selector && !data.main ? 'text-gray-300' : 'text-gray-500'}`}>{data.formatDate}</div>
-                                                            <div 
+                                                            <div
                                                                 className={`calendar-month-date-date ${!textSm ? '' : 'calendar-text-sm'} ${selector && data.isToday ? 'text-white' : selector && !data.main ? 'text-gray-300' : 'text-gray-500'}`}>{data.date}</div>
                                                         </>
 
@@ -365,15 +369,21 @@ const CalendarM = (props) => {
                 />}
             </div>
 
-            <Modal
-                Content={SchedualDetail}
-                show={showDetail}
-                handleClose={() => setShowDetail(false)}
-                defaultValue={selectedDate}
-                setDefaultValue={setSelectedDate}
-                calendarData={newCalendarData}
-                setCalendarData={setNewCalendarData}
-            />
+            <Switch>
+                <Route path="/:sid" render={(props) =>
+                    <Modal
+                        {...props}
+                        Content={SchedualDetail}
+                        show={showDetail}
+                        handleClose={() => setShowDetail(false)}
+                        defaultValue={selectedDate}
+                        setDefaultValue={setSelectedDate}
+                        calendarData={newCalendarData}
+                        setCalendarData={setNewCalendarData}
+                    />
+                } />
+            </Switch>
+
 
             <Modal
                 Content={EditorNote}
