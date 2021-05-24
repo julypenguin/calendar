@@ -16,6 +16,7 @@ import EditorNote from './EditorNote'
 
 const App = (props) => {
     const { intl: { language }, history } = props
+    console.log('history', history)
 
     const [testData, setTestData] = useState([])
     const [showData, setShowData] = useState(new Date().toISOString())
@@ -171,7 +172,7 @@ const App = (props) => {
         }).then(res => {
             return res.json()
         }).then(res => {
-            const tmpData = res.data.reduce((accList, schedual) => {
+            const tmpData = res.data && res.data.reduce((accList, schedual) => {
                 const newSchedual = schedual.display_dates.map(((dete, index) => {
                     const newUuid = uuid()
                     // console.log('newUuid', newUuid)
