@@ -118,9 +118,9 @@ const SchedualDetail = ({
             {/* 內容 */}
             <div className='flex min-h-0 flex-auto flex-col'>
                 <div className='p-2 pr-4 pt-8'>
-                    {/* 新增標題 */}
+                    {/* 標題 */}
                     <div
-                        className='mb-4 flex'
+                        className='flex'
                         style={{ minHeight: '32px' }}
                     >
                         <div
@@ -132,12 +132,14 @@ const SchedualDetail = ({
                         <div className='flex-grow flex'>
                             <div
                                 className={`text-${tag_color} mr-2 pb-1 pl-2 flex-grow text-2xl font-semibold`}
-                            >{detailDate.title}</div>
+                            >
+                                {detailDate.title}
+                            </div>
                         </div>
                     </div>
 
-                    {/* 選擇時間 */}
-                    <div className='flex mb-4'>
+                    {/* 時間 */}
+                    <div className='flex'>
                         <div className='w-full flex'>
                             <div className='p-2'>
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -169,8 +171,26 @@ const SchedualDetail = ({
                         <div></div>
                     </div>
 
+                    {/* 出席者 */}
+                    <div className='flex'>
+                        <div className='w-full flex'>
+                            <div className='p-2'>
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                            </div>
+                            <div
+                                className='w-full p-2'
+                            >
+                                {detailDate.attend && detailDate.attend.map(aa => (
+                                    <div key={aa.aa_id}>{aa.aa_name || aa.aa_id}</div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
                     {/* 備註 */}
-                    <div className='flex mb-4'>
+                    <div className='flex'>
                         <div className='w-full flex'>
                             <div className='p-2'>
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -178,8 +198,7 @@ const SchedualDetail = ({
                                 </svg>
                             </div>
                             <div
-                                className='w-full'
-                                style={{ padding: '8px' }}
+                                className='w-full p-2'
                             >
                                 <span dangerouslySetInnerHTML={{ __html: detailDate.desc }}></span>
                             </div>
