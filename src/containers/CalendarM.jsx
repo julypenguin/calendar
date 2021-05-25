@@ -8,7 +8,6 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-    console.log('dispatch', dispatch)
     return {
         push: (path, state) => dispatch(push(path, state)),
     }

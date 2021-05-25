@@ -68,8 +68,7 @@ const CalendarM = (props) => {
     const handleSetDataAndShowDetail = (data) => {
         setSelectedDate(data)
         setShowDetail(true)
-        console.log('1111', data)
-        push(`/${data.sid}`)
+        push(`/${data.sid}?b=${data.btime}&e=${data.etime}`)
     }
 
     const formatCalendarData = (data) => {
@@ -256,7 +255,6 @@ const CalendarM = (props) => {
                             className={`notes-box-outer truncate ${mouseHover !== uuid ? '' : `bg-${tag_color}-hover-color`}`}
                             onMouseEnter={e => {
                                 setMouseHover(uuid)
-                                console.log('mouseHover', mouseHover)
                             }}
                             onMouseLeave={e => setMouseHover('')}
                         >
@@ -375,7 +373,10 @@ const CalendarM = (props) => {
                         {...props}
                         Content={SchedualDetail}
                         show={showDetail}
-                        handleClose={() => setShowDetail(false)}
+                        handleClose={() => {
+                            push("/")
+                            setShowDetail(false)
+                        }}
                         defaultValue={selectedDate}
                         setDefaultValue={setSelectedDate}
                         calendarData={newCalendarData}

@@ -25,7 +25,7 @@ const EditorNote = ({
     const [showCycleNumberList, setShowCycleNumberList] = useState(false)
     const [showCycleList, setShowCycleList] = useState(false)
     const [showRepeatWeek, setShowRepeatWeek] = useState(false)
-    const [showRepeatDate, setShowRepeatDate] = useState(false)
+    // const [showRepeatDate, setShowRepeatDate] = useState(false)
     const tag_color = colorMap[detailDate.tag_color] || 'blue'
 
     const categoryRef = useRef()
@@ -497,6 +497,70 @@ const EditorNote = ({
                                     </div>
                                 </div>
 
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* 出席者 */}
+                    <div className='flex mb-4'>
+                        <div className='w-full flex'>
+                            <div className='p-2'>
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                            </div>
+                            <div className='mt-2 flex flex-wrap flex-1 mr-2 relative border-b border-gray-300 hover:border-gray-600'>
+                                <div className='flex ml-4 mb-2 rounded-full cursor-pointer bg-blue-50 hover:bg-blue-100'>
+                                    <div
+                                        className='relative'
+                                        style={{ width: '32px', height: '32px' }}
+                                    >
+                                        <div className='absolute inset-0 rounded-full bg-gray-300'>
+
+                                        </div>
+                                    </div>
+                                    <div className='flex items-center'>
+                                        <div className={`pl-2 mr-2 text-${tag_color}`}>Zap Lin</div>
+                                        <div
+                                            className='relative rounded-full hover:bg-blue-200'
+                                            style={{ width: '32px', height: '32px' }}
+                                        >
+                                            <div className='absolute inset-0 flex justify-center items-center'>
+                                                <svg xmlns="http://www.w3.org/2000/svg" className={`h-6 w-6 text-${tag_color}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                                </svg>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className='flex ml-4 mb-2 rounded-full cursor-pointer bg-blue-50 hover:bg-blue-100'>
+                                    <div
+                                        className='relative'
+                                        style={{ width: '32px', height: '32px' }}
+                                    >
+                                        <div className='absolute inset-0 rounded-full bg-gray-300'>
+
+                                        </div>
+                                    </div>
+                                    <div className='flex items-center'>
+                                        <div className={`pl-2 mr-2 text-${tag_color}`}>Zap Lin</div>
+                                        <div
+                                            className='relative rounded-full hover:bg-blue-200'
+                                            style={{ width: '32px', height: '32px' }}
+                                        >
+                                            <div className='absolute inset-0 flex justify-center items-center'>
+                                                <svg xmlns="http://www.w3.org/2000/svg" className={`h-6 w-6 text-${tag_color}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                                </svg>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <input
+                                    type='text'
+                                    className='outline-none flex-1 pb-1 pl-4 '
+                                />
                             </div>
                         </div>
                     </div>

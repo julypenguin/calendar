@@ -8,6 +8,8 @@ import EditorNote from './EditorNote'
 import Modal from './Modal'
 
 const SchedualDetail = ({
+    match,
+    history,
     calendarData, // 整個行程陣列資料
     setCalendarData, // 將資料傳出去
     detailDate,
@@ -18,6 +20,7 @@ const SchedualDetail = ({
     const [showEditor, setShowEditor] = useState(false)
 
     const tag_color = colorMap[detailDate.tag_color]
+    const evt_sid = parseInt(match.params.sid) || 0
 
     const onClose = () => {
         if (typeof handleClose === 'function') handleClose()
@@ -33,6 +36,48 @@ const SchedualDetail = ({
     const onEdit = () => {
         setShowEditor(true)
     }
+
+    useEffect(() => {
+        if (evt_sid) {
+            const options = {
+                headers: {
+                    'Accept': '*',
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                mode: 'cors',
+            }
+
+            fetch(`https://support6-dev.iqs-t.com/teamweb/api/teamweb/calendar/${evt_sid}`, {
+                ...options,
+            }).then(res => {
+                return res.json()
+            }).then(res => {
+                const schedual = res.data
+                const qs = new URLSearchParams(history.location && history.location.search)
+                const qs_obj = {}
+                qs.forEach((val, name) => {
+                    qs_obj[name] = val
+                })
+
+                if (!schedual) return
+                setDetailDate({
+                    ...detailDate,
+                    ...res.data,
+                    sid: schedual.evt_sid || 0,
+                    title: schedual.title || '',
+                    btime: qs_obj.b || new Date(),
+                    etime: qs_obj.e || new Date(),
+                    start_time: schedual.start_time || new Date(),
+                    end_time: schedual.end_time || new Date(),
+                    final_date: schedual.final_date || new Date(),
+                    desc: schedual.detail || '',
+                    tag_color: schedual.color || '',
+                    all_day: schedual.is_allday || false,
+                })
+            })
+        }
+    }, [evt_sid])
 
     return (
         <>
@@ -135,7 +180,9 @@ const SchedualDetail = ({
                             <div
                                 className='w-full'
                                 style={{ padding: '8px' }}
-                            >{detailDate.desc}</div>
+                            >
+                                <span dangerouslySetInnerHTML={{ __html: detailDate.desc }}></span>
+                            </div>
                         </div>
                     </div>
                 </div>
