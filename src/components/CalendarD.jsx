@@ -74,6 +74,7 @@ const CalendarD = (props) => {
                 etime: addMinutes(60, btime),
                 desc: "",
                 tag_color: "#BFDBFE",
+                location: "",
             })
         }
     }

@@ -46,7 +46,7 @@ const App = (props) => {
     //     return [...accList, ...newSchedual]
     // }, [])
 
-    console.log('testData', testData)
+    // console.log('testData', testData)
 
     const checkOverdue = ({ y, m, d, todayY, todayM, todayD }, checkToday) => {
         if (checkToday) {
@@ -141,7 +141,7 @@ const App = (props) => {
         for (let i = 0; i < arr.length; i += 7) {
             week.push(arr.slice(i, i + 7))
         }
-        console.log('week', week)
+        // console.log('week', week)
         return week
     }
 

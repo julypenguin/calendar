@@ -14,8 +14,6 @@ const Modal = ({
     Content,
     ...otherProps
 }) => {
-    console.log('otherProps', otherProps)
-
     const [detailDate, setDetailDate] = useState({ title: '', tag_color: '#BFDBFE' })
 
     const onClose = () => {

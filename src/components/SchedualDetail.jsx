@@ -15,7 +15,7 @@ const SchedualDetail = ({
     detailDate,
     setDetailDate,
     handleClose,
-    getAvatar,
+    getAvatar, // 取得 avatar 圖片，必須是 function
 }) => {
 
     const [showEditor, setShowEditor] = useState(false)
@@ -75,6 +75,7 @@ const SchedualDetail = ({
                     desc: schedual.detail || '',
                     tag_color: schedual.color || '',
                     all_day: schedual.is_allday || false,
+                    location: schedual.location || "",
                 })
             })
         }
@@ -192,11 +193,13 @@ const SchedualDetail = ({
                                             className='relative mr-2'
                                             style={{ width: '32px', height: '32px' }}
                                         >
-                                            <div className='absolute inset-0 rounded-full'>
-                                                <img
-                                                    className='w-full h-full rounded-full border border-gray-300'
-                                                    src={typeof getAvatar === 'function' ? getAvatar(aa.aa_sid) : ''} 
-                                                />
+                                            <div className='absolute inset-0 rounded-full bg-white'>
+                                                {typeof getAvatar !== 'function' ? null :
+                                                    <img
+                                                        className='w-full h-full rounded-full border border-gray-300'
+                                                        src={getAvatar(aa.aa_sid)} 
+                                                    />
+                                                }
                                             </div>
                                         </div>
                                         <div>{aa.aa_name || aa.aa_id}</div>
@@ -251,6 +254,7 @@ const SchedualDetail = ({
                     setDefaultValue={setDetailDate}
                     calendarData={calendarData}
                     setCalendarData={setCalendarData}
+                    getAvatar={getAvatar}
                 />,
                 document.body
             )}

@@ -15,8 +15,8 @@ const EditorNote = ({
     detailDate,
     setDetailDate,
     handleClose,
+    getAvatar, // 取得 avatar 圖片，必須是 function
 }) => {
-
     const [repeatWeekNumbers, setRepeatWeekNumbers] = useState({})
     const [repeatDateNumbers, setRepeatDateNumbers] = useState({})
     const [cycleNumber, setCycleNumber] = useState(1)
@@ -111,8 +111,8 @@ const EditorNote = ({
     }
 
     const onSave = () => {
-        if ((new Date(detailDate.etime) - new Date(detailDate.btime)) < 0) {
-            detailDate.etime = detailDate.btime
+        if ((new Date(detailDate.end_time) - new Date(detailDate.start_time)) < 0) {
+            detailDate.end_time = detailDate.start_time
         }
 
         const addLength = calendarData.filter((data, index) => data.sid === detailDate.sid).length
@@ -123,6 +123,15 @@ const EditorNote = ({
         if (!addLength) newCalendarData.push(detailDate)
         setCalendarData(newCalendarData)
         handleClose()
+    }
+
+    const deleteAttend = aa_sid => {
+        const newAttend = (detailDate.attend && detailDate.attend.filter(member => member.aa_sid !== aa_sid)) || []
+
+        setDetailDate({
+            ...detailDate,
+            attend: newAttend
+        })
     }
 
     // 設定要重複的日期(單選)
@@ -439,19 +448,19 @@ const EditorNote = ({
                                     <div className='flex-1'>
                                         <div className='datetimepicker-box flex mb-4'>
                                             <Datetimepicker
-                                                name="btime"
-                                                value={parseToISOString(detailDate.btime)}
-                                                onChange={value => setDetailDate({ ...detailDate, btime: value })}
+                                                name="start_time"
+                                                value={parseToISOString(detailDate.start_time)}
+                                                onChange={value => setDetailDate({ ...detailDate, start_time: value })}
                                                 notime
                                             />
                                         </div>
 
-                                        <div className='datetimepicker-box flex' onBlur={() => setDetailDate({ ...detailDate, etime: detailDate.btime })}>
+                                        <div className='datetimepicker-box flex' onBlur={() => setDetailDate({ ...detailDate, end_time: detailDate.start_time })}>
                                             <Datetimepicker
-                                                name="etime"
-                                                value={parseToISOString(detailDate.etime)}
-                                                min={parseToISOString(detailDate.btime)}
-                                                onChange={value => setDetailDate({ ...detailDate, etime: value })}
+                                                name="end_time"
+                                                value={parseToISOString(detailDate.end_time)}
+                                                min={parseToISOString(detailDate.start_time)}
+                                                onChange={value => setDetailDate({ ...detailDate, end_time: value })}
                                                 notime
                                             />
                                         </div>
@@ -460,18 +469,18 @@ const EditorNote = ({
                                     <div className='flex-1'>
                                         <div className='datetimepicker-box flex mb-4'>
                                             <Datetimepicker
-                                                name="btime"
-                                                value={parseToISOString(detailDate.btime)}
-                                                onChange={value => setDetailDate({ ...detailDate, btime: value })}
+                                                name="start_time"
+                                                value={parseToISOString(detailDate.start_time)}
+                                                onChange={value => setDetailDate({ ...detailDate, start_time: value })}
                                             />
                                         </div>
 
-                                        <div className='datetimepicker-box flex' onBlur={() => setDetailDate({ ...detailDate, etime: detailDate.btime })}>
+                                        <div className='datetimepicker-box flex' onBlur={() => setDetailDate({ ...detailDate, end_time: detailDate.start_time })}>
                                             <Datetimepicker
-                                                name="etime"
-                                                value={parseToISOString(detailDate.etime)}
-                                                min={parseToISOString(detailDate.btime)}
-                                                onChange={value => setDetailDate({ ...detailDate, etime: value })}
+                                                name="end_time"
+                                                value={parseToISOString(detailDate.end_time)}
+                                                min={parseToISOString(detailDate.start_time)}
+                                                onChange={value => setDetailDate({ ...detailDate, end_time: value })}
                                             />
                                         </div>
                                     </div>
@@ -510,56 +519,63 @@ const EditorNote = ({
                                 </svg>
                             </div>
                             <div className='mt-2 flex flex-wrap flex-1 mr-2 relative border-b border-gray-300 hover:border-gray-600'>
-                                <div className='flex ml-4 mb-2 rounded-full cursor-pointer bg-blue-50 hover:bg-blue-100'>
+                                {detailDate.attend && detailDate.attend.map(aa => (
                                     <div
-                                        className='relative'
-                                        style={{ width: '32px', height: '32px' }}
-                                    >
-                                        <div className='absolute inset-0 rounded-full bg-gray-300'>
-
-                                        </div>
-                                    </div>
-                                    <div className='flex items-center'>
-                                        <div className={`pl-2 mr-2 text-${tag_color}`}>Zap Lin</div>
+                                        key={aa.aa_sid}
+                                        className='flex ml-4 mb-2 rounded-full cursor-pointer bg-blue-50 hover:bg-blue-100'>
                                         <div
-                                            className='relative rounded-full hover:bg-blue-200'
+                                            className='relative'
                                             style={{ width: '32px', height: '32px' }}
                                         >
-                                            <div className='absolute inset-0 flex justify-center items-center'>
-                                                <svg xmlns="http://www.w3.org/2000/svg" className={`h-6 w-6 text-${tag_color}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                                </svg>
+                                            <div className='absolute inset-0 rounded-full bg-white'>
+                                                {typeof getAvatar !== 'function' ? null :
+                                                    <img
+                                                        className='w-full h-full rounded-full border border-gray-300'
+                                                        src={getAvatar(aa.aa_sid)}
+                                                    />
+                                                }
+                                            </div>
+                                        </div>
+                                        <div className='flex items-center'>
+                                            <div className={`pl-2 mr-2 text-${tag_color}`}>{aa.aa_name || aa.aa_id}</div>
+                                            <div
+                                                className='relative rounded-full hover:bg-blue-200'
+                                                style={{ width: '32px', height: '32px' }}
+                                            >
+                                                <div 
+                                                    className='absolute inset-0 flex justify-center items-center'
+                                                    onClick={() => deleteAttend(aa.aa_sid)}
+                                                >
+                                                    <svg xmlns="http://www.w3.org/2000/svg" className={`h-6 w-6 text-${tag_color}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                                    </svg>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
 
-                                <div className='flex ml-4 mb-2 rounded-full cursor-pointer bg-blue-50 hover:bg-blue-100'>
-                                    <div
-                                        className='relative'
-                                        style={{ width: '32px', height: '32px' }}
-                                    >
-                                        <div className='absolute inset-0 rounded-full bg-gray-300'>
-
-                                        </div>
-                                    </div>
-                                    <div className='flex items-center'>
-                                        <div className={`pl-2 mr-2 text-${tag_color}`}>Zap Lin</div>
-                                        <div
-                                            className='relative rounded-full hover:bg-blue-200'
-                                            style={{ width: '32px', height: '32px' }}
-                                        >
-                                            <div className='absolute inset-0 flex justify-center items-center'>
-                                                <svg xmlns="http://www.w3.org/2000/svg" className={`h-6 w-6 text-${tag_color}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                                </svg>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <input
+                    {/* 地點 */}
+                    <div className='flex mb-4'>
+                        <div className='w-full flex'>
+                            <div className='p-2'>
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                            </div>
+                            <div className='mt-2 flex flex-wrap flex-1 mr-2 relative border-b border-gray-300 hover:border-gray-600'>
+                                <input 
                                     type='text'
-                                    className='outline-none flex-1 pb-1 pl-4 '
+                                    className='pl-4 flex-1 outline-none'
+                                    value={detailDate.location}
+                                    onChange={e => setDetailDate({
+                                        ...detailDate,
+                                        location: e.target.value,
+                                    })}
                                 />
                             </div>
                         </div>
@@ -718,7 +734,7 @@ const EditorNote = ({
                                     {detailDate.is_repeat && <div
                                         className='calendar-inner-icon-hover flex flex-shrink-0 cursor-pointer'
                                     >
-                                        <div className='datetimepicker-box-no-borderb flex' onBlur={() => setDetailDate({ ...detailDate, etime: detailDate.btime })}>
+                                        <div className='datetimepicker-box-no-borderb flex'>
                                             <Datetimepicker
                                                 name="final_date"
                                                 value={!detailDate.final_date || detailDate.final_date === '0001-01-01T00:00:00' ? parseToISOString(addDays(30)) : parseToISOString(detailDate.final_date)}
