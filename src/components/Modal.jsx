@@ -6,7 +6,7 @@ import { getFullDate, parseToDateString, parseToISOString } from 'lib/datetime'
 import { Datetimepicker } from '@iqs/datetimepicker'
 import '@iqs/datetimepicker/index.styl'
 
-const EditorNote = ({
+const Modal = ({
     show,
     handleClose,
     defaultValue, // detail 的資料
@@ -14,6 +14,7 @@ const EditorNote = ({
     Content,
     ...otherProps
 }) => {
+    console.log('otherProps', otherProps)
 
     const [detailDate, setDetailDate] = useState({ title: '', tag_color: '#BFDBFE' })
 
@@ -72,4 +73,4 @@ const EditorNote = ({
     );
 };
 
-export default EditorNote;
+export default Modal;

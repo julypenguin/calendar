@@ -38,7 +38,9 @@ const rootElement = document.getElementById("root");
 
 render(
     <Provider store={store} context={ReactReduxContext}>
-        <App history={history} />
+        <App history={history} getAvatar={(sid) => {
+            return `https://support6-dev.iqs-t.com/api/core/member/${sid}/avatar`
+        }} />
     </Provider>,
     rootElement
 )

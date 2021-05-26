@@ -15,6 +15,7 @@ const SchedualDetail = ({
     detailDate,
     setDetailDate,
     handleClose,
+    getAvatar,
 }) => {
 
     const [showEditor, setShowEditor] = useState(false)
@@ -183,8 +184,41 @@ const SchedualDetail = ({
                                 className='w-full p-2'
                             >
                                 {detailDate.attend && detailDate.attend.map(aa => (
-                                    <div key={aa.aa_id}>{aa.aa_name || aa.aa_id}</div>
+                                    <div 
+                                        key={aa.aa_id}
+                                        className='flex items-center mb-1'
+                                    >
+                                        <div
+                                            className='relative mr-2'
+                                            style={{ width: '32px', height: '32px' }}
+                                        >
+                                            <div className='absolute inset-0 rounded-full'>
+                                                <img
+                                                    className='w-full h-full rounded-full border border-gray-300'
+                                                    src={typeof getAvatar === 'function' ? getAvatar(aa.aa_sid) : ''} 
+                                                />
+                                            </div>
+                                        </div>
+                                        <div>{aa.aa_name || aa.aa_id}</div>
+                                    </div>
                                 ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* 地點 */}
+                    <div className='flex'>
+                        <div className='w-full flex'>
+                            <div className='p-2'>
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                            </div>
+                            <div
+                                className='w-full p-2'
+                            >
+                                {detailDate.location}
                             </div>
                         </div>
                     </div>

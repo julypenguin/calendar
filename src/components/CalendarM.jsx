@@ -26,6 +26,7 @@ const CalendarM = (props) => {
         canEdit,
         isMonth,
         push,
+        getAvatar, // 取得 avatar 圖片，必須是 function
     } = props
 
     const [newShowData, setNewShowData] = useState(new Date())
@@ -381,6 +382,7 @@ const CalendarM = (props) => {
                         setDefaultValue={setSelectedDate}
                         calendarData={newCalendarData}
                         setCalendarData={setNewCalendarData}
+                        getAvatar={getAvatar}
                     />
                 } />
             </Switch>
@@ -394,6 +396,7 @@ const CalendarM = (props) => {
                 setDefaultValue={setSelectedDate}
                 calendarData={newCalendarData}
                 setCalendarData={setNewCalendarData}
+                getAvatar={getAvatar}
             />
 
         </>

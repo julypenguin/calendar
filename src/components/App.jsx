@@ -16,7 +16,6 @@ import EditorNote from './EditorNote'
 
 const App = (props) => {
     const { intl: { language }, history } = props
-    console.log('history', history)
 
     const [testData, setTestData] = useState([])
     const [showData, setShowData] = useState(new Date().toISOString())
