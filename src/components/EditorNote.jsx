@@ -17,8 +17,8 @@ const EditorNote = ({
     handleClose,
     getAvatar, // 取得 avatar 圖片，必須是 function
     customEditor, // 可以塞入客製化編輯器，用於編輯備註
+    renderDate,
 }) => {
-    console.log('detailDate', detailDate)
     // const [repeatWeekNumbers, setRepeatWeekNumbers] = useState({})
     const [repeatDateNumbers, setRepeatDateNumbers] = useState({})
     // const [cycleNumber, setCycleNumber] = useState(1)
@@ -29,6 +29,8 @@ const EditorNote = ({
     const [showRepeatWeek, setShowRepeatWeek] = useState(false)
     // const [showRepeatDate, setShowRepeatDate] = useState(false)
     const tag_color = colorMap[detailDate.tag_color] || 'blue'
+    const renderWeeks = renderDate(detailDate.start_time)
+console.log('detailDate', detailDate)
 
     const categoryRef = useRef()
     const cycleNumberRef = useRef()
@@ -147,7 +149,7 @@ const EditorNote = ({
         if (!addLength) newCalendarData.push(detailDate)
         setCalendarData(newCalendarData)
         handleClose()
-        
+
         fetchPostCalendar({
             ...detailDate,
             color: detailDate.tag_color,
@@ -255,12 +257,12 @@ const EditorNote = ({
     }
 
     const renderOnWeek = () => {
-        // let weekList = weeks.map(week => {
-
-        // })
-        // for (const key in repeatWeekNumbers) {
-        //     weekList.push(repeatWeekNumbers[key])
-        // }
+        const dayOfTheWeek = new Date(detailDate.start_time).getDay()
+        // const numOfWeeks = renderWeeks.reduce((acc, week) => {
+        //     week.filter(date => {
+        //         if 
+        //     })
+        // }, [])
 
         return (
             <>
@@ -269,10 +271,10 @@ const EditorNote = ({
                     values={{ number: '3' }}
                 />
                 {weeks.map((week, index) => (
-                    <Fragment key={index}>
-                        {!index ? null : <span className='mr-2 text-sm'>,</span>}
-                        {(week.week_bit & detailDate.week_bit) === week.week_bit && <span className='text-sm'>{week}</span>}
-                    </Fragment>
+                    dayOfTheWeek !== index ? null :
+                        <Fragment key={index}>
+                            <span className='text-sm'>{week.name}</span>
+                        </Fragment>
                 ))}
             </>
         )

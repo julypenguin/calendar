@@ -139,7 +139,7 @@ const App = (props) => {
 
         const week = []
         for (let i = 0; i < arr.length; i += 7) {
-            week.push(arr.slice(i, i + 7))
+            week.push(arr.slice(i, i + 7).map(date => ({ ...date, level: (i / 7) + 1 })))
         }
         // console.log('week', week)
         return week
