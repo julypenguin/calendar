@@ -5,7 +5,7 @@ import { createPortal } from 'react-dom'
 import { getFullDate, parseToDateString, parseToISOString, addDays } from 'lib/datetime'
 import { Datetimepicker } from '@iqs/datetimepicker'
 import '@iqs/datetimepicker/index.styl'
-import { colorMap, weeks } from './formatDate'
+import { colorMap, weeks, modeMap } from './formatDate'
 import { Fragment } from 'react';
 import Dropdown from './Dropdown'
 
@@ -16,11 +16,13 @@ const EditorNote = ({
     setDetailDate,
     handleClose,
     getAvatar, // 取得 avatar 圖片，必須是 function
+    customEditor, // 可以塞入客製化編輯器，用於編輯備註
 }) => {
-    const [repeatWeekNumbers, setRepeatWeekNumbers] = useState({})
+    console.log('detailDate', detailDate)
+    // const [repeatWeekNumbers, setRepeatWeekNumbers] = useState({})
     const [repeatDateNumbers, setRepeatDateNumbers] = useState({})
-    const [cycleNumber, setCycleNumber] = useState(1)
-    const [cycleName, setCycleName] = useState('never')
+    // const [cycleNumber, setCycleNumber] = useState(1)
+    // const [cycleName, setCycleName] = useState('never')
     const [showCategory, setShowCategory] = useState(false)
     const [showCycleNumberList, setShowCycleNumberList] = useState(false)
     const [showCycleList, setShowCycleList] = useState(false)
@@ -110,6 +112,28 @@ const EditorNote = ({
         handleClose()
     }
 
+    const fetchPostCalendar = (data) => {
+        console.log('data', data)
+        const options = {
+            headers: {
+                'Accept': '*',
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            mode: 'cors',
+        }
+
+        fetch('https://support6-dev.iqs-t.com/teamweb/api/teamweb/calendar', {
+            ...options,
+            method: 'POST',
+            body: JSON.stringify(data)
+        }).then(res => {
+            return res.json()
+        }).then(res => {
+            console.log('post_result', res)
+        })
+    }
+
     const onSave = () => {
         if ((new Date(detailDate.end_time) - new Date(detailDate.start_time)) < 0) {
             detailDate.end_time = detailDate.start_time
@@ -123,6 +147,26 @@ const EditorNote = ({
         if (!addLength) newCalendarData.push(detailDate)
         setCalendarData(newCalendarData)
         handleClose()
+        
+        fetchPostCalendar({
+            ...detailDate,
+            color: detailDate.tag_color,
+            // "start_time":"2021-05-20T12:34:56",
+            // "end_time":"2021-05-30T12:34:56",
+            // "title":"This is a Repeat event created by unit test",
+            "detail": detailDate.desc,
+            // "location":"VS2019",
+            // "is_allday":false,
+            // "is_repeat":true,
+            // "attends":[535,1028,1247],
+            // "mode":0,
+            // "freq":1,
+            // "freq_month":0,
+            // "calc_type":0,
+            // "calc_num":0,
+            // "week_bit":0,
+            // "final_date":"2021-05-30T12:34:56"
+        })
     }
 
     const deleteAttend = aa_sid => {
@@ -145,21 +189,19 @@ const EditorNote = ({
     }
 
     // 設定要重複的星期幾(複選)
-    const handleSetRepeatWeek = (name, day) => {
-        const newRepeatWeekNumbers = {
-            ...repeatWeekNumbers
+    const handleSetRepeatWeek = week_bit => {
+        let weekBit = 1
+        if ((week_bit & detailDate.week_bit) === week_bit) {
+            if (detailDate.week_bit - week_bit === 0) return
+            weekBit = detailDate.week_bit - week_bit
+        } else {
+            weekBit = detailDate.week_bit + week_bit
         }
 
-        if (repeatWeekNumbers[day]) {
-            if (Object.keys(newRepeatWeekNumbers).length === 1) return
-            delete newRepeatWeekNumbers[day]
-            setRepeatWeekNumbers(newRepeatWeekNumbers)
-        } else {
-            setRepeatWeekNumbers({
-                ...repeatWeekNumbers,
-                [day]: name,
-            })
-        }
+        setDetailDate({
+            ...detailDate,
+            week_bit: weekBit,
+        })
     }
 
     const detectPosition = (ref, rightAndBottom) => {
@@ -213,10 +255,12 @@ const EditorNote = ({
     }
 
     const renderOnWeek = () => {
-        let weekList = []
-        for (const key in repeatWeekNumbers) {
-            weekList.push(repeatWeekNumbers[key])
-        }
+        // let weekList = weeks.map(week => {
+
+        // })
+        // for (const key in repeatWeekNumbers) {
+        //     weekList.push(repeatWeekNumbers[key])
+        // }
 
         return (
             <>
@@ -224,10 +268,10 @@ const EditorNote = ({
                     id='calendar.on_week'
                     values={{ number: '3' }}
                 />
-                {weekList.map((week, index) => (
+                {weeks.map((week, index) => (
                     <Fragment key={index}>
                         {!index ? null : <span className='mr-2 text-sm'>,</span>}
-                        <span className='text-sm'>{week}</span>
+                        {(week.week_bit & detailDate.week_bit) === week.week_bit && <span className='text-sm'>{week}</span>}
                     </Fragment>
                 ))}
             </>
@@ -288,7 +332,11 @@ const EditorNote = ({
                 key={index}
                 className='flex justify-center items-center p-2 bg-gray-light-hover cursor-pointer'
                 onClick={() => {
-                    setCycleNumber(index + 1)
+                    // setCycleNumber(index + 1)
+                    setDetailDate({
+                        ...detailDate,
+                        freq: index + 1,
+                    })
                     setShowCycleNumberList(false)
                 }}
             >
@@ -299,11 +347,11 @@ const EditorNote = ({
 
     const renderCycleList = () => {
         const cycleList = [
-            'never',
-            'day',
-            'week',
-            'month',
-            'year'
+            { mode: 0, name: 'never' },
+            { mode: 1, name: 'day' },
+            { mode: 2, name: 'week' },
+            { mode: 3, name: 'month' },
+            { mode: 4, name: 'year' }
         ]
 
         return cycleList.map((cycle, index) => (
@@ -311,16 +359,19 @@ const EditorNote = ({
                 key={index}
                 className='flex items-center p-2 bg-gray-light-hover cursor-pointer'
                 onClick={() => {
-                    setCycleName(cycle)
+                    // setCycleName(cycle)
+                    // setDetailDate({ ...detailDate, mode: cycle.mode, xxx: 1 })
                     setShowCycleList(false)
-                    if (cycle === 'never') {
-                        setDetailDate({ ...detailDate, final_date: parseToISOString(addDays(30)), is_repeat: false })
+                    if (cycle.name === 'never') {
+                        setDetailDate({ ...detailDate, is_repeat: false, mode: cycle.mode })
+                        // setDetailDate({ ...detailDate, final_date: parseToISOString(addDays(30)), is_repeat: false })
                     } else {
-                        setDetailDate({ ...detailDate, final_date: parseToISOString(addDays(30)), is_repeat: true })
+                        setDetailDate({ ...detailDate, is_repeat: true, mode: cycle.mode })
+                        // setDetailDate({ ...detailDate, final_date: parseToISOString(addDays(30)), is_repeat: true })
                     }
                 }}
             >
-                <FormattedMessage id={`calendar.${cycle}`} />
+                <FormattedMessage id={`calendar.${cycle.name}`} />
             </li>
         ))
     }
@@ -329,12 +380,8 @@ const EditorNote = ({
         if (detailDate.btime) {
             const fullDay = getFullDate(detailDate.btime)
             const d = fullDay.d
-            const week = new Date(detailDate.btime).getDay()
             setRepeatDateNumbers({
                 [d]: true,
-            })
-            setRepeatWeekNumbers({
-                [week]: weeks[week].name
             })
         }
     }, [detailDate])
@@ -542,7 +589,7 @@ const EditorNote = ({
                                                 className='relative rounded-full hover:bg-blue-200'
                                                 style={{ width: '32px', height: '32px' }}
                                             >
-                                                <div 
+                                                <div
                                                     className='absolute inset-0 flex justify-center items-center'
                                                     onClick={() => deleteAttend(aa.aa_sid)}
                                                 >
@@ -568,7 +615,7 @@ const EditorNote = ({
                                 </svg>
                             </div>
                             <div className='mt-2 flex flex-wrap flex-1 mr-2 relative border-b border-gray-300 hover:border-gray-600'>
-                                <input 
+                                <input
                                     type='text'
                                     className='pl-4 flex-1 outline-none'
                                     value={detailDate.location}
@@ -594,18 +641,18 @@ const EditorNote = ({
                                     <div className='mr-2'>
                                         <span className='mr-1'>
                                             <FormattedMessage id='calendar.repeat' />
-                                            {cycleName === 'never' ? null : <FormattedMessage id='calendar.interval' />}
+                                            {detailDate.mode === 0 ? null : <FormattedMessage id='calendar.interval' />}
                                         </span>
                                         <span>:</span>
                                     </div>
 
                                     {/* 顯示重複間隔天數 */}
-                                    {cycleName === 'never' || cycleName === 'year' ? null : <div
+                                    {detailDate.mode === 0 || detailDate.mode === 4 ? null : <div
                                         className='calendar-inner-icon-hover mr-2 flex flex-shrink-0 cursor-pointer'
                                         ref={cycleNumberRef}
                                         onClick={() => setShowCycleNumberList(!showCycleNumberList)}
                                     >
-                                        <span className='px-2'>{cycleNumber}</span>
+                                        <span className='px-2'>{detailDate.freq}</span>
                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                         </svg>
@@ -627,7 +674,7 @@ const EditorNote = ({
                                         onClick={() => setShowCycleList(!showCycleList)}
                                     >
                                         <span className='px-2'>
-                                            <FormattedMessage id={`calendar.${cycleName}`} />
+                                            {typeof detailDate.mode === 'number' && <FormattedMessage id={`calendar.${modeMap[detailDate.mode]}`} />}
                                         </span>
                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -646,7 +693,7 @@ const EditorNote = ({
                                 </div>
 
                                 {/* 選擇特定日期 */}
-                                {cycleName !== 'month' && cycleName !== 'year' ? null : <fieldset className='w-full mt-2'>
+                                {detailDate.mode !== 3 && detailDate.mode !== 4 ? null : <fieldset className='w-full mt-2'>
                                     <div className="bg-white rounded-md">
                                         {/* 於...日 */}
                                         <label className="relative py-2 flex cursor-pointer">
@@ -707,14 +754,14 @@ const EditorNote = ({
                                 </fieldset>}
 
                                 {/* 選擇星期幾 */}
-                                {(showRepeatWeek || (cycleName === 'day' && cycleNumber === 1) || cycleName === 'week') && <div className='w-full mt-2'>
+                                {(showRepeatWeek || detailDate.mode === 2) && <div className='w-full mt-2'>
                                     <ul className='flex py-2'>
                                         {weeks.map((day, index) => (
                                             <li
                                                 key={index}
-                                                className={`flex justify-center items-center mr-3 rounded-full ${repeatWeekNumbers[day.day] ? 'bg-blue-200' : 'bg-gray-200 hover:bg-gray-300'}`}
+                                                className={`flex justify-center items-center mr-3 rounded-full ${(day.week_bit & detailDate.week_bit) === day.week_bit ? 'bg-blue-200' : 'bg-gray-200 hover:bg-gray-300'}`}
                                                 style={{ height: '38px', width: '38px' }}
-                                                onClick={() => handleSetRepeatWeek(day.name, day.day)}
+                                                onClick={() => handleSetRepeatWeek(day.week_bit)}
                                             >
                                                 <div className='text-sm'>{day.abb_name}</div>
                                             </li>
@@ -723,7 +770,7 @@ const EditorNote = ({
                                 </div>}
 
                                 {/* 重複至 */}
-                                {cycleName !== 'never' && <div className='flex w-full mt-2'>
+                                {detailDate.mode !== 0 && <div className='flex w-full mt-2'>
                                     {detailDate.is_repeat && <div className='flex items-center'>
                                         <span className=''>
                                             <FormattedMessage id='calendar.repeat_until' />
@@ -804,15 +851,28 @@ const EditorNote = ({
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h7" />
                                 </svg>
                             </div>
-                            <textarea
-                                className='border border-gray-300 w-full h-32'
-                                style={{ padding: '8px' }}
-                                value={detailDate.desc}
-                                onChange={e => setDetailDate({
-                                    ...detailDate,
-                                    desc: e.target.value,
-                                })}
-                            />
+
+                            {customEditor ?
+                                <input
+                                    className='border border-gray-300 w-full h-32'
+                                    style={{ padding: '8px' }}
+                                    value={detailDate.desc}
+                                    onChange={e => setDetailDate({
+                                        ...detailDate,
+                                        desc: e.target.value,
+                                    })}
+                                />
+                                :
+                                <textarea
+                                    className='border border-gray-300 w-full h-32'
+                                    style={{ padding: '8px' }}
+                                    value={detailDate.desc}
+                                    onChange={e => setDetailDate({
+                                        ...detailDate,
+                                        desc: e.target.value,
+                                    })}
+                                />
+                            }
                         </div>
                     </div>
                 </div>

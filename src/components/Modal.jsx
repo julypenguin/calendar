@@ -22,8 +22,8 @@ const Modal = ({
         setDefaultValue({
             sid: String(Date.now()),
             title: "",
-            btime: defaultValue.btime,
-            etime: defaultValue.etime,
+            start_time: defaultValue.btime,
+            end_time: defaultValue.etime,
             desc: "",
             tag_color: "#BFDBFE",
         })
@@ -31,7 +31,7 @@ const Modal = ({
 
     useEffect(() => {
         let tag_color = '#BFDBFE'
-        if (defaultValue && defaultValue.btime) {
+        if (defaultValue && defaultValue.start_time) {
             if (defaultValue.tag_color) tag_color = defaultValue.tag_color
             setDetailDate({ ...defaultValue, tag_color })
         }

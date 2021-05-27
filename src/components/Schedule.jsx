@@ -102,10 +102,13 @@ const Schedule = (props) => {
                                     onClick={() => handleSetDataAndShowEditor({
                                         sid: String(Date.now()),
                                         title: "",
-                                        btime: showData,
-                                        etime: addMinutes(60, showData),
+                                        start_time: showData,
+                                        end_time: addMinutes(60, showData),
                                         desc: "",
                                         tag_color: "#BFDBFE",
+                                        location: "",
+                                        mode: 0,
+                                        freq: 1,
                                     })}
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">

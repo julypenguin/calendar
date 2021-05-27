@@ -70,11 +70,13 @@ const CalendarD = (props) => {
             handleSetDataAndShowEditor({
                 sid: String(Date.now()),
                 title: "",
-                btime: btime,
-                etime: addMinutes(60, btime),
+                start_time: btime,
+                end_time: addMinutes(60, btime),
                 desc: "",
                 tag_color: "#BFDBFE",
                 location: "",
+                mode: 0,
+                freq: 1,
             })
         }
     }
@@ -401,6 +403,7 @@ const CalendarD = (props) => {
             </div>
 
             <Modal
+                {...props}
                 Content={SchedualDetail}
                 show={showDetail}
                 handleClose={() => setShowDetail(false)}
@@ -412,6 +415,7 @@ const CalendarD = (props) => {
             />
 
             <Modal
+                {...props}
                 Content={EditorNote}
                 show={showEditor}
                 handleClose={() => setShowEditor(false)}

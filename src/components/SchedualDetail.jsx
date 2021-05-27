@@ -15,7 +15,7 @@ const SchedualDetail = ({
     detailDate,
     setDetailDate,
     handleClose,
-    getAvatar, // 取得 avatar 圖片，必須是 function
+    ...otherProps
 }) => {
 
     const [showEditor, setShowEditor] = useState(false)
@@ -186,7 +186,7 @@ const SchedualDetail = ({
                             >
                                 {detailDate.attend && detailDate.attend.map(aa => (
                                     <div 
-                                        key={aa.aa_id}
+                                        key={aa.aa_sid}
                                         className='flex items-center mb-1'
                                     >
                                         <div
@@ -247,6 +247,7 @@ const SchedualDetail = ({
 
             {!showEditor ? null : createPortal(
                 <Modal
+                    {...otherProps}
                     Content={EditorNote}
                     show={showEditor}
                     handleClose={onClose}
@@ -254,7 +255,6 @@ const SchedualDetail = ({
                     setDefaultValue={setDetailDate}
                     calendarData={calendarData}
                     setCalendarData={setCalendarData}
-                    getAvatar={getAvatar}
                 />,
                 document.body
             )}

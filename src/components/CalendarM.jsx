@@ -4,7 +4,7 @@ import { FormattedDate, FormattedMessage, FormattedTime, injectIntl } from 'reac
 import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome'
 import { Route, Switch } from 'react-router'
 import '../styl/styles.css'
-import { getFullDate, filterDate, addMinutes, dateDiff } from 'lib/datetime'
+import { getFullDate, filterDate, addMinutes, dateDiff, parseToISOString } from 'lib/datetime'
 import { weeks, renderCalendarMonthDate, colorMap } from './formatDate'
 import EditorNote from './EditorNote'
 import SchedualDetail from './SchedualDetail'
@@ -27,6 +27,7 @@ const CalendarM = (props) => {
         isMonth,
         push,
         getAvatar, // 取得 avatar 圖片，必須是 function
+        customEditor,  // 可以塞入客製化編輯器，用於編輯備註 
     } = props
 
     const [newShowData, setNewShowData] = useState(new Date())
@@ -40,7 +41,7 @@ const CalendarM = (props) => {
     const cellRef = useRef()
 
     const fullDate = getFullDate(newShowData)
-    const weeks = renderDate(showData)
+    const renderWeeks = renderDate(showData)
 
     const handleSetDate = data => {
         const newDate = new Date(data.year, data.month - 1, data.date)
@@ -49,17 +50,21 @@ const CalendarM = (props) => {
         if (typeof setOtherData === 'function') setOtherData(newDate)
         if (typeof onClose === 'function') onClose()
         if (canEdit) {
-            if (selectedDate && (selectedDate.btime - newDate) === 0) {
+            if (selectedDate && (new Date(selectedDate.start_time) - newDate) === 0) {
                 setShowEditor(true)
             } else {
                 setShowSchedule(true)
                 setSelectedDate({
                     sid: String(Date.now()),
                     title: "",
-                    btime: newDate,
-                    etime: addMinutes(60, newDate),
+                    start_time: parseToISOString(newDate),
+                    end_time: parseToISOString(addMinutes(60, newDate)),
                     desc: "",
                     tag_color: "#BFDBFE",
+                    location: "",
+                    mode: 0,
+                    freq: 1,
+                    week_bit: weeks[newDate.getDay()] && weeks[newDate.getDay()].week_bit || 1
                 })
             }
 
@@ -76,7 +81,7 @@ const CalendarM = (props) => {
         let subLevel = {} // 紀錄某一天有幾筆資料
 
         // 先把一天一天跑起來，再來看特定日子有哪幾個資料
-        const newDatas = weeks.map((week, index, arr) => {
+        const newDatas = renderWeeks.map((week, index, arr) => {
             const newWeek = week.map((day, idx) => {
                 const newData = data.map((date, i) => {
                     let left = 0
@@ -188,7 +193,7 @@ const CalendarM = (props) => {
         const noteHeight = 23
         if (!cellBox) return
         const minShowDetail = Math.floor(cellBox.height / noteHeight) - 3
-        const totalLevels = weeks.length
+        const totalLevels = renderWeeks.length
 
         return notes.map(({ title, tag_color: hexColor, left, right, sort, level, uuid, ...data }, index) => {
             const isCannotShow = minShowDetail < 0 && sort === 1
@@ -208,10 +213,14 @@ const CalendarM = (props) => {
                         setSelectedDate({
                             sid: String(Date.now()),
                             title: "",
-                            btime: newDate,
-                            etime: addMinutes(60, newDate),
+                            start_time: parseToISOString(newDate),
+                            end_time: parseToISOString(addMinutes(60, newDate)),
                             desc: "",
                             tag_color: "#BFDBFE",
+                            location: "",
+                            mode: 0,
+                            freq: 1,
+                            week_bit: weeks[newDate.getDay()] && weeks[newDate.getDay()].week_bit || 1,
                         })
                     }}
                 >
@@ -289,7 +298,7 @@ const CalendarM = (props) => {
                     <div className="inset-0 absolute flex flex-col">
                         {/* 週 */}
                         <div className='flex flex-1 select-none'>
-                            {weeks.map((week, index) => (
+                            {renderWeeks.map((week, index) => (
                                 <div key={index} className={`calendar-month-title relative flex flex-1 items-end ${!center ? 'calendar-month-title-center' : 'justify-center items-center h-full'}`}>
                                     {abbr ?
                                         <div className={`text-gray ${!textSm ? '' : 'calendar-text-sm'}`}>{week.abb_name}</div>
@@ -359,6 +368,7 @@ const CalendarM = (props) => {
                 </div>
 
                 {showSchedule && canEdit && <Schedule
+                    {...props}
                     calendarData={newCalendarData}
                     showData={newShowData}
                     handleClose={() => setShowSchedule(false)}
@@ -369,9 +379,10 @@ const CalendarM = (props) => {
             </div>
 
             <Switch>
-                <Route path="/:sid" render={(props) =>
+                <Route path="/:sid" render={(routerProps) =>
                     <Modal
                         {...props}
+                        {...routerProps}
                         Content={SchedualDetail}
                         show={showDetail}
                         handleClose={() => {
@@ -382,13 +393,13 @@ const CalendarM = (props) => {
                         setDefaultValue={setSelectedDate}
                         calendarData={newCalendarData}
                         setCalendarData={setNewCalendarData}
-                        getAvatar={getAvatar}
                     />
                 } />
             </Switch>
 
 
             <Modal
+                {...props}
                 Content={EditorNote}
                 show={showEditor}
                 handleClose={() => setShowEditor(false)}
@@ -396,7 +407,6 @@ const CalendarM = (props) => {
                 setDefaultValue={setSelectedDate}
                 calendarData={newCalendarData}
                 setCalendarData={setNewCalendarData}
-                getAvatar={getAvatar}
             />
 
         </>
