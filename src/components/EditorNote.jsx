@@ -29,8 +29,8 @@ const EditorNote = ({
     const [showRepeatWeek, setShowRepeatWeek] = useState(false)
     // const [showRepeatDate, setShowRepeatDate] = useState(false)
     const tag_color = colorMap[detailDate.tag_color] || 'blue'
+    const fullDay = getFullDate(detailDate.start_time)
     const renderWeeks = renderDate(detailDate.start_time)
-console.log('detailDate', detailDate)
 
     const categoryRef = useRef()
     const cycleNumberRef = useRef()
@@ -181,14 +181,14 @@ console.log('detailDate', detailDate)
     }
 
     // 設定要重複的日期(單選)
-    const handleSetReapeatDate = (num) => {
-        if (repeatDateNumbers[num] && Object.keys(repeatDateNumbers).length === 1) return
+    // const handleSetReapeatDate = (num) => {
+    //     if (repeatDateNumbers[num] && Object.keys(repeatDateNumbers).length === 1) return
 
-        setRepeatDateNumbers({
-            // ...repeatDateNumbers,
-            [num]: !repeatDateNumbers[num],
-        })
-    }
+    //     setRepeatDateNumbers({
+    //         // ...repeatDateNumbers,
+    //         [num]: !repeatDateNumbers[num],
+    //     })
+    // }
 
     // 設定要重複的星期幾(複選)
     const handleSetRepeatWeek = week_bit => {
@@ -256,77 +256,113 @@ console.log('detailDate', detailDate)
         ))
     }
 
-    const renderOnWeek = () => {
-        const dayOfTheWeek = new Date(detailDate.start_time).getDay()
-        // const numOfWeeks = renderWeeks.reduce((acc, week) => {
-        //     week.filter(date => {
-        //         if 
-        //     })
-        // }, [])
+    const numOfWeeks = () => {
+        const startTime = new Date(detailDate.start_time)
+        startTime.setHours(0)
+        startTime.setMinutes(0)
+        startTime.setSeconds(0)
 
-        return (
-            <>
-                <FormattedMessage
-                    id='calendar.on_week'
-                    values={{ number: '3' }}
-                />
-                {weeks.map((week, index) => (
-                    dayOfTheWeek !== index ? null :
-                        <Fragment key={index}>
-                            <span className='text-sm'>{week.name}</span>
-                        </Fragment>
-                ))}
-            </>
-        )
+        return renderWeeks.reduce((acc, week) => {
+            return acc + week.filter(date => date.datetime - startTime === 0)
+                .reduce((acc, date) => 0 + date.level, 0)
+    
+        }, 0)
     }
 
-    const renderOnDate = () => {
-        let dayString = ''
-        for (const key in repeatDateNumbers) {
-            if (Object.hasOwnProperty.call(repeatDateNumbers, key)) {
-                if (!dayString) dayString = key
-                else dayString = dayString + ', ' + key
-            }
+    const renderOnWeek = (mode) => {
+        const startTime = new Date(detailDate.start_time)
+
+        const dayOfTheWeek = startTime.getDay()
+        const month = fullDay.m
+
+        if (mode === 3) {
+            return (
+                <>
+                    <FormattedMessage
+                        id='calendar.on_week'
+                        values={{ number: numOfWeeks() }}
+                    />
+                    {weeks.map((week, index) => (
+                        dayOfTheWeek !== index ? null :
+                            <Fragment key={index}>
+                                <span className='text-sm'>{week.name}</span>
+                            </Fragment>
+                    ))}
+                </>
+            )
         }
 
-        return (
-            <FormattedMessage
-                id='calendar.on_date'
-                values={{ date: dayString }}
-            />
-        )
-    }
-
-    const renderDates = () => {
-        if (!detailDate.btime) return
-        if (!new Date(detailDate.btime).getDate()) return
-        const fullDate = getFullDate(detailDate.btime)
-        const y = Number(fullDate.y)
-        const m = Number(fullDate.m)
-        const d = Number(fullDate.d)
-        const days = (new Date(y, m, 1) - new Date(y, m - 1, 1)) / (86400 * 1000)
-        const dateList = new Array(days).fill('')
-
-        return dateList.map((date, index) => {
-            const day = index + 1
+        if (mode === 4) {
             return (
-                <li
-                    key={index}
-                    className={`flex justify-center items-center mb-4 mr-3 rounded-full ${repeatDateNumbers[day] ? 'bg-blue-200' : 'bg-gray-200 hover:bg-gray-300'}`}
-                    style={{ height: '38px', width: '38px' }}
-                    onClick={() => handleSetReapeatDate(day)}
-                >
-                    <div className='text-sm'>
-                        <FormattedDate
-                            value={`${m > 9 ? m : '0' + m}-${index + 1 > 9 ? index + 1 : '0' + (index + 1)}`
-                            }
-                            day="numeric"
-                        />
-                    </div>
-                </li>
+                <>
+                    <FormattedMessage
+                        id='calendar.on_week_of_month'
+                        values={{ number: numOfWeeks(), month }}
+                    />
+                    {weeks.map((week, index) => (
+                        dayOfTheWeek !== index ? null :
+                            <Fragment key={index}>
+                                <span className='text-sm'>{week.name}</span>
+                            </Fragment>
+                    ))}
+                </>
             )
-        })
+        }
     }
+
+    const renderOnDate = (mode) => {
+        const date = fullDay.d
+        const month = fullDay.m
+
+        if (mode === 3) {
+            return (
+                <FormattedMessage
+                    id='calendar.on_date'
+                    values={{ date }}
+                />
+            )
+        }
+
+        if (mode === 4) {
+            return (
+                <FormattedMessage
+                    id='calendar.on_month_and_date'
+                    values={{ month, date }}
+                />
+            )
+        }
+    }
+
+    // const renderDates = () => {
+    //     if (!detailDate.btime) return
+    //     if (!new Date(detailDate.btime).getDate()) return
+    //     const fullDate = getFullDate(detailDate.btime)
+    //     const y = Number(fullDate.y)
+    //     const m = Number(fullDate.m)
+    //     const d = Number(fullDate.d)
+    //     const days = (new Date(y, m, 1) - new Date(y, m - 1, 1)) / (86400 * 1000)
+    //     const dateList = new Array(days).fill('')
+
+    //     return dateList.map((date, index) => {
+    //         const day = index + 1
+    //         return (
+    //             <li
+    //                 key={index}
+    //                 className={`flex justify-center items-center mb-4 mr-3 rounded-full ${repeatDateNumbers[day] ? 'bg-blue-200' : 'bg-gray-200 hover:bg-gray-300'}`}
+    //                 style={{ height: '38px', width: '38px' }}
+    //                 onClick={() => handleSetReapeatDate(day)}
+    //             >
+    //                 <div className='text-sm'>
+    //                     <FormattedDate
+    //                         value={`${m > 9 ? m : '0' + m}-${index + 1 > 9 ? index + 1 : '0' + (index + 1)}`
+    //                         }
+    //                         day="numeric"
+    //                     />
+    //                 </div>
+    //             </li>
+    //         )
+    //     })
+    // }
 
     const renderCycleNumberList = () => {
         return new Array(99).fill('').map((d, index) => (
@@ -378,15 +414,14 @@ console.log('detailDate', detailDate)
         ))
     }
 
-    useEffect(() => {
-        if (detailDate.btime) {
-            const fullDay = getFullDate(detailDate.btime)
-            const d = fullDay.d
-            setRepeatDateNumbers({
-                [d]: true,
-            })
-        }
-    }, [detailDate])
+    // useEffect(() => {
+    //     if (detailDate.btime) {
+    //         const d = fullDay.d
+    //         setRepeatDateNumbers({
+    //             [d]: true,
+    //         })
+    //     }
+    // }, [detailDate])
 
     return (
         <>
@@ -701,13 +736,19 @@ console.log('detailDate', detailDate)
                                         <label className="relative py-2 flex cursor-pointer">
                                             <input
                                                 type="radio"
-                                                name="privacy_setting"
-                                                value=""
+                                                name="calc_type"
                                                 className="mt-0.5 cursor-pointer text-indigo-600 border-gray-300 focus:ring-indigo-500"
+                                                checked={detailDate.calc_type === 0}
+                                                onChange={e => setDetailDate({
+                                                    ...detailDate,
+                                                    calc_type: 0,
+                                                    freq_month: fullDay.m,
+                                                    calc_num: fullDay.d,
+                                                })}
                                             />
                                             <div className="ml-3 flex flex-col">
                                                 <span className="text-gray-900 font-medium flex">
-                                                    <span className='mr-2 text-sm'>{renderOnDate()}</span>
+                                                    <span className='mr-2 text-sm'>{renderOnDate(detailDate.mode)}</span>
                                                     {/* 自訂日期 */}
                                                     {/* <span
                                                         className='flex justify-center items-center text-gray-400 text-sm hover:text-gray-500'
@@ -732,13 +773,19 @@ console.log('detailDate', detailDate)
                                         <label className="relative py-2 flex cursor-pointer">
                                             <input
                                                 type="radio"
-                                                name="privacy_setting"
-                                                value=""
+                                                name="calc_type"
                                                 className="mt-0.5 cursor-pointer text-indigo-600 border-gray-300 focus:ring-indigo-500"
-                                            />
+                                                checked={detailDate.calc_type === 1}
+                                                onChange={e => setDetailDate({
+                                                    ...detailDate,
+                                                    calc_type: 1,
+                                                    freq_month: fullDay.m,
+                                                    calc_num: numOfWeeks(),
+                                                    week_bit: weeks[new Date(detailDate.start_time).getDay()]
+                                                })} />
                                             <div className="ml-3 flex flex-col">
                                                 <span className="text-gray-900 text-sm font-medium flex flex-wrap mr-2">
-                                                    <span className='mr-2 text-sm'>{renderOnWeek()}</span>
+                                                    <span className='mr-2 text-sm'>{renderOnWeek(detailDate.mode)}</span>
                                                     {/* 自訂星期幾 */}
                                                     {/* <span
                                                         className='flex justify-center items-center text-gray-400 text-sm hover:text-gray-500'

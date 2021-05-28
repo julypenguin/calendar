@@ -35,6 +35,8 @@
     "all_day": "All Day",
     "no_plans_today": "No Plans Today",
     "on_date": "on {date}",
+    "on_week": "on {number}th",
+    "on_month_and_date": "on {month}/{date} ",
     "repeat": "repeat",
     "repeat_until": "Repeat until",
     "interval": "interval",
