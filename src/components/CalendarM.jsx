@@ -142,29 +142,39 @@ const CalendarM = (props) => {
             .sort((a, b) => b.index - a.index)
             .sort((a, b) => b.crossDay - a.crossDay)
             .reduce((acc, date, index, arr) => {
+                // 跨日資料，這筆和下一筆在同一層，且資料相同
                 if (date.crossDay === true &&
                     arr[index + 1] && arr[index + 1].level === date.level &&
                     arr[index + 1].uuid === date.uuid
                 ) {
+                    // 紀錄每天有哪些活動
                     for (let i = date.left; i < 7 - arr[index + 1].right; i++) {
                         const key = `${date.level}_${i}`
-                        subLevel[key] = subLevel[key] ? [...subLevel[key], date.uuid] : [date.uuid]
+                        // subLevel[key] = subLevel[key] ? [...subLevel[key], date.uuid] : [date.uuid]
+                        subLevel[key] = subLevel[key] ? [...subLevel[key], {
+                            msec: new Date(date.btime).getTime(),
+                            uuid: date.uuid,
+                            sid: date.sid,
+                        }]
+                            :
+                            [{
+                                msec: new Date(date.btime).getTime(),
+                                uuid: date.uuid,
+                                sid: date.sid,
+                            }]
+
+                        subLevel[key] = subLevel[key].sort((a, b) => a.msec - b.msec)
                     }
 
-                    let sort = 0
-                    for (let sl in subLevel) {
-                        if (sl.substring(0, sl.indexOf('_')) === String(date.level)) {
-                            const newSort = subLevel[sl].indexOf(date.uuid)
-                            if (newSort > sort) sort = newSort
-                        }
-                    }
+                    // 紀錄活動在星期幾~星期幾
+
 
                     return [
                         ...acc,
                         {
                             ...date,
                             right: arr[index + 1].right,
-                            sort,
+                            // sort,
                         }
                     ]
                 }
@@ -172,17 +182,69 @@ const CalendarM = (props) => {
                 if (!date.crossDay) {
                     for (let i = date.left; i < 7 - date.right; i++) {
                         const key = `${date.level}_${i}`
-                        subLevel[key] = subLevel[key] ? [...subLevel[key], date.uuid] : [date.uuid]
+                        // subLevel[key] = subLevel[key] ? [...subLevel[key], date.uuid] : [date.uuid]
+                        subLevel[key] = subLevel[key] ? [...subLevel[key], {
+                            msec: new Date(date.btime).getTime(),
+                            uuid: date.uuid
+                        }]
+                            :
+                            [{
+                                msec: new Date(date.btime).getTime(),
+                                uuid: date.uuid
+                            }]
+
+                        subLevel[key] = subLevel[key].sort((a, b) => a.msec - b.msec)
                     }
                     return [...acc, {
                         ...date,
-                        sort: subLevel[`${date.level}_${date.left}`].indexOf(date.uuid),
+                        // sort: subLevel[`${date.level}_${date.left}`].reduce((acc, slObj, index) => {
+                        //     if (slObj.uuid === date.uuid) return index
+                        //     return acc
+                        // }, 0)
+                        // subLevel[sl].reduce((acc, slObj, index) => {
+                        //     if (slObj.uuid === date.uuid) return index
+                        //     return acc
+                        // }, 0)
                     }]
                 }
-
                 return acc
             }, [])
+            .map(date => {
+                let sort = 0
+                if (date.crossDay) {
+                    for (let sl in subLevel) {
+                        if (sl.substring(0, sl.indexOf('_')) === String(date.level)) {
+                            // const newSort = subLevel[sl].indexOf(date.uuid)
+                            const newSort = subLevel[sl].reduce((acc, slObj, index, arr) => {
+                                // console.log('slObj', slObj)
+                                // console.log('date.uuid', date.uuid)
+                                if (slObj.uuid === date.uuid) {
+                                    // console.log('date', date)
+                                    // console.log('index', index)
+                                    // console.log('arr', arr)
+                                    // console.log('subLevel', subLevel)
+                                    return index
+                                } 
+                                return acc
+                            }, 0)
+                            if (date.sid === 25) console.log('newSort', newSort)
+                            if (newSort > sort) sort = newSort
+                        }
+                    }
+                } else {
+                    sort = subLevel[`${date.level}_${date.left}`].reduce((acc, slObj, index) => {
+                        if (slObj.uuid === date.uuid) return index
+                        return acc
+                    }, 0)
+                }
 
+                return {
+                    ...date,
+                    sort,
+                }
+            })
+            
+            console.log('subLevel', subLevel)
         return newDatas
     }
 

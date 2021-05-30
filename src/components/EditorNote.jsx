@@ -18,7 +18,9 @@ const EditorNote = ({
     getAvatar, // 取得 avatar 圖片，必須是 function
     customEditor, // 可以塞入客製化編輯器，用於編輯備註
     renderDate,
+    evt_sid, // 活動編號，有這個編號才能透過 api 修改活動，否則只能新增
 }) => {
+    console.log('detailDate', detailDate)
     // const [repeatWeekNumbers, setRepeatWeekNumbers] = useState({})
     const [repeatDateNumbers, setRepeatDateNumbers] = useState({})
     // const [cycleNumber, setCycleNumber] = useState(1)
@@ -136,6 +138,28 @@ const EditorNote = ({
         })
     }
 
+    const fetchPatchCalendar = (data) => {
+        console.log('data', data)
+        const options = {
+            headers: {
+                'Accept': '*',
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            mode: 'cors',
+        }
+
+        fetch(`https://support6-dev.iqs-t.com/teamweb/api/teamweb/calendar/${data.evt_sid}`, {
+            ...options,
+            method: 'PATCH',
+            body: JSON.stringify(data)
+        }).then(res => {
+            return res.json()
+        }).then(res => {
+            console.log('post_result', res)
+        })
+    }
+
     const onSave = () => {
         if ((new Date(detailDate.end_time) - new Date(detailDate.start_time)) < 0) {
             detailDate.end_time = detailDate.start_time
@@ -149,26 +173,33 @@ const EditorNote = ({
         if (!addLength) newCalendarData.push(detailDate)
         setCalendarData(newCalendarData)
         handleClose()
-
-        fetchPostCalendar({
-            ...detailDate,
-            color: detailDate.tag_color,
-            // "start_time":"2021-05-20T12:34:56",
-            // "end_time":"2021-05-30T12:34:56",
-            // "title":"This is a Repeat event created by unit test",
-            "detail": detailDate.desc,
-            // "location":"VS2019",
-            // "is_allday":false,
-            // "is_repeat":true,
-            // "attends":[535,1028,1247],
-            // "mode":0,
-            // "freq":1,
-            // "freq_month":0,
-            // "calc_type":0,
-            // "calc_num":0,
-            // "week_bit":0,
-            // "final_date":"2021-05-30T12:34:56"
-        })
+        if (evt_sid) {
+            fetchPatchCalendar({
+                ...detailDate,
+                color: detailDate.tag_color,
+                detail: detailDate.desc,
+            })
+        } else {
+            fetchPostCalendar({
+                ...detailDate,
+                color: detailDate.tag_color,
+                // "start_time":"2021-05-20T12:34:56",
+                // "end_time":"2021-05-30T12:34:56",
+                // "title":"This is a Repeat event created by unit test",
+                detail: detailDate.desc,
+                // "location":"VS2019",
+                // "is_allday":false,
+                // "is_repeat":true,
+                // "attends":[535,1028,1247],
+                // "mode":0,
+                // "freq":1,
+                // "freq_month":0,
+                // "calc_type":0,
+                // "calc_num":0,
+                // "week_bit":0,
+                // "final_date":"2021-05-30T12:34:56"
+            })
+        }
     }
 
     const deleteAttend = aa_sid => {

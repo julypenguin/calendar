@@ -411,7 +411,6 @@ const CalendarD = (props) => {
                 setDefaultValue={setSelectedDate}
                 calendarData={newCalendarData}
                 setCalendarData={setNewCalendarData}
-                getAvatar={getAvatar}
             />
 
             <Modal
@@ -423,7 +422,6 @@ const CalendarD = (props) => {
                 setDefaultValue={setSelectedDate}
                 calendarData={newCalendarData}
                 setCalendarData={setNewCalendarData}
-                getAvatar={getAvatar}
             />
         </div>
     );

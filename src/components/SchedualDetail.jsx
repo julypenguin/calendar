@@ -28,9 +28,31 @@ const SchedualDetail = ({
         setShowEditor(false)
     }
 
+    const fetchDeleteCalendar = (data) => {
+        console.log('data', data)
+        const options = {
+            headers: {
+                'Accept': '*',
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            mode: 'cors',
+        }
+
+        fetch(`https://support6-dev.iqs-t.com/teamweb/api/teamweb/calendar/${data.evt_sid}`, {
+            ...options,
+            method: 'DELETE',
+        }).then(res => {
+            return res.json()
+        }).then(res => {
+            console.log('post_result', res)
+        })
+    }
+
     const onDelete = () => {
         const newCalendarData = calendarData.filter((data, index) => data.sid !== detailDate.sid)
         setCalendarData(newCalendarData)
+        fetchDeleteCalendar(detailDate)
         onClose()
     }
 
@@ -255,6 +277,7 @@ const SchedualDetail = ({
                     setDefaultValue={setDetailDate}
                     calendarData={calendarData}
                     setCalendarData={setCalendarData}
+                    evt_sid={evt_sid}
                 />,
                 document.body
             )}
