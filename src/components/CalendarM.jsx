@@ -275,11 +275,16 @@ const CalendarM = (props) => {
                         }
                     }
 
-                    slTmp.forEach(sl => {
-                        subLevel[sl] = subLevel[sl].filter(({ uuid }) => uuid !== date.uuid)
-                        subLevel[sl][sort] = date
-                        console.log(`subLevel[${sl}]`, subLevel[sl])
-                    })
+                    // slTmp.forEach(sl => {
+                    //     const [newDate] = subLevel[sl].filter(({ uuid }) => uuid === date.uuid)
+                    //     if (newDate) {
+                    //         subLevel[sl] = subLevel[sl].filter(({ uuid }) => uuid !== date.uuid)
+                    //         subLevel[sl][sort] = newDate
+                    //         console.log(`subLevel[${sl}]`, subLevel[sl])
+                    //         console.log('newDate', newDate)
+                    //         console.log('sort', sort)
+                    //     }
+                    // })
                 } else {
                     sort = subLevel[`${date.level}_${date.left}`].reduce((acc, slObj, index) => {
                         if (slObj.uuid === date.uuid) return index
