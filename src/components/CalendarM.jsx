@@ -79,6 +79,9 @@ const CalendarM = (props) => {
 
     const formatCalendarData = (data) => {
         let subLevel = {} // 紀錄某一天有幾筆資料
+        let newSbLevel = {} // 紀錄某一天有幾筆資料
+        let eventDate = {} // 紀錄活動在那些日子
+        let eventDateList = []
 
         // 先把一天一天跑起來，再來看特定日子有哪幾個資料
         const newDatas = renderWeeks.map((week, index, arr) => {
@@ -164,9 +167,25 @@ const CalendarM = (props) => {
                             }]
 
                         subLevel[key] = subLevel[key].sort((a, b) => a.msec - b.msec)
+
+
+
+                        // 紀錄活動在星期幾~星期幾
+                        eventDate = {
+                            ...eventDate,
+                            [date.uuid]: eventDate[date.uuid] ?
+                                [...eventDate[date.uuid], {
+                                    msec: new Date(date.btime).getTime(),
+                                    listOnDate: [key]
+                                }]
+                                :
+                                [{
+                                    msec: new Date(date.btime).getTime(),
+                                    listOnDate: [key]
+                                }]
+                        }
                     }
 
-                    // 紀錄活動在星期幾~星期幾
 
 
                     return [
@@ -209,11 +228,34 @@ const CalendarM = (props) => {
                 }
                 return acc
             }, [])
-            .map(date => {
+            .sort((a, b) => a.btime - b.btime)
+            .map((date, index) => {
                 let sort = 0
+
+                if (index === 0) {
+                    for (let uuid in eventDate) {
+                        eventDateList = [...eventDateList, {
+                            msec: eventDate[uuid][0].msec,
+                            listOnDate: eventDate[uuid].map(({ listOnDate }) => listOnDate)
+                        }]
+                    }
+    
+                    console.log('eventDateList', eventDateList)
+                }
+
                 if (date.crossDay) {
+                    let slTmp = []
+
+                    // for (let i = 0; i < 7; i++) {
+                    //     for (let j = 0; j < 7; j++) {
+                                                    
+                    //     }
+                    // }
+
+
                     for (let sl in subLevel) {
                         if (sl.substring(0, sl.indexOf('_')) === String(date.level)) {
+                            slTmp = [...slTmp, sl]
                             // const newSort = subLevel[sl].indexOf(date.uuid)
                             const newSort = subLevel[sl].reduce((acc, slObj, index, arr) => {
                                 // console.log('slObj', slObj)
@@ -223,14 +265,21 @@ const CalendarM = (props) => {
                                     // console.log('index', index)
                                     // console.log('arr', arr)
                                     // console.log('subLevel', subLevel)
+                                    // event = { ...event,  }
                                     return index
-                                } 
+                                }
                                 return acc
                             }, 0)
-                            if (date.sid === 25) console.log('newSort', newSort)
+                            // if (date.sid === 25) console.log('newSort', newSort)
                             if (newSort > sort) sort = newSort
                         }
                     }
+
+                    slTmp.forEach(sl => {
+                        subLevel[sl] = subLevel[sl].filter(({ uuid }) => uuid !== date.uuid)
+                        subLevel[sl][sort] = date
+                        console.log(`subLevel[${sl}]`, subLevel[sl])
+                    })
                 } else {
                     sort = subLevel[`${date.level}_${date.left}`].reduce((acc, slObj, index) => {
                         if (slObj.uuid === date.uuid) return index
@@ -243,8 +292,10 @@ const CalendarM = (props) => {
                     sort,
                 }
             })
-            
-            console.log('subLevel', subLevel)
+
+        console.log('subLevel', subLevel)
+        console.log('eventDate', eventDate)
+
         return newDatas
     }
 
