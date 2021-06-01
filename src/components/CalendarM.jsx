@@ -285,6 +285,7 @@ const CalendarM = (props) => {
     const renderNotes = () => {
 
         const notes = formatCalendarData(newCalendarData)
+        console.log('notes', notes)
         const cellBox = cellRef.current && cellRef.current.getBoundingClientRect()
         const noteHeight = 23
         if (!cellBox) return
@@ -303,25 +304,25 @@ const CalendarM = (props) => {
                             key={`${index}_${i}`}
                             draggable='true'
                             className={`calendar-month-notes`}
-                            onClick={() => {
-                                const newDate = new Date(addDays(i - left, data.btime))
-                                newDate.setHours(0)
-                                newDate.setMinutes(0)
-                                setShowSchedule(true)
-                                setNewShowData(newDate)
-                                setSelectedDate({
-                                    sid: String(Date.now()),
-                                    title: "",
-                                    start_time: parseToISOString(newDate),
-                                    end_time: parseToISOString(addMinutes(60, newDate)),
-                                    desc: "",
-                                    tag_color: "#BFDBFE",
-                                    location: "",
-                                    mode: 0,
-                                    freq: 1,
-                                    week_bit: weeks[newDate.getDay()] && weeks[newDate.getDay()].week_bit || 1,
-                                })
-                            }}
+                            // onClick={() => {
+                            //     const newDate = new Date(addDays(i - left, data.btime))
+                            //     newDate.setHours(0)
+                            //     newDate.setMinutes(0)
+                            //     setShowSchedule(true)
+                            //     setNewShowData(newDate)
+                            //     setSelectedDate({
+                            //         sid: String(Date.now()),
+                            //         title: "",
+                            //         start_time: parseToISOString(newDate),
+                            //         end_time: parseToISOString(addMinutes(60, newDate)),
+                            //         desc: "",
+                            //         tag_color: "#BFDBFE",
+                            //         location: "",
+                            //         mode: 0,
+                            //         freq: 1,
+                            //         week_bit: weeks[newDate.getDay()] && weeks[newDate.getDay()].week_bit || 1,
+                            //     })
+                            // }}
                         >
                             <div
                                 className={`calendar-month-notes-box absolute cursor-pointer opacity-70 `}
@@ -344,50 +345,6 @@ const CalendarM = (props) => {
 
                 return otherDataList
             }
-
-
-            if (sort === minShowDetail || (isCannotShow)) return (
-                <div
-                    key={index}
-                    draggable='true'
-                    className={`calendar-month-notes`}
-                    onClick={() => {
-                        const newDate = new Date(data.btime)
-                        newDate.setHours(0)
-                        newDate.setMinutes(0)
-                        setShowSchedule(true)
-                        setNewShowData(newDate)
-                        setSelectedDate({
-                            sid: String(Date.now()),
-                            title: "",
-                            start_time: parseToISOString(newDate),
-                            end_time: parseToISOString(addMinutes(60, newDate)),
-                            desc: "",
-                            tag_color: "#BFDBFE",
-                            location: "",
-                            mode: 0,
-                            freq: 1,
-                            week_bit: weeks[newDate.getDay()] && weeks[newDate.getDay()].week_bit || 1,
-                        })
-                    }}
-                >
-                    <div
-                        className={`calendar-month-notes-box absolute cursor-pointer opacity-70 `}
-                        style={{
-                            left: `${(100 / 7) * left}%`,
-                            right: `${(100 / 7) * right}%`,
-                            top: `calc(${(level / totalLevels) * 100}% + 34px + ${sort * noteHeight}px + ${sort ? sort : '0'}px)`
-                        }}>
-                        <div className='px-2 truncate flex justify-center items-center'>
-                            <div className='notes-box-outer'>
-                                <svg xmlns="http://www.w3.org/2000/svg" className="calendar-icon-md" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z" />
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )
 
             if (sort > minShowDetail) return null
 
@@ -445,7 +402,7 @@ const CalendarM = (props) => {
                     <div className="inset-0 absolute flex flex-col">
                         {/* 週 */}
                         <div className='flex flex-1 select-none'>
-                            {renderWeeks.map((week, index) => (
+                            {weeks.map((week, index) => (
                                 <div key={index} className={`calendar-month-title relative flex flex-1 items-end ${!center ? 'calendar-month-title-center' : 'justify-center items-center h-full'}`}>
                                     {abbr ?
                                         <div className={`text-gray ${!textSm ? '' : 'calendar-text-sm'}`}>{week.abb_name}</div>
