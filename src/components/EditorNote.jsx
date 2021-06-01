@@ -20,11 +20,7 @@ const EditorNote = ({
     renderDate,
     evt_sid, // 活動編號，有這個編號才能透過 api 修改活動，否則只能新增
 }) => {
-    console.log('detailDate', detailDate)
-    // const [repeatWeekNumbers, setRepeatWeekNumbers] = useState({})
     const [repeatDateNumbers, setRepeatDateNumbers] = useState({})
-    // const [cycleNumber, setCycleNumber] = useState(1)
-    // const [cycleName, setCycleName] = useState('never')
     const [showCategory, setShowCategory] = useState(false)
     const [showCycleNumberList, setShowCycleNumberList] = useState(false)
     const [showCycleList, setShowCycleList] = useState(false)
@@ -812,7 +808,7 @@ const EditorNote = ({
                                                     calc_type: 1,
                                                     freq_month: fullDay.m,
                                                     calc_num: numOfWeeks(),
-                                                    week_bit: weeks[new Date(detailDate.start_time).getDay()]
+                                                    week_bit: weeks[new Date(detailDate.start_time).getDay()].week_bit
                                                 })} />
                                             <div className="ml-3 flex flex-col">
                                                 <span className="text-gray-900 text-sm font-medium flex flex-wrap mr-2">

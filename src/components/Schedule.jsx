@@ -13,6 +13,8 @@ const Schedule = (props) => {
         showEditor,
         setShowEditor,
         setSelectedDate,
+        setShowDetail,
+        push,
     } = props
 
     const newCalendarData = calendarData && calendarData
@@ -28,7 +30,9 @@ const Schedule = (props) => {
 
     const handleSetDataAndShowEditor = (data) => {
         setSelectedDate(data)
-        setShowEditor(true)
+        push(`/${data.sid}?b=${data.btime}&e=${data.etime}`)
+        setShowDetail(true)
+        // setShowEditor(true)
     }
 
     // 計算開始到結束共有多久

@@ -4,7 +4,7 @@ import { FormattedDate, FormattedMessage, FormattedTime, injectIntl } from 'reac
 import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome'
 import { Route, Switch } from 'react-router'
 import '../styl/styles.css'
-import { getFullDate, filterDate, addMinutes, dateDiff, parseToISOString } from 'lib/datetime'
+import { getFullDate, filterDate, addMinutes, addDays, dateDiff, parseToISOString } from 'lib/datetime'
 import { weeks, renderCalendarMonthDate, colorMap } from './formatDate'
 import EditorNote from './EditorNote'
 import SchedualDetail from './SchedualDetail'
@@ -79,12 +79,10 @@ const CalendarM = (props) => {
 
     const formatCalendarData = (data) => {
         let subLevel = {} // 紀錄某一天有幾筆資料
-        let newSbLevel = {} // 紀錄某一天有幾筆資料
-        let eventDate = {} // 紀錄活動在那些日子
-        let eventDateList = []
+        let tmpSlObj = {} // 紀錄每筆活動的排序
 
         // 先把一天一天跑起來，再來看特定日子有哪幾個資料
-        const newDatas = renderWeeks.map((week, index, arr) => {
+        let newDatas = renderWeeks.map((week, index, arr) => {
             const newWeek = week.map((day, idx) => {
                 const newData = data.map((date, i) => {
                     let left = 0
@@ -167,23 +165,6 @@ const CalendarM = (props) => {
                             }]
 
                         subLevel[key] = subLevel[key].sort((a, b) => a.msec - b.msec)
-
-
-
-                        // 紀錄活動在星期幾~星期幾
-                        eventDate = {
-                            ...eventDate,
-                            [date.uuid]: eventDate[date.uuid] ?
-                                [...eventDate[date.uuid], {
-                                    msec: new Date(date.btime).getTime(),
-                                    listOnDate: [key]
-                                }]
-                                :
-                                [{
-                                    msec: new Date(date.btime).getTime(),
-                                    listOnDate: [key]
-                                }]
-                        }
                     }
 
 
@@ -201,105 +182,102 @@ const CalendarM = (props) => {
                 if (!date.crossDay) {
                     for (let i = date.left; i < 7 - date.right; i++) {
                         const key = `${date.level}_${i}`
-                        // subLevel[key] = subLevel[key] ? [...subLevel[key], date.uuid] : [date.uuid]
                         subLevel[key] = subLevel[key] ? [...subLevel[key], {
                             msec: new Date(date.btime).getTime(),
-                            uuid: date.uuid
+                            uuid: date.uuid,
+                            sid: date.sid,
                         }]
                             :
                             [{
                                 msec: new Date(date.btime).getTime(),
-                                uuid: date.uuid
+                                uuid: date.uuid,
+                                sid: date.sid,
                             }]
 
                         subLevel[key] = subLevel[key].sort((a, b) => a.msec - b.msec)
                     }
                     return [...acc, {
                         ...date,
-                        // sort: subLevel[`${date.level}_${date.left}`].reduce((acc, slObj, index) => {
-                        //     if (slObj.uuid === date.uuid) return index
-                        //     return acc
-                        // }, 0)
-                        // subLevel[sl].reduce((acc, slObj, index) => {
-                        //     if (slObj.uuid === date.uuid) return index
-                        //     return acc
-                        // }, 0)
                     }]
                 }
                 return acc
             }, [])
             .sort((a, b) => a.btime - b.btime)
-            .map((date, index) => {
-                let sort = 0
-
-                if (index === 0) {
-                    for (let uuid in eventDate) {
-                        eventDateList = [...eventDateList, {
-                            msec: eventDate[uuid][0].msec,
-                            listOnDate: eventDate[uuid].map(({ listOnDate }) => listOnDate)
-                        }]
-                    }
-    
-                    console.log('eventDateList', eventDateList)
-                }
-
-                if (date.crossDay) {
-                    let slTmp = []
-
-                    // for (let i = 0; i < 7; i++) {
-                    //     for (let j = 0; j < 7; j++) {
-                                                    
-                    //     }
-                    // }
 
 
-                    for (let sl in subLevel) {
-                        if (sl.substring(0, sl.indexOf('_')) === String(date.level)) {
-                            slTmp = [...slTmp, sl]
-                            // const newSort = subLevel[sl].indexOf(date.uuid)
-                            const newSort = subLevel[sl].reduce((acc, slObj, index, arr) => {
-                                // console.log('slObj', slObj)
-                                // console.log('date.uuid', date.uuid)
-                                if (slObj.uuid === date.uuid) {
-                                    // console.log('date', date)
-                                    // console.log('index', index)
-                                    // console.log('arr', arr)
-                                    // console.log('subLevel', subLevel)
-                                    // event = { ...event,  }
-                                    return index
+        // for 迴圈跑 0_0 到最後一天
+        for (let i = 0; i < weeks.length; i++) {
+            for (let j = 0; j < 7; j++) {
+
+                // 如果這天是有活動的話
+                if (subLevel[`${i}_${j}`]) {
+                    let tmpObj = {} // 為了重新排序，要先記住被刪掉的資料(資料不先刪除有可能導致畫面重疊或空格)
+                    // 先把前一天有出現過的活動刪掉
+                    for (let sort in tmpSlObj) {
+                        subLevel[`${i}_${j}`] = subLevel[`${i}_${j}`].filter(({ uuid }) => {
+                            if (uuid === tmpSlObj[sort].uuid) {
+                                tmpObj = {
+                                    ...tmpObj,
+                                    [sort]: tmpSlObj[sort],
                                 }
-                                return acc
-                            }, 0)
-                            // if (date.sid === 25) console.log('newSort', newSort)
-                            if (newSort > sort) sort = newSort
-                        }
+                            }
+                            return uuid !== tmpSlObj[sort].uuid
+                        })
                     }
 
-                    // slTmp.forEach(sl => {
-                    //     const [newDate] = subLevel[sl].filter(({ uuid }) => uuid === date.uuid)
-                    //     if (newDate) {
-                    //         subLevel[sl] = subLevel[sl].filter(({ uuid }) => uuid !== date.uuid)
-                    //         subLevel[sl][sort] = newDate
-                    //         console.log(`subLevel[${sl}]`, subLevel[sl])
-                    //         console.log('newDate', newDate)
-                    //         console.log('sort', sort)
-                    //     }
-                    // })
-                } else {
-                    sort = subLevel[`${date.level}_${date.left}`].reduce((acc, slObj, index) => {
-                        if (slObj.uuid === date.uuid) return index
-                        return acc
-                    }, 0)
+                    // 再把剛剛刪掉的資料填入正確的 index
+                    for (let sort in tmpObj) {
+                        subLevel[`${i}_${j}`].splice((sort - 10000), 0, tmpSlObj[sort])
+                    }
+
+                    tmpSlObj = {} // 重置
+
+                    // 10000 是為了讓物件排序正確，但有也可能出錯
+                    subLevel[`${i}_${j}`].forEach(({ sid, msec, uuid }, index) => {
+                        tmpSlObj = {
+                            ...tmpSlObj,
+                            [10000 + index]: {
+                                sid,
+                                msec,
+                                uuid,
+                            },
+                        }
+                    })
                 }
 
-                return {
-                    ...date,
-                    sort,
-                }
-            })
+            }
+        }
 
-        console.log('subLevel', subLevel)
-        console.log('eventDate', eventDate)
+        newDatas = newDatas.map((date, index) => {
+            let sort = 0
+
+            if (date.crossDay) {
+                let slTmp = []
+
+                for (let sl in subLevel) {
+                    if (sl.substring(0, sl.indexOf('_')) === String(date.level)) {
+                        slTmp = [...slTmp, sl]
+                        const newSort = subLevel[sl].reduce((acc, slObj, index, arr) => {
+                            if (slObj.uuid === date.uuid) {
+                                return index
+                            }
+                            return acc
+                        }, 0)
+                        if (newSort > sort) sort = newSort
+                    }
+                }
+            } else {
+                sort = subLevel[`${date.level}_${date.left}`].reduce((acc, slObj, index) => {
+                    if (slObj.uuid === date.uuid) return index
+                    return acc
+                }, 0)
+            }
+
+            return {
+                ...date,
+                sort,
+            }
+        })
 
         return newDatas
     }
@@ -316,6 +294,57 @@ const CalendarM = (props) => {
         return notes.map(({ title, tag_color: hexColor, left, right, sort, level, uuid, ...data }, index) => {
             const isCannotShow = minShowDetail < 0 && sort === 1
             const tag_color = colorMap[hexColor]
+
+            if (sort === minShowDetail || (isCannotShow)) {
+                let otherDataList = []
+                for (let i = left; i < 7 - right; i++) {
+                    otherDataList.push(
+                        <div
+                            key={`${index}_${i}`}
+                            draggable='true'
+                            className={`calendar-month-notes`}
+                            onClick={() => {
+                                const newDate = new Date(addDays(i - left, data.btime))
+                                newDate.setHours(0)
+                                newDate.setMinutes(0)
+                                setShowSchedule(true)
+                                setNewShowData(newDate)
+                                setSelectedDate({
+                                    sid: String(Date.now()),
+                                    title: "",
+                                    start_time: parseToISOString(newDate),
+                                    end_time: parseToISOString(addMinutes(60, newDate)),
+                                    desc: "",
+                                    tag_color: "#BFDBFE",
+                                    location: "",
+                                    mode: 0,
+                                    freq: 1,
+                                    week_bit: weeks[newDate.getDay()] && weeks[newDate.getDay()].week_bit || 1,
+                                })
+                            }}
+                        >
+                            <div
+                                className={`calendar-month-notes-box absolute cursor-pointer opacity-70 `}
+                                style={{
+                                    left: `${(100 / 7) * i}%`,
+                                    right: `${(100 / 7) * (6 - i)}%`,
+                                    top: `calc(${(level / totalLevels) * 100}% + 34px + ${sort * noteHeight}px + ${sort ? sort : '0'}px)`
+                                }}>
+                                <div className='px-2 truncate flex justify-center items-center'>
+                                    <div className='notes-box-outer'>
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="calendar-icon-md" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z" />
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )
+                }
+
+                return otherDataList
+            }
+
 
             if (sort === minShowDetail || (isCannotShow)) return (
                 <div
@@ -493,6 +522,7 @@ const CalendarM = (props) => {
                     showEditor={showEditor}
                     setShowEditor={setShowEditor}
                     setSelectedDate={setSelectedDate}
+                    setShowDetail={setShowDetail}
                 />}
             </div>
 
