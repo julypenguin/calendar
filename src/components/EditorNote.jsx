@@ -251,7 +251,7 @@ const EditorNote = ({
         return (
             <li
                 key={index}
-                className={`flex flex-nowrap items-center pl-2 py-2 pr-8 bg-gray-light-hover cursor-pointer`}
+                className={`flex flex-nowrap items-center pl-2 py-2 pr-8 bg-gray-100-g-hover cursor-pointer`}
                 onClick={() => setDetailDate({ ...detailDate, tag_color: data.hexColor.toLowerCase() })}
             >
                 <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 mr-2 text-${color}-fresh`} viewBox="0 0 20 20" fill="currentColor">
@@ -453,7 +453,7 @@ const EditorNote = ({
     return (
         <>
             {/* 頁首 */}
-            <div className={`bg-${tag_color}-500 pl-2 pr-1 flex justify-end`}>
+            <div className={`bg-${tag_color}-500-g pl-2 pr-1 flex justify-end`}>
                 <div
                     className='p-2 text-white cursor-pointer'
                     onClick={handleClose}
@@ -465,9 +465,9 @@ const EditorNote = ({
             </div>
 
             {/* 功能按鈕 */}
-            <div className={`bg-${tag_color}-50 pl-8 pr-1 py-1 flex select-none`}>
+            <div className={`bg-${tag_color}-50-g pl-8 pr-1 py-1 flex select-none`}>
                 <div
-                    className={`px-2 py-1 mr-2 rounded cursor-pointer flex-shrink-0 text-${tag_color}-600 hover:bg-${tag_color}-100`}
+                    className={`px-2 py-1 mr-2 rounded cursor-pointer flex-shrink-0 text-${tag_color} bg-${tag_color}-100-g-hover`}
                     onClick={onSave}
                 >
                     <Icon className='mr-2' icon={['far', 'save']} />
@@ -475,7 +475,7 @@ const EditorNote = ({
                 </div>
 
                 <div
-                    className={`px-2 py-1 mr-2 rounded cursor-pointer flex-shrink-0 text-${tag_color}-600 hover:bg-${tag_color}-100 flex flex-nowrap`}
+                    className={`px-2 py-1 mr-2 rounded cursor-pointer flex-shrink-0 text-${tag_color} bg-${tag_color}-100-g-hover flex flex-nowrap`}
                     onClick={onAbandon}
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-full w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -485,7 +485,7 @@ const EditorNote = ({
                 </div>
 
                 <div
-                    className={`px-2 py-1 mr-2 rounded cursor-pointer flex-shrink-0 text-${tag_color}-600 hover:bg-${tag_color}-100 flex flex-nowrap`}
+                    className={`px-2 py-1 mr-2 rounded cursor-pointer flex-shrink-0 text-${tag_color} bg-${tag_color}-100-g-hover flex flex-nowrap`}
                     onClick={() => setShowCategory(!showCategory)}
                     ref={categoryRef}
                 >
@@ -506,7 +506,7 @@ const EditorNote = ({
                                 onClick={() => setShowCategory(false)}
                             ></div>
                             <div
-                                className={`absolute bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-10 transition ease-out duration-75 flex`}
+                                className={`absolute bg-white rounded-md ring-1-op10-black transition-g ease-out-g duration-75-g flex`}
                                 style={detectPosition(categoryRef)}
                             >
                                 <div className='flex flex-col select-none'>
@@ -538,7 +538,7 @@ const EditorNote = ({
                         </div>
                         <div className='flex-grow flex'>
                             <input
-                                className={`text-${tag_color}-600 mr-2 pb-1 pl-4 flex-grow text-2xl font-semibold border-b border-gray-300 hover:border-gray-600 focus:outline-none`}
+                                className={`text-${tag_color} mr-2 pb-1 pl-4 flex-grow text-2xl font-semibold border-b border-gray-300-g border-gray-600-g-hover outline-none-focus`}
                                 placeholder='新增標題'
                                 value={detailDate.title}
                                 onChange={e => setDetailDate({ ...detailDate, title: e.target.value })}

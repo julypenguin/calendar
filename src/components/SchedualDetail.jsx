@@ -107,7 +107,7 @@ const SchedualDetail = ({
     return (
         <>
             {/* 頁首 */}
-            <div className={`bg-${tag_color}-deep pl-2 pr-1 flex justify-end`}>
+            <div className={`bg-${tag_color}-500-g pl-2 pr-1 flex justify-end`}>
                 <div
                     className='p-2 text-white cursor-pointer'
                     onClick={onClose}
@@ -119,9 +119,9 @@ const SchedualDetail = ({
             </div>
 
             {/* 功能按鈕 */}
-            <div className={`bg-${tag_color}-light pl-8 pr-1 py-1 flex select-none`}>
+            <div className={`bg-${tag_color}-50 pl-8 pr-1 py-1 flex select-none`}>
                 <div
-                    className={`px-2 py-1 mr-2 rounded cursor-pointer flex-shrink-0 text-${tag_color} bg-${tag_color}-light-hover`}
+                    className={`px-2 py-1 mr-2 rounded cursor-pointer flex-shrink-0 text-${tag_color} bg-${tag_color}-100-g-hover`}
                     onClick={onEdit}
                 >
                     <Icon className='mr-2' icon={['far', 'save']} />
@@ -129,7 +129,7 @@ const SchedualDetail = ({
                 </div>
 
                 <div
-                    className={`px-2 py-1 mr-2 rounded cursor-pointer flex-shrink-0 text-${tag_color} bg-${tag_color}-light-hover flex flex-nowrap`}
+                    className={`px-2 py-1 mr-2 rounded cursor-pointer flex-shrink-0 text-${tag_color} bg-${tag_color}-100-g-hover flex flex-nowrap`}
                     onClick={onDelete}
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-full w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
