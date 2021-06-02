@@ -15,6 +15,7 @@ const SchedualDetail = ({
     detailDate,
     setDetailDate,
     handleClose,
+    getAvatar,
     ...otherProps
 }) => {
 

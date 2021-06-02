@@ -283,9 +283,8 @@ const CalendarM = (props) => {
     }
 
     const renderNotes = () => {
-
+        let overNote = {} // 紀錄了那些日期有 ...，{ level_day: true }
         const notes = formatCalendarData(newCalendarData)
-        console.log('notes', notes)
         const cellBox = cellRef.current && cellRef.current.getBoundingClientRect()
         const noteHeight = 23
         if (!cellBox) return
@@ -295,41 +294,42 @@ const CalendarM = (props) => {
         return notes.map(({ title, tag_color: hexColor, left, right, sort, level, uuid, ...data }, index) => {
             const isCannotShow = minShowDetail < 0 && sort === 1
             const tag_color = colorMap[hexColor]
-
-            if (sort === minShowDetail || (isCannotShow)) {
+            if ((sort >= minShowDetail && !overNote[`${level}_${left}`]) || (isCannotShow)) {
                 let otherDataList = []
                 for (let i = left; i < 7 - right; i++) {
+                    overNote = { ...overNote, [`${level}_${i}`]: true }
+
                     otherDataList.push(
                         <div
                             key={`${index}_${i}`}
                             draggable='true'
                             className={`calendar-month-notes`}
-                            // onClick={() => {
-                            //     const newDate = new Date(addDays(i - left, data.btime))
-                            //     newDate.setHours(0)
-                            //     newDate.setMinutes(0)
-                            //     setShowSchedule(true)
-                            //     setNewShowData(newDate)
-                            //     setSelectedDate({
-                            //         sid: String(Date.now()),
-                            //         title: "",
-                            //         start_time: parseToISOString(newDate),
-                            //         end_time: parseToISOString(addMinutes(60, newDate)),
-                            //         desc: "",
-                            //         tag_color: "#BFDBFE",
-                            //         location: "",
-                            //         mode: 0,
-                            //         freq: 1,
-                            //         week_bit: weeks[newDate.getDay()] && weeks[newDate.getDay()].week_bit || 1,
-                            //     })
-                            // }}
+                            onClick={() => {
+                                const newDate = renderWeeks[level][i].datetime
+                                newDate.setHours(0)
+                                newDate.setMinutes(0)
+                                setShowSchedule(true)
+                                setNewShowData(newDate)
+                                setSelectedDate({
+                                    sid: String(Date.now()),
+                                    title: "",
+                                    start_time: parseToISOString(newDate),
+                                    end_time: parseToISOString(addMinutes(60, newDate)),
+                                    desc: "",
+                                    tag_color: "#BFDBFE",
+                                    location: "",
+                                    mode: 0,
+                                    freq: 1,
+                                    week_bit: weeks[newDate.getDay()] && weeks[newDate.getDay()].week_bit || 1,
+                                })
+                            }}
                         >
                             <div
                                 className={`calendar-month-notes-box absolute cursor-pointer opacity-70 `}
                                 style={{
                                     left: `${(100 / 7) * i}%`,
                                     right: `${(100 / 7) * (6 - i)}%`,
-                                    top: `calc(${(level / totalLevels) * 100}% + 34px + ${sort * noteHeight}px + ${sort ? sort : '0'}px)`
+                                    top: `calc(${(level / totalLevels) * 100}% + 34px + ${minShowDetail * noteHeight}px + ${minShowDetail ? minShowDetail : '0'}px)`
                                 }}>
                                 <div className='px-2 truncate flex justify-center items-center'>
                                     <div className='notes-box-outer'>
@@ -346,7 +346,7 @@ const CalendarM = (props) => {
                 return otherDataList
             }
 
-            if (sort > minShowDetail) return null
+            if (sort >= minShowDetail) return null
 
             return (
                 <div

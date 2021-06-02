@@ -132,7 +132,7 @@ const App = (props) => {
                         day="2-digit"
                     />,
                     main: false,
-                    datetime: new Date(newY, newM, newD)
+                    datetime: new Date(newY, newM - 1, newD)
                 })
             }
         }
