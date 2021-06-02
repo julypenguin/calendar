@@ -35,6 +35,9 @@ a {
 .overflow-visible
     overflow visible
 
+.inline-block
+    display inline-block
+
 .relative
     position relative
 
@@ -95,13 +98,35 @@ a {
 .z-10
     z-index 10
 
+.shadow-g
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)
+
 .shadow-lg-black
     box-shadow 0 10px 15px -3px rgba(0, 0, 0, 0.1)
 
+.ring-0
+    box-shadow: 0 0 0 0 #FFF;
+
 .ring-1-op10-black
     box-shadow 0 0 0 1px rgba(0, 0, 0, 0.1)
+
+.ring-2-focus
+    &:focus
+        box-shadow 0 0 0 2px #FFF, 0 0 0 4px Blue500
 
 .outline-none-focus
     &:focus
         outline 2px solid transparent
         outline-offset 2px
+
+.transform-g
+    transform translateX(0) translateY(0) rotate(0) skewX(0) skewY(0) scaleX(1) scaleY(1)
+
+.translate-x-0
+    transform translateX(0)
+
+.translate-x-5
+    transform translateX(1.25rem)
+
+.pointer-events-none
+    pointer-events none

@@ -550,7 +550,7 @@ const EditorNote = ({
                     <div className='flex mb-4'>
                         <div className='w-full flex'>
                             <div className='p-2'>
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-400-g" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                             </div>
@@ -604,14 +604,14 @@ const EditorNote = ({
                                         </span>
                                         <button
                                             type="button"
-                                            className={`relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${detailDate.all_day ? 'bg-blue-500' : 'bg-gray-200'}`}
+                                            className={`relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors-g ease-in-out-g duration-200-g outline-none-focus ring-2-focus ${detailDate.all_day ? 'bg-blue-500-g' : 'bg-gray'}`}
                                             role="switch"
                                             aria-checked="false"
                                             onClick={() => setDetailDate({ ...detailDate, all_day: !detailDate.all_day })}
                                         >
                                             <span
                                                 aria-hidden="true"
-                                                className={`translate-x-0 pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200 ${detailDate.all_day ? 'translate-x-5' : 'translate-x-0'}`}
+                                                className={`translate-x-0 pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow-g transform-g ring-0 transition-g ease-in-out-g duration-200-g ${detailDate.all_day ? 'translate-x-5' : 'translate-x-0'}`}
                                             />
                                         </button>
                                     </div>
