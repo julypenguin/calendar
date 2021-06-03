@@ -62,7 +62,7 @@ typings/
 # next.js build output
 .next
 # 
-dist/
+
 # config.json
 package-lock.json
 *.code-workspace
