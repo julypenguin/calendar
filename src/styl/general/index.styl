@@ -26,14 +26,26 @@ a {
     color #3a3a3a
 }
 
+.opacity-0
+    opacity 0
+
 .opacity-70
     opacity 0.7
+
+.opacity-100
+    opacity: 1
 
 .overflow-hidden
     overflow hidden
 
 .overflow-visible
     overflow visible
+
+.hidden
+    display none
+
+.block
+    display block
 
 .inline-block
     display inline-block
@@ -80,12 +92,33 @@ a {
 .text-right
     text-align right
 
+.text-xs
+    font-size 12px
+    line-height 16px
+
+.text-sm
+    font-size 14px
+    line-height 20px
+
+.text-lg
+    font-size 18px
+    line-height 28px
+
 .text-2xl
     font-size 24px
     line-height 32px
 
+.text-left
+    text-align left
+
+.font-medium
+    font-weight 500
+
 .font-semibold
     font-weight 600
+
+.font-bold
+    font-weight 700
 
 .whitespace-nowrap
     white-space nowrap
@@ -104,6 +137,9 @@ a {
 .shadow-lg-black
     box-shadow 0 10px 15px -3px rgba(0, 0, 0, 0.1)
 
+.shadow-xl
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
 .ring-0
     box-shadow: 0 0 0 0 #FFF;
 
@@ -113,6 +149,10 @@ a {
 .ring-2-focus
     &:focus
         box-shadow 0 0 0 2px #FFF, 0 0 0 4px Blue500
+
+.outline-none-focus
+    outline 2px solid transparent
+    outline-offset 2px
 
 .outline-none-focus
     &:focus
@@ -128,5 +168,34 @@ a {
 .translate-x-5
     transform translateX(1.25rem)
 
+.translate-y-0
+    transform translateY(0)
+
+.translate-y-4
+    transform translateY(1rem)
+
+.scale-100-sm
+    @media screen and (min-width: 640px)
+        transform scaleX(1) scaleY(1)
+
+.scale-95-sm
+    @media screen and (min-width: 640px)
+        transform scaleX(0.95) scaleY(0.95)
+
 .pointer-events-none
     pointer-events none
+
+.overflow-x-hidden
+    overflow-x hidden
+
+.overflow-y-auto
+    overflow-y auto
+
+.overflow-y-hidden
+    overflow-y hidden
+
+.overscroll-y-auto
+    overscroll-behavior-y auto
+
+.align-middle
+    vertical-align middle

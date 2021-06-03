@@ -38,18 +38,18 @@ const Modal = ({
     }, [defaultValue])
 
     return (
-            <div className={`fixed z-10 inset-0 overflow-y-auto ${show ? 'h-auto' : 'h-0'}`} aria-labelledby="modal-title" role="dialog" aria-modal="true">
-                <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:p-0">
+            <div className={`fixed z-10 ${!show ? '' : 'inset-0'} overflow-y-auto ${show ? 'h-auto' : 'h-0'}`} role="dialog">
+                <div className={`${!show ? '' : 'flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center p-0-sm'}`}>
 
                     <div
-                        className={`fixed inset-0 bg-gray-400 bg-opacity-75 transition-opacity ease-out duration-300 ${show ? 'h-auto' : 'h-0'}`}
+                        className={`fixed ${!show ? '' : 'inset-0'} bg-gray-400-o75 transition-opacity-g ease-out-g duration-300-g ${show ? 'h-auto' : 'h-0'}`}
                         aria-hidden="true"
                         onClick={onClose}
                     />
 
                     <div
-                        className={`inline-block align-middle bg-white rounded-lg text-left overflow-y-hidden shadow-xl transform transition-all ease-out duration-300 ${show ? 'opacity-100 translate-y-0 sm:scale-100' : 'opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95'}`}
-                        style={{ minHeight: '0', minWidth: '0', maxHeight: 'calc(100% -32px)', width: '800px' }}
+                        className={`inline-block align-middle bg-white rounded-lg text-left overflow-y-hidden shadow-xl transform-g transition-all ease-out-g duration-300-g translate-y-0 ${show ? 'opacity-100  scale-100-sm' : 'opacity-0 translate-y-4 scale-95-sm'}`}
+                        style={{ minHeight: '0', minWidth: '0', maxHeight: 'calc(100% -32px)', width: '800px', zIndex: '1' }}
                     >
                         <div
                             className={`overflow-y-hidden flex-grow`}

@@ -423,7 +423,7 @@ const CalendarM = (props) => {
                                 week.map((data, i) => (
                                     <div
                                         key={i}
-                                        className={`whitespace-nowrap absolute cursor-pointer ${classNames("bg-white", {
+                                        className={`whitespace-nowrap absolute cursor-pointer border-0 border-gray-300-g border-solid ${classNames("bg-white", {
                                             "calendar-bg-today":
                                                 // !dateDiff({ btime: data.datetime, etime: newShowData })
                                                 Number(data.date) === Number(fullDate.d) && Number(data.month) === Number(fullDate.m) && Number(data.year) === Number(fullDate.y)

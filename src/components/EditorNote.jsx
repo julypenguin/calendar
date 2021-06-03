@@ -252,7 +252,7 @@ const EditorNote = ({
             <li
                 key={index}
                 className={`flex flex-nowrap items-center pl-2 py-2 pr-8 bg-gray-100-g-hover cursor-pointer`}
-                onClick={() => setDetailDate({ ...detailDate, tag_color: data.hexColor.toLowerCase() })}
+                onClick={() => setDetailDate({ ...detailDate, tag_color: data.hexColor.toLocaleUpperCase() })}
             >
                 <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 mr-2 text-${color}-fresh`} viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M17.707 9.293a1 1 0 010 1.414l-7 7a1 1 0 01-1.414 0l-7-7A.997.997 0 012 10V5a3 3 0 013-3h5c.256 0 .512.098.707.293l7 7zM5 6a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
@@ -395,7 +395,7 @@ const EditorNote = ({
         return new Array(99).fill('').map((d, index) => (
             <li
                 key={index}
-                className='flex justify-center items-center p-2 bg-gray-light-hover cursor-pointer'
+                className='flex justify-center items-center p-2 bg-gray-100-g-hover cursor-pointer'
                 onClick={() => {
                     // setCycleNumber(index + 1)
                     setDetailDate({
@@ -422,7 +422,7 @@ const EditorNote = ({
         return cycleList.map((cycle, index) => (
             <li
                 key={index}
-                className='flex items-center p-2 bg-gray-light-hover cursor-pointer'
+                className='flex items-center p-2 bg-gray-100-g-hover cursor-pointer'
                 onClick={() => {
                     // setCycleName(cycle)
                     // setDetailDate({ ...detailDate, mode: cycle.mode, xxx: 1 })
@@ -538,7 +538,7 @@ const EditorNote = ({
                         </div>
                         <div className='flex-grow flex'>
                             <input
-                                className={`text-${tag_color} mr-2 pb-1 pl-4 flex-grow text-2xl font-semibold border-b border-gray-300-g border-gray-600-g-hover outline-none-focus`}
+                                className={`text-${tag_color} mr-2 pb-1 pl-4 flex-grow text-2xl font-semibold border-0 border-b border-solid border-gray-300-g border-gray-600-g-hover outline-none-focus`}
                                 placeholder='新增標題'
                                 value={detailDate.title}
                                 onChange={e => setDetailDate({ ...detailDate, title: e.target.value })}
@@ -625,15 +625,15 @@ const EditorNote = ({
                     <div className='flex mb-4'>
                         <div className='w-full flex'>
                             <div className='p-2'>
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-400-g" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                 </svg>
                             </div>
-                            <div className='mt-2 flex flex-wrap flex-1 mr-2 relative border-b border-gray-300 hover:border-gray-600'>
+                            <div className='mt-2 flex flex-wrap flex-1 mr-2 relative border-0 border-b border-solid border-gray-300-g border-gray-600-g-hover'>
                                 {detailDate.attend && detailDate.attend.map(aa => (
                                     <div
                                         key={aa.aa_sid}
-                                        className='flex ml-4 mb-2 rounded-full cursor-pointer bg-blue-50 hover:bg-blue-100'>
+                                        className='flex ml-4 mb-2 rounded-full cursor-pointer bg-blue-50-g bg-blue-100-g-hover'>
                                         <div
                                             className='relative'
                                             style={{ width: '32px', height: '32px' }}
@@ -641,7 +641,7 @@ const EditorNote = ({
                                             <div className='absolute inset-0 rounded-full bg-white'>
                                                 {typeof getAvatar !== 'function' ? null :
                                                     <img
-                                                        className='w-full h-full rounded-full border border-gray-300'
+                                                        className='w-full h-full rounded-full border border-gray-300-g border-solid'
                                                         src={getAvatar(aa.aa_sid)}
                                                     />
                                                 }
@@ -650,7 +650,7 @@ const EditorNote = ({
                                         <div className='flex items-center'>
                                             <div className={`pl-2 mr-2 text-${tag_color}`}>{aa.aa_name || aa.aa_id}</div>
                                             <div
-                                                className='relative rounded-full hover:bg-blue-200'
+                                                className='relative rounded-full bg-blue-200-hover'
                                                 style={{ width: '32px', height: '32px' }}
                                             >
                                                 <div
@@ -673,15 +673,15 @@ const EditorNote = ({
                     <div className='flex mb-4'>
                         <div className='w-full flex'>
                             <div className='p-2'>
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-400-g" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                 </svg>
                             </div>
-                            <div className='mt-2 flex flex-wrap flex-1 mr-2 relative border-b border-gray-300 hover:border-gray-600'>
+                            <div className='mt-2 flex flex-wrap flex-1 mr-2 relative border-0 border-b border-solid border-gray-300-g border-gray-600-g-hover'>
                                 <input
                                     type='text'
-                                    className='pl-4 flex-1 outline-none'
+                                    className='pl-4 flex-1 outline-none border-0 outline-none-focus'
                                     value={detailDate.location}
                                     onChange={e => setDetailDate({
                                         ...detailDate,
@@ -696,11 +696,11 @@ const EditorNote = ({
                     <div className='flex mb-4 flex-wrap select-none'>
                         <div className='w-full flex'>
                             <div className='p-2'>
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-400-g" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                                 </svg>
                             </div>
-                            <div className='mt-2 flex flex-wrap flex-1 mr-2 pb-1 pl-4 border-b border-gray-300 hover:border-gray-600'>
+                            <div className='mt-2 flex flex-wrap flex-1 mr-2 pb-1 pl-4 border-0 border-b border-solid border-gray-300-g border-gray-600-g-hover'>
                                 <div className='flex'>
                                     <div className='mr-2'>
                                         <span className='mr-1'>
@@ -717,7 +717,7 @@ const EditorNote = ({
                                         onClick={() => setShowCycleNumberList(!showCycleNumberList)}
                                     >
                                         <span className='px-2'>{detailDate.freq}</span>
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-300-g" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                         </svg>
                                     </div>}
@@ -740,7 +740,7 @@ const EditorNote = ({
                                         <span className='px-2'>
                                             {typeof detailDate.mode === 'number' && <FormattedMessage id={`calendar.${modeMap[detailDate.mode]}`} />}
                                         </span>
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-300-g" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                         </svg>
                                     </div>
@@ -764,7 +764,7 @@ const EditorNote = ({
                                             <input
                                                 type="radio"
                                                 name="calc_type"
-                                                className="mt-0.5 cursor-pointer text-indigo-600 border-gray-300 focus:ring-indigo-500"
+                                                className="mt-0.5 cursor-pointer text-indigo-600-g border-gray-300-g "
                                                 checked={detailDate.calc_type === 0}
                                                 onChange={e => setDetailDate({
                                                     ...detailDate,
@@ -774,7 +774,7 @@ const EditorNote = ({
                                                 })}
                                             />
                                             <div className="ml-3 flex flex-col">
-                                                <span className="text-gray-900 font-medium flex">
+                                                <span className="text-gray-900-g font-medium flex">
                                                     <span className='mr-2 text-sm'>{renderOnDate(detailDate.mode)}</span>
                                                     {/* 自訂日期 */}
                                                     {/* <span
@@ -801,7 +801,7 @@ const EditorNote = ({
                                             <input
                                                 type="radio"
                                                 name="calc_type"
-                                                className="mt-0.5 cursor-pointer text-indigo-600 border-gray-300 focus:ring-indigo-500"
+                                                className="mt-0.5 cursor-pointer text-indigo-600-g border-gray-300-g"
                                                 checked={detailDate.calc_type === 1}
                                                 onChange={e => setDetailDate({
                                                     ...detailDate,
@@ -811,7 +811,7 @@ const EditorNote = ({
                                                     week_bit: weeks[new Date(detailDate.start_time).getDay()].week_bit
                                                 })} />
                                             <div className="ml-3 flex flex-col">
-                                                <span className="text-gray-900 text-sm font-medium flex flex-wrap mr-2">
+                                                <span className="text-gray-900-g text-sm font-medium flex flex-wrap mr-2">
                                                     <span className='mr-2 text-sm'>{renderOnWeek(detailDate.mode)}</span>
                                                     {/* 自訂星期幾 */}
                                                     {/* <span
@@ -835,7 +835,7 @@ const EditorNote = ({
                                         {weeks.map((day, index) => (
                                             <li
                                                 key={index}
-                                                className={`flex justify-center items-center mr-3 rounded-full ${(day.week_bit & detailDate.week_bit) === day.week_bit ? 'bg-blue-200' : 'bg-gray-200 hover:bg-gray-300'}`}
+                                                className={`flex justify-center items-center mr-3 rounded-full ${(day.week_bit & detailDate.week_bit) === day.week_bit ? 'bg-blue' : 'bg-gray bg-gray-300-hover'}`}
                                                 style={{ height: '38px', width: '38px' }}
                                                 onClick={() => handleSetRepeatWeek(day.week_bit)}
                                             >
@@ -869,7 +869,7 @@ const EditorNote = ({
 
                                     {detailDate.is_repeat ?
                                         <div
-                                            className='flex items-center text-sm text-blue-500 cursor-pointer'
+                                            className='flex items-center text-sm text-blue-500-g cursor-pointer'
                                             onClick={() => {
                                                 setDetailDate({ ...detailDate, final_date: '0001-01-01T00:00:00', is_repeat: false })
                                             }}
@@ -878,7 +878,7 @@ const EditorNote = ({
                                         </div>
                                         :
                                         <div
-                                            className='flex items-center text-sm text-blue-500 cursor-pointer'
+                                            className='flex items-center text-sm text-blue-500-g cursor-pointer'
                                             onClick={() => {
                                                 setDetailDate({ ...detailDate, final_date: parseToISOString(addDays(30)), is_repeat: true })
                                             }}
@@ -923,14 +923,14 @@ const EditorNote = ({
                     <div className='flex mb-4'>
                         <div className='w-full flex'>
                             <div className='p-2'>
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-400-g" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h7" />
                                 </svg>
                             </div>
 
                             {customEditor ?
                                 <input
-                                    className='border border-gray-300 w-full h-32'
+                                    className='border border-gray-300-g w-full h-32'
                                     style={{ padding: '8px' }}
                                     value={detailDate.desc}
                                     onChange={e => setDetailDate({
@@ -940,7 +940,7 @@ const EditorNote = ({
                                 />
                                 :
                                 <textarea
-                                    className='border border-gray-300 w-full h-32'
+                                    className='border border-gray-300-g w-full h-32'
                                     style={{ padding: '8px' }}
                                     value={detailDate.desc}
                                     onChange={e => setDetailDate({

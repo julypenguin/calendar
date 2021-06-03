@@ -80,7 +80,7 @@ const Schedule = (props) => {
     }
 
     return (
-        <div className='border-l hidden md:flex flex-col bg-white'>
+        <div className='border-0 border-l border-solid border-gray-300-g hidden flex-md flex-col bg-white'>
             <div
                 className='flex flex-col h-full'
                 style={{ width: '320px', minWidth: '320px', maxHeight: 'calc(100vh - 70px)' }}
@@ -88,7 +88,7 @@ const Schedule = (props) => {
                 <div className='flex flex-auto h-full overflow-y-auto overflow-x-hidden'>
                     <div className='overflow-hidden flex flex-col w-full'>
                         <div
-                            className='pl-3 border-b flex flex-row flex-nowrap items-center justify-between overflow-hidden'
+                            className='pl-3 border-0 border-b border-solid border-gray-300-g flex flex-row flex-nowrap items-center justify-between overflow-hidden'
                             style={{ height: '46px', minHeight: '46px' }}
                         >
                             <div className='flex flex-row items-center h-full'>
@@ -102,7 +102,7 @@ const Schedule = (props) => {
                             >
                                 <span
                                     // className='flex flex-shrink-0 text-blue-600 border border-blue-600 rounded-lg px-2 mr-2 bg-blue-50 cursor-pointer hover:bg-blue-100'
-                                    className='flex flex-shrink-0 text-white bg-blue-600 rounded mr-2 cursor-pointer hover:bg-blue-700'
+                                    className='flex flex-shrink-0 text-white bg-blue-600-g rounded mr-2 cursor-pointer bg-blue-700-g-hover'
                                     onClick={() => handleSetDataAndShowEditor({
                                         sid: String(Date.now()),
                                         title: "",
@@ -121,7 +121,7 @@ const Schedule = (props) => {
                                     {/* <span>新增</span> */}
                                 </span>
                                 <span
-                                    className='p-2 mr-2 flex items-center cursor-pointer hover:bg-gray-100'
+                                    className='p-2 mr-2 flex items-center cursor-pointer bg-gray-100-g-hover'
                                     onClick={onClose}
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -135,7 +135,7 @@ const Schedule = (props) => {
                         >
                             {newCalendarData && !newCalendarData.length ?
 
-                                <div className='flex flex-col flex-auto h-full justify-center items-center text-lg text-bold'>
+                                <div className='flex flex-col flex-auto h-full justify-center items-center text-lg font-bold'>
                                     <FormattedMessage id='calendar.no_plans_today' />
                                 </div>
 
@@ -146,10 +146,10 @@ const Schedule = (props) => {
                                     {newCalendarData.map((schedule, index) => (
                                         <div
                                             key={index}
-                                            className='px-4 py-2 flex cursor-pointer hover:bg-gray-100'
+                                            className='px-4 py-2 flex cursor-pointer bg-gray-100-g-hover'
                                             onClick={() => handleSetDataAndShowEditor(schedule)}
                                         >
-                                            <div className={`border-l-4 mr-2 rounded-sm ${colorMap[schedule.tag_color] ? `border-${colorMap[schedule.tag_color]}` : 'border-blue'}`} />
+                                            <div className={`border-0 border-l-4 border-solid mr-2 rounded-sm ${colorMap[schedule.tag_color] ? `border-${colorMap[schedule.tag_color]}` : 'border-blue'}`} />
                                             <div className='flex flex-col py-2 w-full'>
                                                 <div className='flex mb-1'>
                                                     <div className='text-xs truncate mr-1' style={{ width: '58px' }}>
