@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { FormattedDate, FormattedMessage, FormattedTime, injectIntl } from 'react-intl'
 import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome'
+import { Route, Switch } from 'react-router'
 import { renderFullDate, colorMap, weeks } from './formatDate'
 import { getFullDate, addDays, getCycleDays, filterDate, dateDiff, addMinutes } from 'lib/datetime'
 import EditorNote from './EditorNote'
@@ -9,7 +10,7 @@ import Modal from './Modal'
 import { brightness } from 'lib/color'
 
 const CalendarD = (props) => {
-    const { showData, isWeek, cycle, calendarData } = props
+    const { showData, isWeek, cycle, calendarData, push } = props
 
     const [days, setDays] = useState(1)
     const [selectedDate, setSelectedDate] = useState({})
@@ -26,9 +27,11 @@ const CalendarD = (props) => {
     const handleSetDataAndShowDetail = (data) => {
         setSelectedDate(data)
         setShowDetail(true)
+        push(`/${data.sid}?b=${data.btime}&e=${data.etime}`)
     }
 
     const handleSetDataAndShowEditor = (data) => {
+        console.log('data', data)
         setSelectedDate(data)
         setShowEditor(true)
     }
@@ -177,7 +180,7 @@ const CalendarD = (props) => {
                 >
                     <div draggable='true'>
                         <div
-                            className={`calendar-day-title-note truncate absolute cursor-pointer flex items-center ${tag_color ? `bg-${tag_color}-hover border-${tag_color} text-${tag_color}` : 'bg-blue border-blue text-blue'}`}
+                            className={`calendar-day-title-note border-0 border-solid truncate absolute cursor-pointer flex items-center ${tag_color ? `bg-${tag_color}-hover border-${tag_color} text-${tag_color}` : 'bg-blue border-blue text-blue'}`}
                             style={{
                                 left: `${calcLeftAndRight(data, 'left')}%`,
                                 right: `${calcLeftAndRight(data, 'right')}%`,
@@ -235,7 +238,7 @@ const CalendarD = (props) => {
         return (
             <div
                 key={index}
-                className={`calendar-day-note absolute cursor-pointer opacity-70 ${tag_color ? `bg-${tag_color}-hover border-${tag_color} text-${tag_color}-view` : 'bg-blue border-blue text-blue'}`}
+                className={`calendar-day-note border-0 border-solid absolute cursor-pointer opacity-70 ${tag_color ? `bg-${tag_color}-hover border-${tag_color} text-${tag_color}-view` : 'bg-blue border-blue text-blue'}`}
                 style={{
                     top: `${minutePercent * minuteB}%`,
                     bottom: `${100 - (minutePercent * minuteE)}%`,
@@ -352,7 +355,7 @@ const CalendarD = (props) => {
                     </div>
                     <div className='calendar-day-title-right overflow-hidden flex-1'>
                         <div className='flex'>{renderDaysTitle(days)}</div>
-                        <div className='flex relative border-b-2'>
+                        <div className='flex relative border-0 border-solid border-b-2'>
                             {renderDaysTitle(days, newCalendarData)}
                             {renderTitleNote()}
                         </div>
@@ -389,7 +392,7 @@ const CalendarD = (props) => {
                                 {hourLineArr.map((line, index) => (
                                     <div
                                         key={index}
-                                        className={`absolute left-0 right-0 border-t ${index % 2 === 1 ? 'border-solid' : 'border-dashed'}`}
+                                        className={`absolute left-0 right-0 border-0 border-t ${index % 2 === 1 ? 'border-solid' : 'border-dashed'}`}
                                         style={{ top: `${(100 / 48) * (index + 1)}%` }}
                                     />
                                 ))}
@@ -402,16 +405,24 @@ const CalendarD = (props) => {
                 </div>
             </div>
 
-            <Modal
-                {...props}
-                Content={SchedualDetail}
-                show={showDetail}
-                handleClose={() => setShowDetail(false)}
-                defaultValue={selectedDate}
-                setDefaultValue={setSelectedDate}
-                calendarData={newCalendarData}
-                setCalendarData={setNewCalendarData}
-            />
+            <Switch>
+                <Route path="/:sid" render={(routerProps) =>
+                    <Modal
+                        {...props}
+                        {...routerProps}
+                        Content={SchedualDetail}
+                        show={showDetail}
+                        handleClose={() => {
+                            push("/")
+                            setShowDetail(false)
+                        }}
+                        defaultValue={selectedDate}
+                        setDefaultValue={setSelectedDate}
+                        calendarData={newCalendarData}
+                        setCalendarData={setNewCalendarData}
+                    />
+                } />
+            </Switch>
 
             <Modal
                 {...props}

@@ -220,7 +220,7 @@ const Navbar = ({
                                 />
                             </div>
                         </div>}
-                        <div className='top-0 border-r'></div>
+                        <div className='top-0 border-0 border-r border-solid border-gray-300-g'></div>
                         <SelectorM
                             month={renderFullDate({ data: previewData, noMonth: true, noDate: true })}
                             renderFullDate={renderFullDate}

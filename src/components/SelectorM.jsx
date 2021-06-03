@@ -74,7 +74,7 @@ const SelectorM = ({
                         .map(d => (
                             <div
                                 key={d.month}
-                                className={`mr-1 text-xs text-center inline-block cursor-pointer ${d.month === selectedM && y === selectedY ? 'bg-blue-100-g' : 'bg-white hover:bg-gray-100'}`}
+                                className={`mr-1 text-xs text-center inline-block cursor-pointer ${d.month === selectedM && y === selectedY ? 'bg-blue-100-g' : 'bg-white bg-gray-100-g-hover'}`}
                                 role='gridcell'
                                 style={{ width: '40px', height: '40px', lineHeight: '40px' }}
                                 onClick={() => handleSetMonth(d.month - 1)}
@@ -105,7 +105,7 @@ const SelectorM = ({
                         .map(d => (
                             <div
                                 key={d.year}
-                                className={`mr-1 text-xs text-center inline-block cursor-pointer ${d.year === y ? 'bg-blue-100-g' : 'bg-white hover:bg-gray-100'}`}
+                                className={`mr-1 text-xs text-center inline-block cursor-pointer ${d.year === y ? 'bg-blue-100-g' : 'bg-white bg-gray-100-g-hover'}`}
                                 role='gridcell'
                                 style={{ width: '40px', height: '40px', lineHeight: '40px' }}
                                 onClick={() => handleSetYear(d.year)}
@@ -150,14 +150,14 @@ const SelectorM = ({
             <div className='px-2 pt-2 pb-1 overflow-hidden' style={{ width: '196px' }}>
                 <div className='flex'>
                     <div
-                        className='flex-1 pl-2 pr-5 hover:bg-gray-100 cursor-pointer'
+                        className='flex-1 pl-2 pr-5 bg-gray-100-g-hover cursor-pointer'
                         onClick={() => setMode(mode === 1 ? 2 : 1)}
                     >
                         {renderFullDate({ data: previewData, noMonth: true, noDate: true, rangeY: mode === 2 })}
                     </div>
                     <div className='flex'>
                         <div
-                            className='flex justify-center items-center cursor-pointer hover:bg-gray-100' style={{ width: '28px', height: '28px' }}
+                            className='flex justify-center items-center cursor-pointer bg-gray-100-g-hover' style={{ width: '28px', height: '28px' }}
                             onClick={() => mode === 2 ? setYear(setPreviewData, previewData, -12) : setYear(setPreviewData, previewData, -1)}
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -165,7 +165,7 @@ const SelectorM = ({
                             </svg>
                         </div>
                         <div
-                            className='flex justify-center items-center cursor-pointer hover:bg-gray-100'
+                            className='flex justify-center items-center cursor-pointer bg-gray-100-g-hover'
                             style={{ width: '28px', height: '28px' }}
                             onClick={() => mode === 2 ? setYear(setPreviewData, previewData, 12) : setYear(setPreviewData, previewData, 1)}
                         >
@@ -183,7 +183,7 @@ const SelectorM = ({
             </div>
             {cycle === 30 ? null :
                 <div 
-                    className='text-right px-6 text-xs hover:text-blue-400 cursor-pointer'
+                    className='text-right px-6 text-xs text-blue-400-g-hover cursor-pointer'
                     onClick={toToday}
                 >
                     <FormattedMessage id='calendar.today' />

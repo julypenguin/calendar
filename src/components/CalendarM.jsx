@@ -403,7 +403,7 @@ const CalendarM = (props) => {
                         {/* 週 */}
                         <div className='flex flex-1 select-none'>
                             {weeks.map((week, index) => (
-                                <div key={index} className={`calendar-month-title relative flex flex-1 items-end ${!center ? 'calendar-month-title-center' : 'justify-center items-center h-full'}`}>
+                                <div key={index} className={`calendar-month-title relative flex flex-1 ${!center ? 'calendar-month-title-center items-end' : 'justify-center items-center h-full'}`}>
                                     {abbr ?
                                         <div className={`text-gray ${!textSm ? '' : 'calendar-text-sm'}`}>{week.abb_name}</div>
                                         :
@@ -449,17 +449,17 @@ const CalendarM = (props) => {
                                                 {data.formatDate ?
                                                     abbr ?
                                                         <div
-                                                            className={`${!textSm ? '' : 'calendar-text-sm'} ${selector && data.isToday ? 'text-white' : selector && !data.main ? 'text-gray-300' : 'text-gray-500'}`}>{data.date}</div>
+                                                            className={`${!textSm ? '' : 'calendar-text-sm'} ${selector && data.isToday ? 'text-white' : selector && !data.main ? 'text-gray-300-g' : 'text-gray-500-g'}`}>{data.date}</div>
                                                         :
                                                         <>
                                                             <div
-                                                                className={`calendar-month-date-name ${!textSm ? '' : 'calendar-text-sm'} ${selector && data.isToday ? 'text-white' : selector && !data.main ? 'text-gray-300' : 'text-gray-500'}`}>{data.formatDate}</div>
+                                                                className={`calendar-month-date-name ${!textSm ? '' : 'calendar-text-sm'} ${selector && data.isToday ? 'text-white' : selector && !data.main ? 'text-gray-300-g' : 'text-gray-500-g'}`}>{data.formatDate}</div>
                                                             <div
-                                                                className={`calendar-month-date-date ${!textSm ? '' : 'calendar-text-sm'} ${selector && data.isToday ? 'text-white' : selector && !data.main ? 'text-gray-300' : 'text-gray-500'}`}>{data.date}</div>
+                                                                className={`calendar-month-date-date ${!textSm ? '' : 'calendar-text-sm'} ${selector && data.isToday ? 'text-white' : selector && !data.main ? 'text-gray-300-g' : 'text-gray-500-g'}`}>{data.date}</div>
                                                         </>
 
                                                     :
-                                                    <span className={`${!textSm ? '' : 'calendar-text-sm'} ${selector && data.isToday ? 'text-white' : selector && !data.main ? 'text-gray-300' : 'text-gray-500'}`}>{data.date}</span>
+                                                    <span className={`${!textSm ? '' : 'calendar-text-sm'} ${selector && data.isToday ? 'text-white' : selector && !data.main ? 'text-gray-300-g' : 'text-gray-500-g'}`}>{data.date}</span>
                                                 }
                                             </div>
                                         </div>
