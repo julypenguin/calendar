@@ -12,6 +12,7 @@ const Modal = ({
     defaultValue, // detail 的資料
     setDefaultValue, // 重置 default
     Content,
+    className,
     ...otherProps
 }) => {
     const [detailDate, setDetailDate] = useState({ title: '', tag_color: '#BFDBFE' })
@@ -38,7 +39,7 @@ const Modal = ({
     }, [defaultValue])
 
     return (
-            <div className={`fixed z-10 ${!show ? '' : 'inset-0'} overflow-y-auto ${show ? 'h-auto' : 'h-0'}`} role="dialog">
+            <div className={`fixed z-10 ${!show ? '' : 'inset-0'} overflow-y-auto ${show ? 'h-auto' : 'h-0'} ${className}`} role="dialog">
                 <div className={`${!show ? '' : 'flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center p-0-sm'}`}>
 
                     <div

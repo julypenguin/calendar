@@ -37,6 +37,7 @@ const CalendarM = (props) => {
     const [showDetail, setShowDetail] = useState(false)
     const [showEditor, setShowEditor] = useState(false)
     const [showSchedule, setShowSchedule] = useState(true)
+    const [showScheduleModal, setShowScheduleModal] = useState(false)
 
     const cellRef = useRef()
 
@@ -54,6 +55,7 @@ const CalendarM = (props) => {
                 setShowEditor(true)
             } else {
                 setShowSchedule(true)
+                setShowScheduleModal(true)
                 setSelectedDate({
                     sid: String(Date.now()),
                     title: "",
@@ -309,6 +311,7 @@ const CalendarM = (props) => {
                                 newDate.setHours(0)
                                 newDate.setMinutes(0)
                                 setShowSchedule(true)
+                                setShowScheduleModal(true)
                                 setNewShowData(newDate)
                                 setSelectedDate({
                                     sid: String(Date.now()),
@@ -475,7 +478,7 @@ const CalendarM = (props) => {
                     {...props}
                     calendarData={newCalendarData}
                     showData={newShowData}
-                    handleClose={() => setShowSchedule(false)}
+                    onClose={() => setShowSchedule(false)}
                     showEditor={showEditor}
                     setShowEditor={setShowEditor}
                     setSelectedDate={setSelectedDate}
@@ -512,6 +515,21 @@ const CalendarM = (props) => {
                 setDefaultValue={setSelectedDate}
                 calendarData={newCalendarData}
                 setCalendarData={setNewCalendarData}
+            />
+
+            <Modal
+                {...props}
+                Content={Schedule}
+                show={showScheduleModal}
+                handleClose={() => setShowScheduleModal(false)}
+                calendarData={newCalendarData}
+                showData={newShowData}
+                showEditor={showEditor}
+                setShowEditor={setShowEditor}
+                setSelectedDate={setSelectedDate}
+                setShowDetail={setShowDetail}
+                modalMd={true}
+                className='block hidden-md'
             />
 
         </>

@@ -10,11 +10,13 @@ const Schedule = (props) => {
         calendarData, // 從外部填入日曆的資料
         showData, // 一個日期
         handleClose,
+        onClose,
         showEditor,
         setShowEditor,
         setSelectedDate,
         setShowDetail,
         push,
+        modalMd,
     } = props
 
     const newCalendarData = calendarData && calendarData
@@ -24,13 +26,19 @@ const Schedule = (props) => {
         })
         || []
 
-    const onClose = () => {
+    const handleOnClose = () => {
+        if (typeof onClose === 'function') onClose()
         if (typeof handleClose === 'function') handleClose()
     }
 
     const handleSetDataAndShowEditor = (data) => {
         setSelectedDate(data)
-        push(`/${data.sid}?b=${data.btime}&e=${data.etime}`)
+        setShowEditor(true)
+    }
+
+    const handleSetDataAndShowDetail = (data) => {
+        setSelectedDate(data)
+        push(`/calendar/${data.sid}?b=${btoa(data.btime)}&e=${btoa(data.etime)}`)
         setShowDetail(true)
         // setShowEditor(true)
     }
@@ -80,10 +88,10 @@ const Schedule = (props) => {
     }
 
     return (
-        <div className='border-0 border-l border-solid border-gray-300-g hidden flex-md flex-col bg-white'>
+        <div className={`border-0 border-l border-solid border-gray-300-g flex-col bg-white-g ${modalMd ? 'flex hidden-md' : 'hidden flex-md'}`}>
             <div
                 className='flex flex-col h-full'
-                style={{ width: '320px', minWidth: '320px', maxHeight: 'calc(100vh - 70px)' }}
+                style={{ width: '320px', minWidth: modalMd ? '100%' : '320px', maxHeight: 'calc(100vh - 70px)' }}
             >
                 <div className='flex flex-auto h-full overflow-y-auto overflow-x-hidden'>
                     <div className='overflow-hidden flex flex-col w-full'>
@@ -103,26 +111,28 @@ const Schedule = (props) => {
                                 <span
                                     // className='flex flex-shrink-0 text-blue-600 border border-blue-600 rounded-lg px-2 mr-2 bg-blue-50 cursor-pointer hover:bg-blue-100'
                                     className='flex flex-shrink-0 text-white bg-blue-600-g rounded mr-2 cursor-pointer bg-blue-700-g-hover'
-                                    onClick={() => handleSetDataAndShowEditor({
-                                        sid: String(Date.now()),
-                                        title: "",
-                                        start_time: showData,
-                                        end_time: addMinutes(60, showData),
-                                        desc: "",
-                                        tag_color: "#BFDBFE",
-                                        location: "",
-                                        mode: 0,
-                                        freq: 1,
-                                    })}
+                                    onClick={() => {
+                                        if (typeof handleClose === 'function') handleClose()
+                                        handleSetDataAndShowEditor({
+                                            sid: String(Date.now()),
+                                            title: "",
+                                            start_time: showData,
+                                            end_time: addMinutes(60, showData),
+                                            desc: "",
+                                            tag_color: "#BFDBFE",
+                                            location: "",
+                                            mode: 0,
+                                            freq: 1,
+                                        })
+                                    }}
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                                     </svg>
-                                    {/* <span>新增</span> */}
                                 </span>
                                 <span
                                     className='p-2 mr-2 flex items-center cursor-pointer bg-gray-100-g-hover'
-                                    onClick={onClose}
+                                    onClick={handleOnClose}
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                         <path fillRule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clipRule="evenodd" />
@@ -147,7 +157,10 @@ const Schedule = (props) => {
                                         <div
                                             key={index}
                                             className='px-4 py-2 flex cursor-pointer bg-gray-100-g-hover'
-                                            onClick={() => handleSetDataAndShowEditor(schedule)}
+                                            onClick={() => {
+                                                handleSetDataAndShowDetail(schedule)
+                                                if (typeof handleClose === 'function') handleClose()
+                                            }}
                                         >
                                             <div className={`border-0 border-l-4 border-solid mr-2 rounded-sm ${colorMap[schedule.tag_color] ? `border-${colorMap[schedule.tag_color]}` : 'border-blue'}`} />
                                             <div className='flex flex-col py-2 w-full'>
